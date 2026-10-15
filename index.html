@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-nnCnlYptke3ocGahEaE36dqbehQhm49eNE/MxvB013U=' 'sha256-qUW/IuC9E3kL23Go4NNw0iGUYZ/RfVRQCiwb2OQDsQ4=' 'sha256-HPMHGlKNzY1Mva/pWwnkdc3pFCkkrSfIXQL2gzZtins=' 'sha256-+0vao619F7gTgosqKFKREnWLtv478YUSg91V25fMBRI=' 'sha256-o4BpecFGIZmeKX70dAnyMjnDMwBmtJmCpcxfUxv5GRk=' 'sha256-1PajFr7hy7XySBtPEGeY6/xS9plvQKxC6NF00iNlWcI='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tile.openstreetmap.org https://server.arcgisonline.com; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-nnCnlYptke3ocGahEaE36dqbehQhm49eNE/MxvB013U=' 'sha256-qUW/IuC9E3kL23Go4NNw0iGUYZ/RfVRQCiwb2OQDsQ4=' 'sha256-UD/k/7P56Jmd5Ze+krI5jNW7maqTpUHQiCPdW1yEtc4=' 'sha256-dXxRAFKwReB6b+jBhYtnZgJRHTIJ78wrM4ZO2virQNE=' 'sha256-o4BpecFGIZmeKX70dAnyMjnDMwBmtJmCpcxfUxv5GRk=' 'sha256-id6obAQicwzeIcP7IrAQMmpY7CDTg6mNT1/Z6j1ppoI='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tile.openstreetmap.org https://server.arcgisonline.com; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style>
 /* Fuentes alojadas en el mismo sitio (licencia SIL OFL): la app no pide nada a Google Fonts */
@@ -367,6 +367,7 @@ select.campo{width:100%;min-height:46px;border-radius:10px;border:1px solid var(
         <div class="instruccion" id="llegadaTxt">Quédate aquí hasta que la autoridad informe que terminó la alerta. No vuelvas a la costa.</div>
       </div>
       <p class="nota" id="llegadaSiguiente" hidden></p>
+      <button class="boton" id="btnContinuarPD" type="button" hidden data-i18n="volc.continuar">Continuar al punto definitivo</button>
       <button class="enlace-btn" id="btnSeguirGuia" type="button" data-i18n="llegada.volver">Volver a la guía</button>
     </div>
 
@@ -559,7 +560,7 @@ es: {
     'giro.der': 'gira a la derecha', 'giro.izq': 'gira a la izquierda', 'giro.lder': 'dobla levemente a la derecha', 'giro.lizq': 'dobla levemente a la izquierda', 'giro.sigue': 'continúa', 'giro.vuelta': 'da la vuelta',
     'ley.rutaAuto': 'Ruta en auto por calles, a favor del tránsito (modo vehículo)', 'auto.atrib': 'calles',
     'gmaps.pie': 'Se abrirá Google Maps con una ruta a pie que pasa por tu vía de evacuación. Puede diferir en senderos que Google no conoce.',
-    'llegada.titulo': 'Llegaste', 'llegada.def': 'Punto de encuentro definitivo más cercano: {n} ({d}).', 'llegada.volver': 'Volver a la guía',
+    'llegada.titulo': 'Llegaste', 'llegada.def': 'Punto de encuentro definitivo más cercano: {n} ({d}).', 'volc.luego': '{pe}; luego, {pd}', 'volc.continuar': 'Continuar al punto definitivo', 'volc.vozPET': 'Llegaste al punto de encuentro transitorio. Para seguir al punto de encuentro definitivo, toca Continuar.', 'volc.llegadaPET': 'Este es un punto de encuentro transitorio. Continúa en vehículo hasta {pd}, a {d}.', 'volc.llegadaPD': 'Estás en el punto de encuentro definitivo. Quédate aquí y sigue las instrucciones de la autoridad.', 'volc.haciaPD': 'Sigue en vehículo hasta {pd}, a {d} en línea recta. Toca «Ruta en auto (Google Maps)» para ir por los caminos.', 'llegada.volver': 'Volver a la guía',
     'error.titulo': 'Ubicación no disponible', 'error.manual': 'Marcar dónde estoy en el mapa', 'error.reintentar': 'Intentar de nuevo con GPS',
     'error.https': 'Para usar el GPS, abre esta guía desde su dirección https://.',
     'error.sinGeo': 'Este navegador no entrega la ubicación del teléfono.',
@@ -696,7 +697,7 @@ en: {
     'giro.der': 'turn right', 'giro.izq': 'turn left', 'giro.lder': 'bear right', 'giro.lizq': 'bear left', 'giro.sigue': 'continue', 'giro.vuelta': 'make a U-turn',
     'ley.rutaAuto': 'Driving route on streets, with the flow of traffic (vehicle mode)', 'auto.atrib': 'streets',
     'gmaps.pie': 'Google Maps will open with a walking route that follows your evacuation route. It may differ on paths Google does not know.',
-    'llegada.titulo': 'You made it', 'llegada.def': 'Nearest final meeting point: {n} ({d}).', 'llegada.volver': 'Back to the guide',
+    'llegada.titulo': 'You made it', 'llegada.def': 'Nearest final meeting point: {n} ({d}).', 'volc.luego': '{pe}; then {pd}', 'volc.continuar': 'Continue to the definitive point', 'volc.vozPET': 'You reached the transitional meeting point. To go on to the definitive meeting point, tap Continue.', 'volc.llegadaPET': 'This is a transitional meeting point. Keep driving to {pd}, {d} away.', 'volc.llegadaPD': 'You are at the definitive meeting point. Stay here and follow the instructions of the authorities.', 'volc.haciaPD': 'Keep driving to {pd}, {d} away in a straight line. Tap “Driving route (Google Maps)” to follow the roads.', 'llegada.volver': 'Back to the guide',
     'error.titulo': 'Location unavailable', 'error.manual': 'Mark where I am on the map', 'error.reintentar': 'Try GPS again',
     'error.https': 'To use GPS, open this guide from its https:// address.',
     'error.sinGeo': 'This browser does not provide the phone’s location.',
@@ -832,7 +833,7 @@ fr: {
     'giro.der': 'tournez à droite', 'giro.izq': 'tournez à gauche', 'giro.lder': 'serrez à droite', 'giro.lizq': 'serrez à gauche', 'giro.sigue': 'continuez', 'giro.vuelta': 'faites demi-tour',
     'ley.rutaAuto': 'Itinéraire en voiture par les rues, dans le sens de la circulation (mode véhicule)', 'auto.atrib': 'rues',
     'gmaps.pie': 'Google Maps va s’ouvrir avec un itinéraire à pied qui passe par votre voie d’évacuation. Il peut différer sur des sentiers que Google ne connaît pas.',
-    'llegada.titulo': 'Vous y êtes', 'llegada.def': 'Point de rassemblement définitif le plus proche : {n} ({d}).', 'llegada.volver': 'Revenir au guidage',
+    'llegada.titulo': 'Vous y êtes', 'llegada.def': 'Point de rassemblement définitif le plus proche : {n} ({d}).', 'volc.luego': '{pe} ; ensuite {pd}', 'volc.continuar': 'Continuer vers le point définitif', 'volc.vozPET': 'Vous êtes arrivé au point de rassemblement transitoire. Pour aller au point de rassemblement définitif, touchez Continuer.', 'volc.llegadaPET': 'Ceci est un point de rassemblement transitoire. Continuez en véhicule jusqu’à {pd}, à {d}.', 'volc.llegadaPD': 'Vous êtes au point de rassemblement définitif. Restez ici et suivez les instructions des autorités.', 'volc.haciaPD': 'Continuez en véhicule jusqu’à {pd}, à {d} à vol d’oiseau. Touchez « Itinéraire en voiture (Google Maps) » pour suivre les routes.', 'llegada.volver': 'Revenir au guidage',
     'error.titulo': 'Position indisponible', 'error.manual': 'Indiquer ma position sur la carte', 'error.reintentar': 'Réessayer avec le GPS',
     'error.https': 'Pour utiliser le GPS, ouvrez ce guide depuis son adresse https://.',
     'error.sinGeo': 'Ce navigateur ne fournit pas la position du téléphone.',
@@ -968,7 +969,7 @@ pt: {
     'giro.der': 'vire à direita', 'giro.izq': 'vire à esquerda', 'giro.lder': 'mantenha-se à direita', 'giro.lizq': 'mantenha-se à esquerda', 'giro.sigue': 'continue', 'giro.vuelta': 'faça o retorno',
     'ley.rutaAuto': 'Rota de carro pelas ruas, no sentido do trânsito (modo veículo)', 'auto.atrib': 'ruas',
     'gmaps.pie': 'O Google Maps será aberto com uma rota a pé que passa pela sua rota de evacuação. Pode diferir em trilhas que o Google não conhece.',
-    'llegada.titulo': 'Você chegou', 'llegada.def': 'Ponto de encontro definitivo mais próximo: {n} ({d}).', 'llegada.volver': 'Voltar à orientação',
+    'llegada.titulo': 'Você chegou', 'llegada.def': 'Ponto de encontro definitivo mais próximo: {n} ({d}).', 'volc.luego': '{pe}; depois, {pd}', 'volc.continuar': 'Continuar até o ponto definitivo', 'volc.vozPET': 'Você chegou ao ponto de encontro transitório. Para seguir até o ponto de encontro definitivo, toque em Continuar.', 'volc.llegadaPET': 'Este é um ponto de encontro transitório. Continue de veículo até {pd}, a {d}.', 'volc.llegadaPD': 'Você está no ponto de encontro definitivo. Fique aqui e siga as instruções das autoridades.', 'volc.haciaPD': 'Siga de veículo até {pd}, a {d} em linha reta. Toque em «Rota de carro (Google Maps)» para seguir pelas estradas.', 'llegada.volver': 'Voltar à orientação',
     'error.titulo': 'Localização indisponível', 'error.manual': 'Marcar onde estou no mapa', 'error.reintentar': 'Tentar novamente com GPS',
     'error.https': 'Para usar o GPS, abra este guia pelo endereço https://.',
     'error.sinGeo': 'Este navegador não fornece a localização do celular.',
@@ -1242,7 +1243,7 @@ pt: {
     // 3) Puntos de encuentro
     (data.pe || []).forEach((p, i) => {
       const n = addNode([+p.coord[0], +p.coord[1]], false);
-      pes.push({ nombre: p.nombre || ('Punto de encuentro ' + (i + 1)), sector: p.sector || '', coord: nodes[n], node: n, enlaces: 0 });
+      pes.push({ nombre: p.nombre || ('Punto de encuentro ' + (i + 1)), sector: p.sector || '', coord: nodes[n], node: n, enlaces: 0, tipo: p.tipo || '' });
     });
 
     // 4) Extremos de cada vía: unir a PE cercanos y a otras vías
@@ -1354,10 +1355,13 @@ pt: {
     const DIRECTO = opt.radioDirecto ?? 60;       // m: cerca del PE se va en línea recta
     const LLEGADA = opt.radioLlegada ?? 25;       // m: se considera llegada
     const HIST = opt.histeresis ?? 1.15;
+    // Volcán: permitir(k) limita los destinos (etapa hacia el punto definitivo) y extra(k) suma lo que falta
+    // desde un punto transitorio hasta el definitivo, para elegir el camino más corto hasta quedar a salvo
+    const permitir = opt.permitir || (() => true), extra = opt.costoExtra || (() => 0);
 
     // ¿Llegó a algún PE?
     let peCerca = null, dPe = Infinity;
-    net.pes.forEach((pe, k) => { const d = dist(u, pe.coord); if (d < dPe) { dPe = d; peCerca = k; } });
+    net.pes.forEach((pe, k) => { if (!permitir(k)) return; const d = dist(u, pe.coord); if (d < dPe) { dPe = d; peCerca = k; } });
     if (peCerca !== null && dPe <= LLEGADA) return { llegada: true, pe: peCerca, nombrePE: net.pes[peCerca].nombre, dPe };
 
     const todos = [];
@@ -1366,17 +1370,18 @@ pt: {
       const pr = projectOnSegment(u, net.nodes[s.a], net.nodes[s.b]);
       if (pr.d > MAXR) continue;
       for (const k of net.compPE[net.comp[s.a]]) {
+        if (!permitir(k)) continue;
         const pe = net.pes[k];
         const da = pe.dist[net.local[s.a]], db = pe.dist[net.local[s.b]];
         const viaA = pr.t * s.len + da, viaB = (1 - pr.t) * s.len + db;
         const dRed = Math.min(viaA, viaB);
         if (!isFinite(dRed)) continue;
-        todos.push({ key: k + '|' + s.line, costo: FACTOR * pr.d + dRed, pe: k, line: s.line, seg: id, q: pr.q, dAprox: pr.d, dRed, salida: viaA <= viaB ? s.a : s.b });
+        todos.push({ key: k + '|' + s.line, costo: FACTOR * pr.d + dRed + extra(k), pe: k, line: s.line, seg: id, q: pr.q, dAprox: pr.d, dRed, salida: viaA <= viaB ? s.a : s.b });
       }
     }
     net.pes.forEach((pe, k) => {
       const d = dist(u, pe.coord);
-      if (d <= DIRECTO) todos.push({ key: k + '|directo', costo: d, pe: k, line: -1, directo: true, q: pe.coord, dAprox: d, dRed: 0 });
+      if (d <= DIRECTO && permitir(k)) todos.push({ key: k + '|directo', costo: d + extra(k), pe: k, line: -1, directo: true, q: pe.coord, dAprox: d, dRed: 0 });
     });
 
     if (!todos.length) {
@@ -1872,7 +1877,25 @@ pt: {
     return res;
   }
 
-  const api = { dist, bearing, rumbo, projectOnSegment, buildNetwork, rutaDesde, puntoA, largo, enlaceGoogleMaps, enlaceGoogleMapsAuto, prepararZonas, zonaEn, prepararMar, estadoMar, recortarLineas, recortarAnillo, prepararCalles, rutaAuto, rutaConAcceso, accesoPorCalles };
+  /* ------------- Volcán: punto transitorio (PET) o directo al definitivo (PD) -------------
+     El PD es el destino final. Se mantiene el PET que indica la red oficial, salvo que ir directo
+     a un PD por las vías sea igual o más corto que ir al PET y luego seguir al PD (cont[k] = lo que
+     falta desde el PET k hasta su PD). Tras llegar al PET, la etapa «definitivo» guía solo hacia los PD. */
+  function rutaDosEtapas(net, W, u, opt, cont) {
+    const esPD = (k) => net.pes[k].tipo === 'definitivo';
+    if (opt.etapa === 'definitivo') return rutaConAcceso(net, W, u, Object.assign({}, opt, { permitir: esPD }));
+    const a = rutaConAcceso(net, W, u, Object.assign({}, opt, { permitir: (k) => !esPD(k) }));
+    const b = rutaConAcceso(net, W, u, Object.assign({}, opt, { permitir: esPD, rutaFija: null }));
+    if (b.llegada) return b;
+    if (a.llegada) return a;
+    const pa = a.principal, pb = b.principal;
+    if (!pb || b.lejos || b.cruzaAgua) return a;
+    if (!pa || a.lejos) return b;
+    const viaPET = pa.total + (cont[pa.pe] || 0), hist = opt.previoPD ? 1.15 : 1;   // histéresis: no saltar entre ambos
+    return pb.total <= viaPET * hist ? b : a;
+  }
+
+  const api = { dist, bearing, rumbo, projectOnSegment, buildNetwork, rutaDesde, puntoA, largo, enlaceGoogleMaps, enlaceGoogleMapsAuto, prepararZonas, zonaEn, prepararMar, estadoMar, recortarLineas, recortarAnillo, prepararCalles, rutaAuto, rutaConAcceso, accesoPorCalles, rutaDosEtapas };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else global.EvacCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);
 
@@ -2135,7 +2158,13 @@ if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEven
 /* ---------- Red ---------- */
 function cargarRed(datos, fuente) {
   S.datos = datos; S.fuente = fuente;
-  S.net = C.buildNetwork(datos, datos.tolerancias || CONFIG.tolerancias);
+  // Volcán: los puntos de encuentro definitivos (PD) son el destino final; los transitorios (PET), una parada
+  S.pdEnRed = AMENAZAS[datos.amenaza] && AMENAZAS[datos.amenaza].autoPorVias && (datos.pe_definitivo || []).length > 0;
+  const red = S.pdEnRed ? Object.assign({}, datos, { pe: (datos.pe || []).map(p => Object.assign({}, p, { tipo: p.tipo || 'transitorio' }))
+    .concat(datos.pe_definitivo.map(p => Object.assign({}, p, { tipo: 'definitivo' }))) }) : datos;
+  S.net = C.buildNetwork(red, datos.tolerancias || CONFIG.tolerancias);
+  S.etapa = null;
+  S.continuacion = S.pdEnRed ? calcularContinuacion(S.net) : null;
   S.zonas = C.prepararZonas(datos.zonas);
   S.estadoZona = null; S.zonaPend = null; S.zonaCuenta = 0;
   S.mar = C.prepararMar(datos.costa, S.zonas, datos.pe, datos.tierra, datos.aguas, datos.tierraCaja);
@@ -2150,6 +2179,28 @@ function cargarRed(datos, fuente) {
   S.res = null; S.clave = null; S.fija = null; S.verAlt = false; S.hitos.clear(); S.llegado = false; S.enVia = null;
   S.calles = null; S.rutaAuto = null; $('leyendaRutaAuto').hidden = true;
   pintarDiagnostico();
+}
+
+// Desde cada punto transitorio, lo que falta hasta el punto definitivo más cercano: por las vías si se puede;
+// si no, en línea recta por 1,3 (camino en auto)
+function calcularContinuacion(net) {
+  const pds = net.pes.map((p, k) => p.tipo === 'definitivo' ? k : -1).filter(k => k >= 0);
+  return net.pes.map((p, k) => {
+    if (p.tipo === 'definitivo') return { d: 0, pd: k, porVias: true };
+    let mejor = null;
+    for (const j of pds) {
+      const q = net.pes[j], dv = net.comp[q.node] === net.comp[p.node] ? q.dist[net.local[p.node]] : Infinity;
+      const c = isFinite(dv) ? { d: dv, pd: j, porVias: true } : { d: 1.3 * C.dist(p.coord, q.coord), pd: j, porVias: false };
+      if (!mejor || c.d < mejor.d) mejor = c;
+    }
+    return mejor;
+  });
+}
+// Nombre del destino; si es un punto transitorio, también el definitivo que sigue
+function textoDestino(k) {
+  const pe = S.net.pes[k], c = S.continuacion && S.continuacion[k];
+  if (!S.pdEnRed || !pe || pe.tipo === 'definitivo' || !c) return nombreL(pe ? pe.nombre : '');
+  return T('volc.luego', { pe: nombreL(pe.nombre), pd: nombreL(S.net.pes[c.pd].nombre) });
 }
 
 function pintarResumen() {
@@ -2244,6 +2295,7 @@ mapa.setDibujo((ctx, P, st, mpp) => {
   for (const pe of S.net.pes) {
     const p = P(pe.coord); if (p[0] < -60 || p[1] < -60 || p[0] > st.w + 60 || p[1] > st.h + 60) continue;
     const destino = peDestino === pe;
+    if (pe.tipo === 'definitivo') { dibujarPD(ctx, p, st, pe, destino); continue; }
     if (st.z < 12 && !destino) {
       ctx.beginPath(); ctx.arc(p[0], p[1], st.z < 10 ? 4 : 5.5, 0, 7); ctx.fillStyle = COL.seguro; ctx.fill();
       ctx.lineWidth = 1.5; ctx.strokeStyle = '#fff'; ctx.stroke();
@@ -2261,22 +2313,12 @@ mapa.setDibujo((ctx, P, st, mpp) => {
       ctx.fillStyle = COL.tinta; ctx.fillText(nom, p[0], p[1] + rad + 13);
     }
   }
-  // Puntos de encuentro definitivos (volcán): círculo oscuro "PD", igual en tema claro y noche
-  for (const x of S.defs) {
+  // Puntos de encuentro definitivos (volcán) que no están en la red de rutas
+  if (!S.pdEnRed) for (const x of S.defs) {
     const p = P(x.coord); if (p[0] < -60 || p[1] < -60 || p[0] > st.w + 60 || p[1] > st.h + 60) continue;
-    const rad = st.z < 12 ? 6 : 14;
-    ctx.beginPath(); ctx.arc(p[0], p[1], rad + (st.z < 12 ? 1.5 : 3), 0, 7); ctx.fillStyle = '#fff'; ctx.fill();
-    ctx.beginPath(); ctx.arc(p[0], p[1], rad, 0, 7); ctx.fillStyle = COLOR_PD; ctx.fill();
-    if (st.z < 12) continue;
-    ctx.fillStyle = '#fff'; ctx.font = '700 13px "Barlow Condensed", "Arial Narrow", sans-serif';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('PD', p[0], p[1] + 1);
-    if (st.z >= 14) {
-      ctx.font = '700 13px "Atkinson Hyperlegible", system-ui, sans-serif';
-      const nom = nombreL(x.nombre);
-      ctx.lineWidth = 4; ctx.strokeStyle = COL.hoja; ctx.strokeText(nom, p[0], p[1] + rad + 13);
-      ctx.fillStyle = COL.tinta; ctx.fillText(nom, p[0], p[1] + rad + 13);
-    }
+    dibujarPD(ctx, p, st, x, false);
   }
+
   // Puntos seguros vehiculares (solo en modo vehículo)
   if (S.modo === 'vehiculo') for (const v of S.vehiculo) {
     const p = P(v.coord); if (p[0] < -40 || p[1] < -40 || p[0] > st.w + 40 || p[1] > st.h + 40) continue;
@@ -2303,6 +2345,21 @@ mapa.setDibujo((ctx, P, st, mpp) => {
     ctx.beginPath(); ctx.arc(p[0], p[1], 7.5, 0, 7); ctx.fillStyle = COL.alerta; ctx.fill();
   }
 });
+// Punto de encuentro definitivo (volcán): círculo oscuro «PD», igual en tema claro y noche; más grande si es el destino
+function dibujarPD(ctx, p, st, x, destino) {
+  const rad = destino ? 17 : st.z < 12 ? 6 : 14;
+  ctx.beginPath(); ctx.arc(p[0], p[1], rad + (st.z < 12 && !destino ? 1.5 : 3), 0, 7); ctx.fillStyle = '#fff'; ctx.fill();
+  ctx.beginPath(); ctx.arc(p[0], p[1], rad, 0, 7); ctx.fillStyle = COLOR_PD; ctx.fill();
+  if (st.z < 12 && !destino) return;
+  ctx.fillStyle = '#fff'; ctx.font = '700 ' + (destino ? 15 : 13) + 'px "Barlow Condensed", "Arial Narrow", sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('PD', p[0], p[1] + 1);
+  if (st.z >= 14) {
+    ctx.font = '700 13px "Atkinson Hyperlegible", system-ui, sans-serif';
+    const nom = nombreL(x.nombre);
+    ctx.lineWidth = 4; ctx.strokeStyle = COL.hoja; ctx.strokeText(nom, p[0], p[1] + rad + 13);
+    ctx.fillStyle = COL.tinta; ctx.fillText(nom, p[0], p[1] + rad + 13);
+  }
+}
 function patronZona(ctx) {
   if (PATRON) return PATRON;
   const c = document.createElement('canvas'); c.width = c.height = 10;
@@ -2361,7 +2418,7 @@ function chevronesSegunPE(ctx, P, ln) {
 
 mapa.on('arrastre', () => { if (S.seguir) { S.seguir = false; pintarCentrar(); } });
 mapa.on('toque', ({ lonlat, px }) => {
-  if (S.prueba || S.manual) { detenerSim(); fijarPosicion(lonlat, 5, null); return; }
+  if (S.prueba || S.manual) { detenerSim(); S.etapa = null; S.llegado = false; fijarPosicion(lonlat, 5, null); return; }
   // Nombre del PE tocado
   if (!S.net) return;
   for (const pe of S.net.pes) { const p = mapa.aPantalla(pe.coord); if (Math.hypot(p[0] - px[0], p[1] - px[1]) < 26) { avisar(nombreL(pe.nombre)); return; } }
@@ -2517,15 +2574,19 @@ function actualizar() {
   if (!S.pos || !S.net || !S.guiando) { mapa.pedir(); return; }
   const cambioZona = actualizarZona();
   if (S.modo === 'vehiculo' && !AM().autoPorVias) return actualizarVehiculo(cambioZona);
-  const res = C.rutaConAcceso(S.net, callesPeatonales(), S.pos, { claveAnterior: S.clave, rutaFija: S.fija, radioLlegada: CONFIG.radioLlegada, cruzaAgua });
+  const opc = { claveAnterior: S.clave, rutaFija: S.fija, radioLlegada: CONFIG.radioLlegada, cruzaAgua };
+  const res = S.pdEnRed
+    ? C.rutaDosEtapas(S.net, null, S.pos, Object.assign(opc, { etapa: S.etapa, previoPD: !!(S.clave && S.net.pes[parseInt(S.clave, 10)] && S.net.pes[parseInt(S.clave, 10)].tipo === 'definitivo') }), S.continuacion.map(c => c ? c.d : 0))
+    : C.rutaConAcceso(S.net, callesPeatonales(), S.pos, opc);
   if (res.sinDatos) { S.res = null; avisar(T('guia.noVias')); mapa.pedir(); return; }
   if (res.llegada) {
     S.res = null;
     if (!S.llegado) {
       S.llegado = true; detenerSim();
-      S.llegadaPE = res.nombrePE; pintarLlegada();
+      S.llegadaPE = res.nombrePE; S.llegadaK = res.pe; pintarLlegada();
       vista('vLlegada');
-      hablar(CONFIG.textos.llegadaVoz, true);
+      const pdFinal = S.pdEnRed && S.net.pes[res.pe] && S.net.pes[res.pe].tipo === 'definitivo';
+      hablar(esPET(res.pe) ? T('volc.vozPET') : pdFinal ? T('volc.llegadaPD') : CONFIG.textos.llegadaVoz, true);
       try { navigator.vibrate && navigator.vibrate([200, 100, 200]); } catch (_) { /* sin vibración */ }
     }
     seguirMapa(); mapa.pedir(); return;
@@ -2556,16 +2617,18 @@ function actualizar() {
     $('senal').classList.add('lejos');
     $('cifra').innerHTML = res.cruzaAgua ? '—' : fmtM(r.total);
     $('tiempo').textContent = T('guia.hastaPE');
-    const txt = res.cruzaAgua ? T('guia.aguaEnMedio') : S.estadoZona === 'dentro' || S.estadoZona === 'playa' ? t.lejosDentro : t.lejosFuera;
+    const haciaPD = S.etapa === 'definitivo' && r.coordPE;
+    const txt = res.cruzaAgua ? T('guia.aguaEnMedio') : haciaPD ? T('volc.haciaPD', { pd: nombreL(r.nombrePE), d: fmtMtxt(C.dist(S.pos, r.coordPE)) })
+      : S.estadoZona === 'dentro' || S.estadoZona === 'playa' ? t.lejosDentro : t.lejosFuera;
     $('instruccion').textContent = txt;
-    $('destino').textContent = nombreL(r.nombrePE);
+    $('destino').textContent = textoDestino(r.pe);
     if (res.cruzaAgua) {
       // Google Maps conoce caminos que el mapa de la app no tiene: se ofrece la ruta a pie hasta el PE
       $('btnGmaps').href = C.enlaceGoogleMaps(r, S.prueba || S.manual ? S.pos : null, 'walking'); $('btnGmaps').setAttribute('aria-disabled', 'false');
       $('btnGmapsTxt').textContent = T('guia.gmaps');
     } else if (AM().autoPorVias && r.coordPE) {
       // Volcán: aunque no haya vías cerca, se puede llegar en auto por caminos al punto de encuentro más cercano
-      $('btnGmaps').href = C.enlaceGoogleMapsAuto(r.coordPE); $('btnGmaps').setAttribute('aria-disabled', 'false');
+      $('btnGmaps').href = C.enlaceGoogleMapsAuto(r.coordPE, S.prueba || S.manual ? S.pos : null); $('btnGmaps').setAttribute('aria-disabled', 'false');
       $('btnGmapsTxt').textContent = T('guia.gmapsAuto');
     }
     if (!S.anuncioInicial) { S.anuncioInicial = true; hablar((S.estadoZona === 'fuera' ? t.zonaFueraTitulo + '. ' : '') + txt, true); }
@@ -2592,7 +2655,7 @@ function actualizar() {
   $('cifra').innerHTML = fmtM(r.total);
   $('tiempo').textContent = fmtMin(r.total);
   $('instruccion').textContent = instr;
-  $('destino').textContent = nombreL(r.nombrePE);
+  $('destino').textContent = textoDestino(r.pe);
   $('estadoVia').innerHTML = r.directo ? '' : S.enVia ? '<b style="color:var(--seguro)">● ' + esc(T('guia.enVia')) + '</b>' : '<b style="color:var(--alerta)">● ' + esc(T('guia.fueraVia')) + '</b>';
   const enAuto = S.modo === 'vehiculo';
   $('btnGmaps').href = C.enlaceGoogleMaps(r, S.prueba || S.manual ? S.pos : null, enAuto ? 'driving' : 'walking');
@@ -2867,7 +2930,7 @@ function pintarFlecha() {
 /* ---------- Inicio, modo prueba, alternativa ---------- */
 function comenzarGuia(modo) {
   S.lejos = false; S.sinRuta = false; S.estadoZona = null; S.preguntoVehiculo = false; S.contVel = 0;
-  S.modo = modo || 'pie'; S.rutaAuto = null; S.rutaAutoVista = false; S.vozAuto = null;
+  S.modo = modo || 'pie'; S.rutaAuto = null; S.rutaAutoVista = false; S.vozAuto = null; S.etapa = null;
   cargarCalles();   // calles: ruta en auto y trayecto a pie hasta la vía
   $('btnSimular').textContent = textoSimular();
   $('senal').classList.remove('lejos', 'vehiculo', 'mar');
@@ -2893,7 +2956,7 @@ function ponerPrueba(on) {
   if (!on) detenerSim();
 }
 function entrarPrueba() {
-  ponerPrueba(true); S.manual = false; comenzarGuia();
+  ponerPrueba(true); S.manual = false; comenzarGuia(AM().modoInicial);   // volcán: en vehículo, como la guía real
   S.pos = null; S.res = null;
   $('cifra').textContent = '—'; $('tiempo').textContent = T('prueba.modo');
   $('instruccion').textContent = T('prueba.toca');
@@ -2915,6 +2978,11 @@ $('btnManual').onclick = () => {
 };
 $('btnReintentar').onclick = () => { S.manual = false; comenzarGuia(); iniciarGPS(); };
 $('btnSeguirGuia').onclick = () => { vista('vGuia'); };
+// Segunda etapa del volcán: del punto transitorio al definitivo
+$('btnContinuarPD').onclick = () => {
+  S.etapa = 'definitivo'; S.llegado = false; S.clave = null; S.fija = null; S.anuncioInicial = false; S.primerFix = false; S.hitos.clear();
+  vista('vGuia'); actualizar();
+};
 
 $('btnAlt').onclick = () => { S.verAlt = !S.verAlt; actualizar(); };
 $('btnUsarAlt').onclick = () => {
@@ -3413,9 +3481,19 @@ function idiomaInicial() {
   }
   return 'es';
 }
+// ¿El punto al que llegó es transitorio, con un punto definitivo adonde seguir?
+function esPET(k) { return !!(S.pdEnRed && S.net && S.net.pes[k] && S.net.pes[k].tipo !== 'definitivo' && S.continuacion && S.continuacion[k]); }
 function pintarLlegada() {
   $('llegadaPE').textContent = nombreL(S.llegadaPE || T('ley.pe')); $('llegadaTxt').textContent = CONFIG.textos.llegada;
-  const def = S.pos ? definitivoCercano(S.pos) : null;
+  $('btnContinuarPD').hidden = true;
+  if (esPET(S.llegadaK)) {
+    const c = S.continuacion[S.llegadaK], pd = S.net.pes[c.pd];
+    $('llegadaTxt').textContent = T('volc.llegadaPET', { pd: nombreL(pd.nombre), d: fmtMtxt(S.pos ? C.dist(S.pos, pd.coord) : c.d) });
+    $('btnContinuarPD').hidden = false; $('llegadaSiguiente').hidden = true; return;
+  }
+  const llegoPD = S.pdEnRed && S.net && S.net.pes[S.llegadaK] && S.net.pes[S.llegadaK].tipo === 'definitivo';
+  if (llegoPD) $('llegadaTxt').textContent = T('volc.llegadaPD');
+  const def = S.pos && !llegoPD ? definitivoCercano(S.pos) : null;
   $('llegadaSiguiente').hidden = !def;
   if (def) $('llegadaSiguiente').textContent = T('llegada.def', { n: nombreL(def.nombre), d: fmtMtxt(C.dist(S.pos, def.coord)) });
 }
