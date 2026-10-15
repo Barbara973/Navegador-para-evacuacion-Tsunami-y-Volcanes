@@ -16,7 +16,9 @@
    "vias": 82,
    "pe": 57,
    "zonas": 24,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-01.json",
+   "callesBytes": 1035810
   },
   {
    "id": "tsunami-02",
@@ -34,7 +36,9 @@
    "vias": 154,
    "pe": 132,
    "zonas": 28,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-02.json",
+   "callesBytes": 1292963
   },
   {
    "id": "tsunami-03",
@@ -54,7 +58,7 @@
    "zonas": 64,
    "generado": "2026-10-14",
    "calles": "calles-03.json",
-   "callesBytes": 502874
+   "callesBytes": 561917
   },
   {
    "id": "tsunami-04",
@@ -72,7 +76,9 @@
    "vias": 222,
    "pe": 158,
    "zonas": 76,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-04.json",
+   "callesBytes": 3319251
   },
   {
    "id": "tsunami-05",
@@ -90,7 +96,9 @@
    "vias": 637,
    "pe": 256,
    "zonas": 106,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-05.json",
+   "callesBytes": 6637018
   },
   {
    "id": "tsunami-05i",
@@ -108,7 +116,9 @@
    "vias": 6,
    "pe": 2,
    "zonas": 2,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-05i.json",
+   "callesBytes": 138164
   },
   {
    "id": "tsunami-05j",
@@ -126,7 +136,9 @@
    "vias": 9,
    "pe": 6,
    "zonas": 1,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-05j.json",
+   "callesBytes": 12925
   },
   {
    "id": "tsunami-06",
@@ -144,7 +156,9 @@
    "vias": 165,
    "pe": 66,
    "zonas": 41,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-06.json",
+   "callesBytes": 1401851
   },
   {
    "id": "tsunami-07",
@@ -162,7 +176,9 @@
    "vias": 112,
    "pe": 70,
    "zonas": 36,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-07.json",
+   "callesBytes": 1319898
   },
   {
    "id": "tsunami-08",
@@ -180,7 +196,9 @@
    "vias": 492,
    "pe": 226,
    "zonas": 114,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-08.json",
+   "callesBytes": 5849367
   },
   {
    "id": "tsunami-09",
@@ -198,7 +216,9 @@
    "vias": 74,
    "pe": 54,
    "zonas": 26,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-09.json",
+   "callesBytes": 2301084
   },
   {
    "id": "tsunami-10",
@@ -216,7 +236,9 @@
    "vias": 299,
    "pe": 158,
    "zonas": 90,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-10.json",
+   "callesBytes": 4367489
   },
   {
    "id": "tsunami-11",
@@ -234,7 +256,9 @@
    "vias": 83,
    "pe": 28,
    "zonas": 174,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-11.json",
+   "callesBytes": 382837
   },
   {
    "id": "tsunami-12",
@@ -252,7 +276,9 @@
    "vias": 54,
    "pe": 38,
    "zonas": 13,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-12.json",
+   "callesBytes": 1244060
   },
   {
    "id": "tsunami-14",
@@ -270,7 +296,9 @@
    "vias": 99,
    "pe": 86,
    "zonas": 33,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-14.json",
+   "callesBytes": 3317389
   },
   {
    "id": "tsunami-15",
@@ -288,7 +316,9 @@
    "vias": 42,
    "pe": 37,
    "zonas": 7,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-15.json",
+   "callesBytes": 834074
   },
   {
    "id": "tsunami-16",
@@ -306,7 +336,9 @@
    "vias": 51,
    "pe": 43,
    "zonas": 33,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-16.json",
+   "callesBytes": 828852
   },
   {
    "id": "volcan-07",
@@ -324,7 +356,9 @@
    "vias": 15,
    "pe": 10,
    "zonas": 9,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-07.json",
+   "callesBytes": 1319898
   },
   {
    "id": "volcan-08",
@@ -342,7 +376,9 @@
    "vias": 24,
    "pe": 22,
    "zonas": 12,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-08.json",
+   "callesBytes": 5849367
   },
   {
    "id": "volcan-09",
@@ -360,7 +396,9 @@
    "vias": 78,
    "pe": 70,
    "zonas": 18,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-09.json",
+   "callesBytes": 2301084
   },
   {
    "id": "volcan-10",
@@ -378,7 +416,9 @@
    "vias": 94,
    "pe": 19,
    "zonas": 14,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-10.json",
+   "callesBytes": 4367489
   },
   {
    "id": "volcan-11",
@@ -396,7 +436,9 @@
    "vias": 5,
    "pe": 5,
    "zonas": 3,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-11.json",
+   "callesBytes": 382837
   },
   {
    "id": "volcan-14",
@@ -414,7 +456,9 @@
    "vias": 30,
    "pe": 9,
    "zonas": 10,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-14.json",
+   "callesBytes": 3317389
   },
   {
    "id": "volcan-15",
@@ -432,7 +476,9 @@
    "vias": 15,
    "pe": 5,
    "zonas": 4,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-15.json",
+   "callesBytes": 834074
   },
   {
    "id": "volcan-16",
@@ -450,8 +496,10 @@
    "vias": 0,
    "pe": 14,
    "zonas": 3,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-16.json",
+   "callesBytes": 828852
   }
  ],
- "version": "20261015010252"
+ "version": "20261015012043"
 }

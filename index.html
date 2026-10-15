@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-nnCnlYptke3ocGahEaE36dqbehQhm49eNE/MxvB013U=' 'sha256-qUW/IuC9E3kL23Go4NNw0iGUYZ/RfVRQCiwb2OQDsQ4=' 'sha256-51usK7BLcMKV+GLn2nJfBUVjMcybr2slJQ3RP6P/+F4=' 'sha256-V7UrcAjf3JftQLOlI4slHG4bhXomjyMeEtEvUew72J8=' 'sha256-o4BpecFGIZmeKX70dAnyMjnDMwBmtJmCpcxfUxv5GRk=' 'sha256-O1eWw1unHGnLgmpa2VPzDVWvE7qxtnLNJEdhiPfNxN0='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tile.openstreetmap.org https://server.arcgisonline.com; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-nnCnlYptke3ocGahEaE36dqbehQhm49eNE/MxvB013U=' 'sha256-qUW/IuC9E3kL23Go4NNw0iGUYZ/RfVRQCiwb2OQDsQ4=' 'sha256-HPMHGlKNzY1Mva/pWwnkdc3pFCkkrSfIXQL2gzZtins=' 'sha256-+0vao619F7gTgosqKFKREnWLtv478YUSg91V25fMBRI=' 'sha256-o4BpecFGIZmeKX70dAnyMjnDMwBmtJmCpcxfUxv5GRk=' 'sha256-1PajFr7hy7XySBtPEGeY6/xS9plvQKxC6NF00iNlWcI='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tile.openstreetmap.org https://server.arcgisonline.com; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style>
 /* Fuentes alojadas en el mismo sitio (licencia SIL OFL): la app no pide nada a Google Fonts */
@@ -536,7 +536,7 @@ es: {
     'guia.enVia': 'En la vía', 'guia.fueraVia': 'Fuera de la vía', 'guia.deLaCosta': 'de la costa',
     'guia.hastaPE': 'hasta el punto de encuentro más cercano', 'guia.noVias': 'No hay vías cargadas.',
     'dir.camina': 'Camina', 'dir.conduce': 'Conduce',
-    'dir.alPE': '{verbo} hacia {rb} {d} hasta el punto de encuentro.', 'dir.aVia': '{verbo} hacia {rb} {d} hasta la vía de evacuación.',
+    'dir.alPE': '{verbo} hacia {rb} {d} hasta el punto de encuentro.', 'dir.aVia': '{verbo} hacia {rb} {d} hasta la vía de evacuación.', 'dir.aViaCalles': '{verbo} por calles y senderos {d} hasta la vía de evacuación; parte hacia {rb}. Sigue la línea naranja.', 'guia.aguaEnMedio': 'La vía de evacuación más cercana está al otro lado del agua y el mapa no muestra un camino por tierra. No intentes cruzar: busca un lugar alto cerca de ti y sigue las instrucciones de la autoridad.',
     'dir.seguir': 'Sigue la vía de evacuación hacia {rb}.',
     'voz.faltan': 'Faltan {d}.', 'voz.enVia': 'Estás en la vía de evacuación. Síguela hacia {rb}.',
     'voz.teAlejaste': 'Te alejaste de la vía. Vuelve hacia {rb}.', 'voz.salAgua': 'Sal del agua.',
@@ -673,7 +673,7 @@ en: {
     'guia.enVia': 'On the route', 'guia.fueraVia': 'Off the route', 'guia.deLaCosta': 'from the coast',
     'guia.hastaPE': 'to the nearest meeting point', 'guia.noVias': 'No evacuation routes loaded.',
     'dir.camina': 'Walk', 'dir.conduce': 'Drive',
-    'dir.alPE': '{verbo} {rb} {d} to the meeting point.', 'dir.aVia': '{verbo} {rb} {d} to the evacuation route.',
+    'dir.alPE': '{verbo} {rb} {d} to the meeting point.', 'dir.aVia': '{verbo} {rb} {d} to the evacuation route.', 'dir.aViaCalles': '{verbo} along streets and paths {d} to the evacuation route, starting {rb}. Follow the orange line.', 'guia.aguaEnMedio': 'The nearest evacuation route is across the water and the map shows no way there by land. Do not try to cross: find high ground near you and follow the instructions of the authorities.',
     'dir.seguir': 'Follow the evacuation route heading {rb}.',
     'voz.faltan': '{d} to go.', 'voz.enVia': 'You are on the evacuation route. Follow it heading {rb}.',
     'voz.teAlejaste': 'You have left the route. Head back {rb}.', 'voz.salAgua': 'Get out of the water.',
@@ -809,7 +809,7 @@ fr: {
     'guia.enVia': 'Sur la voie', 'guia.fueraVia': 'Hors de la voie', 'guia.deLaCosta': 'de la côte',
     'guia.hastaPE': 'jusqu’au point de rassemblement le plus proche', 'guia.noVias': 'Aucune voie d’évacuation chargée.',
     'dir.camina': 'Marchez', 'dir.conduce': 'Conduisez',
-    'dir.alPE': '{verbo} vers {rb} sur {d} jusqu’au point de rassemblement.', 'dir.aVia': '{verbo} vers {rb} sur {d} jusqu’à la voie d’évacuation.',
+    'dir.alPE': '{verbo} vers {rb} sur {d} jusqu’au point de rassemblement.', 'dir.aVia': '{verbo} vers {rb} sur {d} jusqu’à la voie d’évacuation.', 'dir.aViaCalles': '{verbo} par les rues et sentiers sur {d} jusqu’à la voie d’évacuation, en partant vers {rb}. Suivez la ligne orange.', 'guia.aguaEnMedio': 'La voie d’évacuation la plus proche est de l’autre côté de l’eau et la carte n’indique aucun chemin par la terre. N’essayez pas de traverser : cherchez un endroit élevé près de vous et suivez les instructions des autorités.',
     'dir.seguir': 'Suivez la voie d’évacuation vers {rb}.',
     'voz.faltan': 'Encore {d}.', 'voz.enVia': 'Vous êtes sur la voie d’évacuation. Suivez-la vers {rb}.',
     'voz.teAlejaste': 'Vous vous êtes éloigné de la voie. Revenez vers {rb}.', 'voz.salAgua': 'Sortez de l’eau.',
@@ -945,7 +945,7 @@ pt: {
     'guia.enVia': 'Na rota', 'guia.fueraVia': 'Fora da rota', 'guia.deLaCosta': 'da costa',
     'guia.hastaPE': 'até o ponto de encontro mais próximo', 'guia.noVias': 'Não há rotas carregadas.',
     'dir.camina': 'Caminhe', 'dir.conduce': 'Dirija',
-    'dir.alPE': '{verbo} para {rb} por {d} até o ponto de encontro.', 'dir.aVia': '{verbo} para {rb} por {d} até a rota de evacuação.',
+    'dir.alPE': '{verbo} para {rb} por {d} até o ponto de encontro.', 'dir.aVia': '{verbo} para {rb} por {d} até a rota de evacuação.', 'dir.aViaCalles': '{verbo} por ruas e trilhas por {d} até a rota de evacuação, começando para {rb}. Siga a linha laranja.', 'guia.aguaEnMedio': 'A rota de evacuação mais próxima fica do outro lado da água e o mapa não mostra um caminho por terra. Não tente atravessar: procure um lugar alto perto de você e siga as instruções das autoridades.',
     'dir.seguir': 'Siga a rota de evacuação para {rb}.',
     'voz.faltan': 'Faltam {d}.', 'voz.enVia': 'Você está na rota de evacuação. Siga-a para {rb}.',
     'voz.teAlejaste': 'Você se afastou da rota. Volte para {rb}.', 'voz.salAgua': 'Saia da água.',
@@ -1396,7 +1396,20 @@ pt: {
       const prev = validos.find(c => c.key === opt.claveAnterior);
       if (prev && prev.costo <= principal.costo * HIST + 10) principal = prev;
     }
+    // Nunca entrar a la vía cruzando el mar (o una bahía) en línea recta: se busca otra entrada por tierra
+    if (opt.cruzaAgua && !principal.directo && opt.cruzaAgua(u, principal.q)) {
+      const vistas = new Set(); let revisadas = 0;
+      for (const c of validos.concat(todos)) {
+        if (c.directo) { principal = c; break; }
+        const k = c.line + ':' + Math.round(c.dAprox / 50);
+        if (vistas.has(k)) continue; vistas.add(k);
+        if (++revisadas > 12) break;
+        if (!opt.cruzaAgua(u, c.q)) { principal = c; break; }
+      }
+      principal.cruzaAgua = opt.cruzaAgua(u, principal.q);
+    }
     const P = armar(net, u, principal);
+    P.cruzaAgua = !!principal.cruzaAgua;
     // Si la persona eligió seguir la alternativa, se la guía sobre ese trazado fijo
     // y la ruta recomendada queda como "la otra opción".
     if (opt.rutaFija) return { principal: seguirTrazado(net, u, opt.rutaFija), alternativa: P, forzada: true };
@@ -1655,14 +1668,18 @@ pt: {
       const L = acum[acum.length - 1], v = (K.velocidades[c] || 30) / 3.6;
       const bb = [Infinity, Infinity, -Infinity, -Infinity];
       for (const p of pts) { bb[0] = Math.min(bb[0], p[0]); bb[1] = Math.min(bb[1], p[1]); bb[2] = Math.max(bb[2], p[0]); bb[3] = Math.max(bb[3], p[1]); }
-      return { a, b, unico: !!s, clase: K.clases[c], nombre: n >= 0 ? K.nombres[n] : '', pts, acum, largo: L, v, t: L / v, bb };
+      const clase = K.clases[c], auto = (K.velocidades[c] || 0) > 0;
+      return { a, b, unico: !!s, clase, nombre: n >= 0 ? K.nombres[n] : '', pts, acum, largo: L, v, t: auto ? L / v : Infinity, bb,
+        auto, pie: clase !== 'motorway' && clase !== 'motorway_link' };
     });
-    const grid = Grid(0.003); aristas.forEach((e, i) => grid.add(i, e.bb));
+    // Dos índices: calles para autos y todo lo caminable (calles, veredas, senderos y escaleras)
+    const grid = Grid(0.003), gridPie = Grid(0.003);
+    aristas.forEach((e, i) => { if (e.auto) grid.add(i, e.bb); if (e.pie) gridPie.add(i, e.bb); });
 
     // Puntos más cercanos sobre las calles (dentro de maxM metros): el mejor, o todos si se pide
-    function ajustar(p, maxM, todos) {
+    function ajustar(p, maxM, todos, aPie) {
       let mejor = null; const lista = [];
-      for (const i of grid.query(bboxAround(p, maxM))) {
+      for (const i of (aPie ? gridPie : grid).query(bboxAround(p, maxM))) {
         const e = aristas[i];
         for (let j = 1; j < e.pts.length; j++) {
           const pr = projectOnSegment(p, e.pts[j - 1], e.pts[j]);
@@ -1677,7 +1694,10 @@ pt: {
 
     // Entrantes de cada cruce: [arista, cruce de origen, sentido (+1 = de a hacia b)]
     const entr = Array.from({ length: nN }, () => []);
-    aristas.forEach((e, i) => { entr[e.b].push([i, e.a, 1]); if (!e.unico) entr[e.a].push([i, e.b, -1]); });
+    aristas.forEach((e, i) => { if (!e.auto) return; entr[e.b].push([i, e.a, 1]); if (!e.unico) entr[e.a].push([i, e.b, -1]); });
+    // A pie se camina en ambos sentidos por todo lo caminable
+    const adjPie = Array.from({ length: nN }, () => []);
+    aristas.forEach((e, i) => { if (!e.pie) return; adjPie[e.a].push([i, e.b]); adjPie[e.b].push([i, e.a]); });
     const costo = new Float64Array(nN).fill(Infinity), sig = new Int32Array(nN).fill(-1);
     const sigDir = new Int8Array(nN), sigPE = new Int32Array(nN).fill(-1), fin = new Uint8Array(nN);
     const peSnap = [], pePorArista = new Map(), h = Heap();
@@ -1700,7 +1720,7 @@ pt: {
         if (nc < costo[desde]) { costo[desde] = nc; sig[desde] = ei; sigDir[desde] = dir; sigPE[desde] = sigPE[n]; fin[desde] = 0; h.push([nc, desde]); }
       }
     }
-    return { nodos, aristas, grid, ajustar, costo, sig, sigDir, sigPE, fin, peSnap, pePorArista, pes, conPE: peSnap.filter(Boolean).length };
+    return { nodos, aristas, grid, ajustar, costo, sig, sigDir, sigPE, fin, peSnap, pePorArista, pes, adjPie, enlaces: new Map(), conPE: peSnap.filter(Boolean).length };
   }
 
   // Trozo de una arista entre dos distancias medidas desde su inicio, en el orden de recorrido (d0 → d1)
@@ -1775,7 +1795,84 @@ pt: {
       dCalle: s.d, calle: piezas[0].nombre, maniobras, rumboInicio: enCalle.length > 1 ? bearing(enCalle[0], puntoA(enCalle, 25)) : null };
   }
 
-  const api = { dist, bearing, rumbo, projectOnSegment, buildNetwork, rutaDesde, puntoA, largo, enlaceGoogleMaps, enlaceGoogleMapsAuto, prepararZonas, zonaEn, prepararMar, estadoMar, recortarLineas, recortarAnillo, prepararCalles, rutaAuto };
+  /* ------------- Trayecto a pie por calles y senderos hasta la vía de evacuación -------------
+     Si la vía más cercana queda al otro lado de una bahía, un cerro o un barrio, la línea recta engaña.
+     Se camina por la red de calles y senderos (en ambos sentidos) hasta un cruce que toque la vía. */
+  const ENLACE = 35;   // m: un cruce de calles se une a la vía de evacuación si está a esta distancia
+  function enlaceVia(W, net, n, factor) {
+    if (W.enlaces.has(n)) return W.enlaces.get(n);
+    const p = W.nodos[n]; let mejor = null;
+    for (const id of net.segsNear(p, ENLACE)) {
+      const s = net.segs[id], pr = projectOnSegment(p, net.nodes[s.a], net.nodes[s.b]);
+      if (pr.d > ENLACE) continue;
+      for (const k of net.compPE[net.comp[s.a]]) {
+        const pe = net.pes[k], da = pe.dist[net.local[s.a]], db = pe.dist[net.local[s.b]];
+        const viaA = pr.t * s.len + da, viaB = (1 - pr.t) * s.len + db, dRed = Math.min(viaA, viaB);
+        if (!isFinite(dRed)) continue;
+        const c = { d: pr.d, q: pr.q, seg: id, line: s.line, pe: k, dRed, salida: viaA <= viaB ? s.a : s.b, costo: factor * pr.d + dRed };
+        if (!mejor || c.costo < mejor.costo) mejor = c;
+      }
+    }
+    W.enlaces.set(n, mejor);
+    return mejor;
+  }
+  function accesoPorCalles(W, net, u, opt) {
+    opt = opt || {};
+    // Caminar por calles cuesta 1,5 veces lo mismo por la vía (se prefiere entrar pronto a la vía oficial);
+    // caminar a campo traviesa, 3 veces
+    const MAXD = opt.maxDist ?? 4000, FACTOR = opt.factor ?? 3, FC = opt.factorCalle ?? 1.5;
+    const s0 = W.ajustar(u, opt.snap ?? 300, false, true); if (!s0) return null;
+    const e0 = W.aristas[s0.e];
+    const dist_ = new Map(), prev = new Map(), h = Heap();
+    const ini = (n, d) => { if (d < (dist_.get(n) ?? Infinity)) { dist_.set(n, d); prev.set(n, -1); h.push([d, n]); } };
+    ini(e0.a, s0.off); ini(e0.b, e0.largo - s0.off);
+    let mejor = null;
+    while (h.size) {
+      const [d, n] = h.pop(); if (d > dist_.get(n)) continue;
+      if (d > MAXD || (mejor && FACTOR * s0.d + FC * d >= mejor.costo)) break;     // ya no puede mejorar
+      const c = enlaceVia(W, net, n, FACTOR);
+      if (c) { const costo = FACTOR * s0.d + FC * d + c.costo; if (!mejor || costo < mejor.costo) mejor = { costo, n, d, c }; }
+      for (const [ei, m] of W.adjPie[n]) {
+        const e = W.aristas[ei], nd = d + e.largo * (e.clase === 'steps' ? 1.5 : 1);
+        if (nd < (dist_.get(m) ?? Infinity)) { dist_.set(m, nd); prev.set(m, ei); h.push([nd, m]); }
+      }
+    }
+    if (!mejor) return null;
+    // Camino: desde el cruce elegido hacia atrás hasta la calle donde está la persona
+    const tramos = []; let n = mejor.n;
+    for (let guard = 0; guard < 100000 && prev.get(n) !== -1; guard++) {
+      const e = W.aristas[prev.get(n)], desde = e.a === n ? e.b : e.a;
+      tramos.push(e.b === n ? e.pts : e.pts.slice().reverse());
+      n = desde;
+    }
+    tramos.reverse();
+    const acceso = [u, s0.q].concat(trozo(e0, s0.off, n === e0.a ? 0 : e0.largo).slice(1));
+    for (const t of tramos) acceso.push(...t.slice(1));
+    acceso.push(mejor.c.q);
+    return { costo: mejor.costo, acceso, largo: largo(acceso), c: mejor.c };
+  }
+  // Ruta a pie completa: la de rutaDesde, o la que llega a la vía por calles si es mejor (o si la recta cruza el agua)
+  function rutaConAcceso(net, W, u, opt) {
+    opt = opt || {};
+    const res = rutaDesde(net, u, opt);
+    if (!res.principal || res.llegada || res.lejos || res.forzada) return res;
+    const P = res.principal;
+    if (P.directo || (P.dAprox < (opt.minAcceso ?? 60) && !P.cruzaAgua)) return res;
+    const FACTOR = opt.factorAproximacion ?? 3;
+    const A = W ? accesoPorCalles(W, net, u, { factor: FACTOR }) : null;
+    if (!A) { if (P.cruzaAgua) res.cruzaAgua = true; return res; }     // solo se llega cruzando el agua: no se guía hacia allá
+    const recta = P.cruzaAgua ? Infinity : FACTOR * P.dAprox + P.dRed;
+    if (A.costo >= recta) return res;
+    const c = A.c;
+    const R = armar(net, u, { key: c.pe + '|' + c.line + '|calles', pe: c.pe, line: c.line, seg: c.seg, q: c.q, dAprox: A.largo, dRed: c.dRed, salida: c.salida });
+    R.acceso = A.acceso;
+    R.camino = A.acceso.concat(R.ruta.slice(1));
+    res.principal = R;
+    if (res.alternativa && res.alternativa.pe === R.pe && res.alternativa.via === R.via) res.alternativa = null;
+    return res;
+  }
+
+  const api = { dist, bearing, rumbo, projectOnSegment, buildNetwork, rutaDesde, puntoA, largo, enlaceGoogleMaps, enlaceGoogleMapsAuto, prepararZonas, zonaEn, prepararMar, estadoMar, recortarLineas, recortarAnillo, prepararCalles, rutaAuto, rutaConAcceso, accesoPorCalles };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else global.EvacCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);
 
@@ -2133,7 +2230,8 @@ mapa.setDibujo((ctx, P, st, mpp) => {
     trazar(ctx, P, r.ruta, 12, COL.borde);
     trazar(ctx, P, r.ruta, 7.5, COL.via);
     chevrones(ctx, P, r.ruta, '#ffffff');
-    if (r.dAprox > 3) { trazar(ctx, P, [r.camino[0], r.entrada], 7, COL.borde); trazar(ctx, P, [r.camino[0], r.entrada], 4, COL.alerta, [2, 8]); }
+    // Tramo hasta la vía: por calles y senderos si se calculó así; si no, en línea recta
+    if (r.dAprox > 3) { const acc = r.acceso || [r.camino[0], r.entrada]; trazar(ctx, P, acc, 7, COL.borde); trazar(ctx, P, acc, 4, COL.alerta, [2, 8]); }
   }
   // Ruta en auto por calles: puntitos, como en Google Maps (el tramo hasta la calle, punteado naranjo)
   const ra = S.modo === 'vehiculo' && S.guiando ? S.rutaAuto : null;
@@ -2394,11 +2492,32 @@ const fmtMtxt = (m) => m >= 1000 ? T('u.km', { n: (m / 1000).toFixed(1).replace(
 const HITOS = [1000, 500, 300, 200, 100];
 const fmtMin = (m) => { const auto = S.modo === 'vehiculo'; const min = Math.max(1, Math.round(m / (auto ? CONFIG.velocidadAuto : CONFIG.velocidadCaminata) / 60)); return T(auto ? 'min.auto' : 'min.pie', { n: min }); };
 
+// Rumbo inicial hacia la vía: por el trayecto calculado (calles) o en línea recta
+function rumboEntrada(r) { return r.acceso ? C.bearing(S.pos, C.puntoA(r.acceso, 25)) : C.bearing(S.pos, r.entrada); }
+// ¿La línea recta entre a y b pasa por el mar? (se ignoran los 40 m de cada orilla)
+function cruzaAgua(a, b) {
+  if (!S.mar) return false;
+  const L = C.dist(a, b); if (L < 80) return false;
+  const n = Math.min(60, Math.ceil(L / 30));
+  for (let i = 1; i < n; i++) {
+    const f = i / n, dA = f * L; if (dA < 40 || L - dA < 40) continue;
+    const m = C.estadoMar(S.mar, [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f]);
+    if (m.mar && (m.dCosta == null || m.dCosta > 20)) return true;
+  }
+  return false;
+}
+// Red de calles y senderos para el trayecto a pie (tsunami); se carga la primera vez que se necesita
+function callesPeatonales() {
+  if (!S.paquete || !S.paquete.calles || AM().autoPorVias) return null;
+  if (S.calles && S.calles.id === S.paquete.id) return S.calles.R;
+  cargarCalles(); return null;
+}
+
 function actualizar() {
   if (!S.pos || !S.net || !S.guiando) { mapa.pedir(); return; }
   const cambioZona = actualizarZona();
   if (S.modo === 'vehiculo' && !AM().autoPorVias) return actualizarVehiculo(cambioZona);
-  const res = C.rutaDesde(S.net, S.pos, { claveAnterior: S.clave, rutaFija: S.fija, radioLlegada: CONFIG.radioLlegada });
+  const res = C.rutaConAcceso(S.net, callesPeatonales(), S.pos, { claveAnterior: S.clave, rutaFija: S.fija, radioLlegada: CONFIG.radioLlegada, cruzaAgua });
   if (res.sinDatos) { S.res = null; avisar(T('guia.noVias')); mapa.pedir(); return; }
   if (res.llegada) {
     S.res = null;
@@ -2431,16 +2550,20 @@ function actualizar() {
     seguirMapa(); mapa.pedir(); return;
   }
 
-  if (res.lejos) {
-    // A más de 5 km de cualquier vía: no se entrega rumbo (podría apuntar hacia la costa)
+  if (res.lejos || res.cruzaAgua) {
+    // A más de 5 km de cualquier vía, o la vía solo se alcanza cruzando el agua: no se entrega rumbo
     entrarSinRuta(); S.lejos = true;
     $('senal').classList.add('lejos');
-    $('cifra').innerHTML = fmtM(r.total);
+    $('cifra').innerHTML = res.cruzaAgua ? '—' : fmtM(r.total);
     $('tiempo').textContent = T('guia.hastaPE');
-    const txt = S.estadoZona === 'dentro' || S.estadoZona === 'playa' ? t.lejosDentro : t.lejosFuera;
+    const txt = res.cruzaAgua ? T('guia.aguaEnMedio') : S.estadoZona === 'dentro' || S.estadoZona === 'playa' ? t.lejosDentro : t.lejosFuera;
     $('instruccion').textContent = txt;
     $('destino').textContent = nombreL(r.nombrePE);
-    if (AM().autoPorVias && r.coordPE) {
+    if (res.cruzaAgua) {
+      // Google Maps conoce caminos que el mapa de la app no tiene: se ofrece la ruta a pie hasta el PE
+      $('btnGmaps').href = C.enlaceGoogleMaps(r, S.prueba || S.manual ? S.pos : null, 'walking'); $('btnGmaps').setAttribute('aria-disabled', 'false');
+      $('btnGmapsTxt').textContent = T('guia.gmaps');
+    } else if (AM().autoPorVias && r.coordPE) {
       // Volcán: aunque no haya vías cerca, se puede llegar en auto por caminos al punto de encuentro más cercano
       $('btnGmaps').href = C.enlaceGoogleMapsAuto(r.coordPE); $('btnGmaps').setAttribute('aria-disabled', 'false');
       $('btnGmapsTxt').textContent = T('guia.gmapsAuto');
@@ -2463,7 +2586,7 @@ function actualizar() {
   let instr;
   const verbo = T(S.modo === 'vehiculo' ? 'dir.conduce' : 'dir.camina');
   if (r.directo) instr = T('dir.alPE', { verbo, rb, d: fmtMtxt(r.dAprox) });
-  else if (!S.enVia) instr = T('dir.aVia', { verbo, rb: rumboL(C.bearing(S.pos, r.entrada)), d: fmtMtxt(r.dAprox) });
+  else if (!S.enVia) instr = T(r.acceso ? 'dir.aViaCalles' : 'dir.aVia', { verbo, rb: rumboL(rumboEntrada(r)), d: fmtMtxt(r.dAprox) });
   else instr = T('dir.seguir', { rb });
 
   $('cifra').innerHTML = fmtM(r.total);
@@ -2499,7 +2622,7 @@ function actualizar() {
   else if (cambioZona === 'fuera') hablar(t.salioZona);
   else if (cambioZona === 'dentro' || cambioZona === 'playa') hablar(t.entroZona);
   else if (antesEnVia === false && S.enVia === true) hablar(T('voz.enVia', { rb }));
-  else if (antesEnVia === true && S.enVia === false) hablar(T('voz.teAlejaste', { rb: rumboL(C.bearing(S.pos, r.entrada)) }));
+  else if (antesEnVia === true && S.enVia === false) hablar(T('voz.teAlejaste', { rb: rumboL(rumboEntrada(r)) }));
   for (const h of HITOS) if (r.total < h && !S.hitos.has(h)) { S.hitos.add(h); hablar(T('voz.faltan', { d: fmtMtxt(r.total) })); break; }
 
   seguirMapa();
@@ -2572,7 +2695,7 @@ async function cargarCalles() {
     if (!S.paquete || S.paquete.id !== p.id) return null;            // cambió de región mientras cargaba
     S.calles = { id: p.id, R: C.prepararCalles(K, S.net.pes) };
     $('leyendaRutaAuto').hidden = false;
-    if (S.guiando && S.modo === 'vehiculo' && S.pos) actualizar();
+    if (S.guiando && S.pos) actualizar();
     return S.calles.R;
   } catch (_) { return null; } finally { if (S.callesCargando === p.id) S.callesCargando = null; }
 }
@@ -2745,7 +2868,7 @@ function pintarFlecha() {
 function comenzarGuia(modo) {
   S.lejos = false; S.sinRuta = false; S.estadoZona = null; S.preguntoVehiculo = false; S.contVel = 0;
   S.modo = modo || 'pie'; S.rutaAuto = null; S.rutaAutoVista = false; S.vozAuto = null;
-  if (S.modo === 'vehiculo') cargarCalles();
+  cargarCalles();   // calles: ruta en auto y trayecto a pie hasta la vía
   $('btnSimular').textContent = textoSimular();
   $('senal').classList.remove('lejos', 'vehiculo', 'mar');
   $('btnModo').textContent = textoBtnModo();
