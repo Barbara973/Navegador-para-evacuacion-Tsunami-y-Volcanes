@@ -1,0 +1,455 @@
+{
+ "paquetes": [
+  {
+   "id": "tsunami-01",
+   "amenaza": "tsunami",
+   "region": "01",
+   "nombre": "Tarapacá",
+   "archivo": "tsunami-01.json",
+   "bbox": [
+    -70.2172,
+    -21.4238,
+    -70.0481,
+    -19.5948
+   ],
+   "bytes": 465620,
+   "vias": 82,
+   "pe": 57,
+   "zonas": 24,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "tsunami-02",
+   "amenaza": "tsunami",
+   "region": "02",
+   "nombre": "Antofagasta",
+   "archivo": "tsunami-02.json",
+   "bbox": [
+    -70.6485,
+    -25.656,
+    -70.1364,
+    -21.6344
+   ],
+   "bytes": 760516,
+   "vias": 154,
+   "pe": 132,
+   "zonas": 28,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "tsunami-03",
+   "amenaza": "tsunami",
+   "region": "03",
+   "nombre": "Atacama",
+   "archivo": "tsunami-03.json",
+   "bbox": [
+    -71.4923,
+    -29.08,
+    -70.6018,
+    -26.1402
+   ],
+   "bytes": 830914,
+   "vias": 260,
+   "pe": 124,
+   "zonas": 64,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "tsunami-04",
+   "amenaza": "tsunami",
+   "region": "04",
+   "nombre": "Coquimbo",
+   "archivo": "tsunami-04.json",
+   "bbox": [
+    -71.7033,
+    -32.154,
+    -71.2521,
+    -29.2397
+   ],
+   "bytes": 1126134,
+   "vias": 222,
+   "pe": 158,
+   "zonas": 76,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "tsunami-05",
+   "amenaza": "tsunami",
+   "region": "05",
+   "nombre": "Valparaíso",
+   "archivo": "tsunami-05.json",
+   "bbox": [
+    -71.815,
+    -33.9179,
+    -71.277,
+    -32.2241
+   ],
+   "bytes": 1405222,
+   "vias": 637,
+   "pe": 256,
+   "zonas": 106,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "tsunami-05i",
+   "amenaza": "tsunami",
+   "region": "05i",
+   "nombre": "Rapa Nui",
+   "archivo": "tsunami-05i.json",
+   "bbox": [
+    -109.4404,
+    -27.1585,
+    -109.4239,
+    -27.142
+   ],
+   "bytes": 81361,
+   "vias": 6,
+   "pe": 2,
+   "zonas": 2,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "tsunami-05j",
+   "amenaza": "tsunami",
+   "region": "05j",
+   "nombre": "Juan Fernández",
+   "archivo": "tsunami-05j.json",
+   "bbox": [
+    -78.8363,
+    -33.6434,
+    -78.8245,
+    -33.6323
+   ],
+   "bytes": 24578,
+   "vias": 9,
+   "pe": 6,
+   "zonas": 1,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "tsunami-06",
+   "amenaza": "tsunami",
+   "region": "06",
+   "nombre": "O'Higgins",
+   "archivo": "tsunami-06.json",
+   "bbox": [
+    -72.0485,
+    -34.708,
+    -71.7288,
+    -33.9042
+   ],
+   "bytes": 688229,
+   "vias": 165,
+   "pe": 66,
+   "zonas": 41,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "tsunami-07",
+   "amenaza": "tsunami",
+   "region": "07",
+   "nombre": "Maule",
+   "archivo": "tsunami-07.json",
+   "bbox": [
+    -72.784,
+    -36.0026,
+    -72.0486,
+    -34.6876
+   ],
+   "bytes": 753771,
+   "vias": 112,
+   "pe": 70,
+   "zonas": 36,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "tsunami-08",
+   "amenaza": "tsunami",
+   "region": "08",
+   "nombre": "Biobío",
+   "archivo": "tsunami-08.json",
+   "bbox": [
+    -73.9201,
+    -38.387,
+    -72.8797,
+    -36.4468
+   ],
+   "bytes": 1623189,
+   "vias": 492,
+   "pe": 226,
+   "zonas": 114,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "tsunami-09",
+   "amenaza": "tsunami",
+   "region": "09",
+   "nombre": "La Araucanía",
+   "archivo": "tsunami-09.json",
+   "bbox": [
+    -73.4891,
+    -39.4042,
+    -73.1009,
+    -38.6134
+   ],
+   "bytes": 908543,
+   "vias": 74,
+   "pe": 54,
+   "zonas": 26,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "tsunami-10",
+   "amenaza": "tsunami",
+   "region": "10",
+   "nombre": "Los Lagos",
+   "archivo": "tsunami-10.json",
+   "bbox": [
+    -73.8402,
+    -43.1211,
+    -72.2959,
+    -40.5263
+   ],
+   "bytes": 3178961,
+   "vias": 299,
+   "pe": 158,
+   "zonas": 90,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "tsunami-11",
+   "amenaza": "tsunami",
+   "region": "11",
+   "nombre": "Aysén",
+   "archivo": "tsunami-11.json",
+   "bbox": [
+    -73.8904,
+    -47.8056,
+    -72.5519,
+    -43.7697
+   ],
+   "bytes": 3998060,
+   "vias": 83,
+   "pe": 28,
+   "zonas": 174,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "tsunami-12",
+   "amenaza": "tsunami",
+   "region": "12",
+   "nombre": "Magallanes",
+   "archivo": "tsunami-12.json",
+   "bbox": [
+    -72.5077,
+    -54.9375,
+    -67.5841,
+    -51.7202
+   ],
+   "bytes": 2623426,
+   "vias": 54,
+   "pe": 38,
+   "zonas": 13,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "tsunami-14",
+   "amenaza": "tsunami",
+   "region": "14",
+   "nombre": "Los Ríos",
+   "archivo": "tsunami-14.json",
+   "bbox": [
+    -73.6679,
+    -40.1608,
+    -73.2047,
+    -39.3925
+   ],
+   "bytes": 956400,
+   "vias": 99,
+   "pe": 86,
+   "zonas": 33,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "tsunami-15",
+   "amenaza": "tsunami",
+   "region": "15",
+   "nombre": "Arica y Parinacota",
+   "archivo": "tsunami-15.json",
+   "bbox": [
+    -70.3375,
+    -19.2064,
+    -70.2319,
+    -18.3947
+   ],
+   "bytes": 227113,
+   "vias": 42,
+   "pe": 37,
+   "zonas": 7,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "tsunami-16",
+   "amenaza": "tsunami",
+   "region": "16",
+   "nombre": "Ñuble",
+   "archivo": "tsunami-16.json",
+   "bbox": [
+    -72.8734,
+    -36.4307,
+    -72.7676,
+    -36.0091
+   ],
+   "bytes": 367340,
+   "vias": 51,
+   "pe": 43,
+   "zonas": 33,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "volcan-07",
+   "amenaza": "volcan",
+   "region": "07",
+   "nombre": "Maule",
+   "archivo": "volcan-07.json",
+   "bbox": [
+    -71.2995,
+    -35.8177,
+    -70.8094,
+    -35.0009
+   ],
+   "bytes": 204919,
+   "vias": 15,
+   "pe": 10,
+   "zonas": 9,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "volcan-08",
+   "amenaza": "volcan",
+   "region": "08",
+   "nombre": "Biobío",
+   "archivo": "volcan-08.json",
+   "bbox": [
+    -72.0282,
+    -38.0887,
+    -71.2151,
+    -37.3315
+   ],
+   "bytes": 246629,
+   "vias": 24,
+   "pe": 22,
+   "zonas": 12,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "volcan-09",
+   "amenaza": "volcan",
+   "region": "09",
+   "nombre": "La Araucanía",
+   "archivo": "volcan-09.json",
+   "bbox": [
+    -72.307,
+    -39.8383,
+    -71.3707,
+    -38.3651
+   ],
+   "bytes": 471213,
+   "vias": 78,
+   "pe": 70,
+   "zonas": 18,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "volcan-10",
+   "amenaza": "volcan",
+   "region": "10",
+   "nombre": "Los Lagos",
+   "archivo": "volcan-10.json",
+   "bbox": [
+    -72.8849,
+    -42.962,
+    -72.0185,
+    -40.891
+   ],
+   "bytes": 983680,
+   "vias": 94,
+   "pe": 19,
+   "zonas": 14,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "volcan-11",
+   "amenaza": "volcan",
+   "region": "11",
+   "nombre": "Aysén",
+   "archivo": "volcan-11.json",
+   "bbox": [
+    -72.6984,
+    -46.1602,
+    -72.1542,
+    -46.0453
+   ],
+   "bytes": 214343,
+   "vias": 5,
+   "pe": 5,
+   "zonas": 3,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "volcan-14",
+   "amenaza": "volcan",
+   "region": "14",
+   "nombre": "Los Ríos",
+   "archivo": "volcan-14.json",
+   "bbox": [
+    -72.6976,
+    -40.6308,
+    -71.9328,
+    -40.1906
+   ],
+   "bytes": 634020,
+   "vias": 30,
+   "pe": 9,
+   "zonas": 10,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "volcan-15",
+   "amenaza": "volcan",
+   "region": "15",
+   "nombre": "Arica y Parinacota",
+   "archivo": "volcan-15.json",
+   "bbox": [
+    -69.6609,
+    -18.3382,
+    -69.4185,
+    -17.9795
+   ],
+   "bytes": 56164,
+   "vias": 15,
+   "pe": 5,
+   "zonas": 4,
+   "generado": "2026-10-14"
+  },
+  {
+   "id": "volcan-16",
+   "amenaza": "volcan",
+   "region": "16",
+   "nombre": "Ñuble",
+   "archivo": "volcan-16.json",
+   "bbox": [
+    -71.6153,
+    -36.9311,
+    -71.2531,
+    -36.615
+   ],
+   "bytes": 125817,
+   "vias": 0,
+   "pe": 14,
+   "zonas": 3,
+   "generado": "2026-10-14"
+  }
+ ],
+ "version": "20261014202908"
+}
