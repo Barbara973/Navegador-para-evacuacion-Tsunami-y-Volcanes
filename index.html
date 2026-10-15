@@ -1,0 +1,2915 @@
+<!doctype html>
+<!-- Ruta de Evacuación · © 2026 Bárbara del Pilar González Lucero. Todos los derechos reservados. -->
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ruta de Evacuación</title>
+<meta name="description" content="Guía con GPS por la vía de evacuación hasta el punto de encuentro (sismo-tsunami).">
+<meta name="theme-color" content="#0b4aa8">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-nnCnlYptke3ocGahEaE36dqbehQhm49eNE/MxvB013U=' 'sha256-0Q9DAv9Cy89A3/1vtUhd+lY2RweR69u8YHxMzXb9glY=' 'sha256-E+VfAv3xJ/hkLt1pavyUvaMNB/0trT8YQ0jCc/SbMZg=' 'sha256-lcidphfaTqsS226rv1B1TC/eSl0cMPOJbs8xZvJg0bE=' 'sha256-fwRrOzSd7wyMAjDIy2Je8wX4xFAROEqB8C3wOQ1Q97w=' 'sha256-dIOHXWKIDBKMlyhjSaSCI/0hqSi/8Q0xIt2Bz253+tY='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tile.openstreetmap.org https://server.arcgisonline.com; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<style>
+/* Fuentes alojadas en el mismo sitio (licencia SIL OFL): la app no pide nada a Google Fonts */
+@font-face{font-family:"Atkinson Hyperlegible";font-weight:400;font-display:swap;src:url(fuentes/AtkinsonHyperlegible-Regular.woff) format("woff")}
+@font-face{font-family:"Atkinson Hyperlegible";font-weight:700;font-display:swap;src:url(fuentes/AtkinsonHyperlegible-Bold.woff) format("woff")}
+@font-face{font-family:"Barlow Condensed";font-weight:600;font-display:swap;src:url(fuentes/BarlowCondensed-SemiBold.woff) format("woff")}
+@font-face{font-family:"Barlow Condensed";font-weight:700;font-display:swap;src:url(fuentes/BarlowCondensed-Bold.woff) format("woff")}
+/* Concepto: el mapa ocupa la pantalla y abajo vive una "señal" viva, con la gramática
+   de la señalética chilena de evacuación: azul y blanco para la vía, verde para el
+   punto de encuentro, naranja para lo que aún falta caminar fuera de la vía. */
+:root{
+  --papel:#eef2f7; --hoja:#ffffff; --tinta:#0e1a2b; --tenue:#566378; --linea:#d3dbe6;
+  --via:#0b4aa8; --via-fuerte:#083a86; --borde-via:#ffffff; --senal-txt:#ffffff;
+  --seguro:#11804a; --alerta:#d9530c; --alerta-suave:#fdeee5; --alt:#6a7890;
+  --zona:#c62f1f; --zona-suave:#fbe9e6;
+  --mapa-fondo:#e3e9f0; --sombra:0 6px 24px rgba(14,26,43,.14);
+  --f-rotulo:"Barlow Condensed","Roboto Condensed","Arial Narrow",sans-serif;
+  --f-texto:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --papel:#0a111d; --hoja:#111b2b; --tinta:#e7edf6; --tenue:#9aa9bf; --linea:#243349;
+    --via:#1d5fc4; --via-fuerte:#0b4aa8; --borde-via:#0a111d; --senal-txt:#ffffff;
+    --seguro:#22a463; --alerta:#ff8a3d; --alerta-suave:#2e1d12; --alt:#8796ad;
+    --zona:#ff6b57; --zona-suave:#33171a;
+    --mapa-fondo:#172234; --sombra:0 6px 24px rgba(0,0,0,.45);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --papel:#0a111d; --hoja:#111b2b; --tinta:#e7edf6; --tenue:#9aa9bf; --linea:#243349;
+  --via:#1d5fc4; --via-fuerte:#0b4aa8; --borde-via:#0a111d; --senal-txt:#ffffff;
+  --seguro:#22a463; --alerta:#ff8a3d; --alerta-suave:#2e1d12; --alt:#8796ad;
+  --zona:#ff6b57; --zona-suave:#33171a;
+  --mapa-fondo:#172234; --sombra:0 6px 24px rgba(0,0,0,.45);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--papel);color:var(--tinta);font:16px/1.45 var(--f-texto);overflow:hidden;-webkit-text-size-adjust:100%}
+[hidden]{display:none!important}
+button,a.boton{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--alerta);outline-offset:2px}
+
+#app{height:100%;display:grid;grid-template-rows:auto auto minmax(40vh,1fr) auto;grid-template-columns:minmax(0,1fr)}
+#app > .barra{grid-row:1} #app > .franja{grid-row:2} #app > .mapa-zona{grid-row:3} #app > .hoja{grid-row:4}
+
+/* Barra superior */
+.barra{display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 8px 16px;background:var(--hoja);border-bottom:1px solid var(--linea)}
+.barra .marca{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.barra .marca svg{flex:none}
+.barra .nombres{min-width:0;line-height:1.1}
+.barra .eyebrow{white-space:nowrap;font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--tenue);font-weight:700}
+.barra h1{margin:0;font:700 21px/1.05 var(--f-rotulo);letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;border:1px solid var(--linea);font-size:13px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.chip .punto{width:8px;height:8px;border-radius:50%;background:var(--tenue)}
+.chip[data-estado="ok"] .punto{background:var(--seguro)}
+.chip[data-estado="buscando"] .punto{background:var(--alerta);animation:latido 1.2s infinite}
+.chip[data-estado="error"] .punto{background:var(--alerta)}
+@keyframes latido{50%{opacity:.25}}
+.icono-btn{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;border:1px solid var(--linea);background:var(--hoja);cursor:pointer;flex:none}
+.icono-btn svg{width:22px;height:22px}
+
+/* Franja de modo prueba */
+.franja{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:8px 16px;background:var(--alerta);color:#fff;font-weight:700;font-size:14px}
+.franja span{flex:1;min-width:12em}
+.franja button{border:1.5px solid rgba(255,255,255,.85);background:transparent;color:#fff;border-radius:999px;padding:5px 12px;font-weight:700;cursor:pointer}
+
+/* Mapa */
+.mapa-zona{position:relative;min-height:0}
+#mapa{position:absolute;inset:0;overflow:hidden;background:var(--mapa-fondo);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+#mapa:active{cursor:grabbing}
+.ml-teselas{position:absolute;inset:0;overflow:hidden;z-index:0}
+.ml-tesela{position:absolute;left:0;top:0;opacity:0;transition:opacity .2s;max-width:none;pointer-events:none;will-change:transform}
+.ml-tesela.lista{opacity:1}
+.ml-lienzo{position:absolute;left:0;top:0;pointer-events:none;z-index:1}
+.ml-atrib{position:absolute;right:0;bottom:0;z-index:5;background:color-mix(in srgb,var(--hoja) 82%,transparent);color:var(--tenue);font-size:11px;padding:2px 6px;border-top-left-radius:6px;pointer-events:auto}
+.ml-atrib a{color:inherit}
+.controles{position:absolute;right:12px;top:12px;display:flex;flex-flow:column wrap-reverse;align-content:flex-start;gap:8px;max-height:calc(100% - 36px);z-index:6}
+.controles .icono-btn{box-shadow:var(--sombra)}
+.controles .icono-btn[aria-pressed="true"]{background:var(--via);color:#fff;border-color:var(--via)}
+.aviso-flotante{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:7;max-width:calc(100% - 96px);background:var(--tinta);color:var(--hoja);padding:8px 14px;border-radius:10px;font-weight:700;font-size:14px;box-shadow:var(--sombra);text-align:center}
+
+/* Hoja inferior */
+.hoja{background:var(--hoja);border-top:1px solid var(--linea);box-shadow:0 -8px 24px rgba(14,26,43,.08);padding:10px 16px calc(env(safe-area-inset-bottom,0px) + 10px);display:grid;gap:10px;max-height:52vh;overflow-y:auto}
+.hoja > *{min-width:0}
+.eyebrow-hoja{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--via)}
+.hoja h2{margin:0;font:700 34px/1 var(--f-rotulo);text-wrap:balance}
+.hoja p{margin:0;max-width:62ch}
+.recuadro{border-radius:12px;padding:10px 14px;background:var(--alerta-suave);border:1px solid color-mix(in srgb,var(--alerta) 40%,transparent);font-size:15px}
+.recuadro strong{color:var(--alerta)}
+.boton{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;border-radius:14px;border:0;background:var(--via);color:#fff!important;font:700 22px/1 var(--f-rotulo);letter-spacing:.02em;text-transform:uppercase;cursor:pointer;text-decoration:none;padding:0 18px}
+.boton:active{background:var(--via-fuerte)}
+.boton svg{width:24px;height:24px}
+.enlace-btn{background:none;border:0;color:var(--via);font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:6px 0;justify-self:center}
+:root[data-theme="dark"] .enlace-btn{color:#8fb6ff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .enlace-btn{color:#8fb6ff}}
+
+/* Señal de guía */
+.senal{background:var(--via);color:var(--senal-txt);border-radius:14px;padding:10px 14px;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center;box-shadow:inset 0 0 0 3px rgba(255,255,255,.9),inset 0 0 0 5px var(--via)}
+.senal.verde{background:var(--seguro);box-shadow:inset 0 0 0 3px rgba(255,255,255,.9),inset 0 0 0 5px var(--seguro)}
+.brujula{position:relative;width:62px;height:62px;grid-row:span 2}
+.brujula svg{position:absolute;inset:0;width:100%;height:100%;transition:transform .35s ease-out}
+@media (prefers-reduced-motion: reduce){.brujula svg{transition:none}}
+.cifra{font:700 40px/0.95 var(--f-rotulo);font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.cifra small{font-size:22px;margin-left:2px}
+.tiempo{font-size:14px;opacity:.9;font-weight:700}
+.instruccion{grid-column:1 / -1;border-top:1px solid rgba(255,255,255,.35);padding-top:7px;font-size:17px;font-weight:700;line-height:1.28;text-wrap:balance}
+.brujula-pie{grid-column:1 / -1;font-size:12px;opacity:.85;margin-top:-1px}
+.senal.lejos{grid-template-columns:1fr}
+.senal.lejos .brujula,.senal.lejos .brujula-pie{display:none}
+.senal.lejos .cifra{font-size:36px}
+.senal.vehiculo .cifra{font-size:26px;line-height:1.05}
+.senal.mar{background:#0a5c7a;box-shadow:inset 0 0 0 3px rgba(255,255,255,.9),inset 0 0 0 5px #0a5c7a}
+.meta{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--tenue);font-size:14px;line-height:1.3}
+.meta b{color:var(--tinta)}
+.acciones{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.accion{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:6px;min-height:46px;padding:4px 6px;border-radius:10px;border:1px solid var(--linea);background:var(--hoja);cursor:pointer;font-size:13px;font-weight:700;text-align:center;text-decoration:none;color:var(--tinta);line-height:1.15}
+.accion svg{flex:none;width:19px;height:19px}
+.accion[aria-pressed="true"]{border-color:var(--via);color:var(--via);box-shadow:inset 0 0 0 1px var(--via)}
+.accion:disabled,.accion[aria-disabled="true"]{opacity:.45;cursor:default;pointer-events:none}
+.tarjeta-alt{border:1.5px dashed var(--alt);border-radius:12px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.tarjeta-alt p{flex:1;min-width:12em;font-size:15px}
+.tarjeta-alt button,.tarjeta-alt a.btn-oscuro{border:0;background:var(--tinta);color:var(--hoja);border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer;text-decoration:none;font-size:15px}
+.tarjeta-alt .secundario{background:transparent;color:var(--tinta);border:1px solid var(--linea)}
+.enlace-chico{background:none;border:0;color:var(--via);font:inherit;font-weight:700;text-decoration:underline;text-underline-offset:2px;padding:0;cursor:pointer}
+:root[data-theme="dark"] .enlace-chico{color:#8fb6ff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .enlace-chico{color:#8fb6ff}}
+.boton.secundario{background:transparent;color:var(--via)!important;box-shadow:inset 0 0 0 2px var(--via);min-height:48px;font-size:19px}
+:root[data-theme="dark"] .boton.secundario{color:#8fb6ff!important;box-shadow:inset 0 0 0 2px #8fb6ff}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .boton.secundario{color:#8fb6ff!important;box-shadow:inset 0 0 0 2px #8fb6ff}}
+.aviso-zona.mar{background:color-mix(in srgb,#0a5c7a 14%,var(--hoja));border:1.5px solid #0a5c7a}
+.aviso-zona.mar strong{color:#0a6f94}
+:root[data-theme="dark"] .aviso-zona.mar strong{color:#5fc3e8}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .aviso-zona.mar strong{color:#5fc3e8}}
+.accion .gm{font-size:12.5px;line-height:1.15}
+
+/* Aviso de zona de amenaza */
+.aviso-zona{display:flex;gap:8px;align-items:flex-start;border-radius:10px;padding:7px 10px;font-size:14px;line-height:1.3}
+.aviso-zona svg{flex:none;width:18px;height:18px;margin-top:1px}
+.aviso-zona.dentro{background:var(--zona-suave);border:1.5px solid var(--zona)}
+.aviso-zona.dentro strong{color:var(--zona)}
+.aviso-zona.fuera{background:color-mix(in srgb,var(--seguro) 12%,var(--hoja));border:1.5px solid color-mix(in srgb,var(--seguro) 55%,transparent)}
+.aviso-zona.fuera strong{color:var(--seguro)}
+
+/* Menú */
+dialog{border:0;border-radius:18px;padding:0;width:min(560px,calc(100% - 24px));max-height:calc(100% - 48px);background:var(--hoja);color:var(--tinta);box-shadow:var(--sombra)}
+dialog::backdrop{background:rgba(5,10,20,.55)}
+.menu-cab{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--hoja);border-bottom:1px solid var(--linea)}
+.menu-cab h2{margin:0;font:700 26px/1 var(--f-rotulo)}
+.menu-cuerpo{padding:8px 16px 20px;display:grid;gap:18px}
+.menu-cuerpo section{display:grid;gap:8px}
+.menu-cuerpo h3{margin:0;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--tenue)}
+.fila{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.fila label{flex:1}
+.fila input[type="checkbox"]{width:22px;height:22px;accent-color:var(--via)}
+.segmentado{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--linea);border-radius:12px;overflow:hidden}
+.segmentado button{border:0;background:transparent;padding:10px;font-weight:700;cursor:pointer}
+.segmentado button[aria-pressed="true"]{background:var(--via);color:#fff}
+.nota{font-size:14px;color:var(--tenue)}
+#estadoDatos{margin-top:-6px;font-variant-numeric:tabular-nums}
+.archivo{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.archivo label{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--linea);border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
+.archivo input{position:absolute;width:1px;height:1px;opacity:0}
+.diag{display:grid;gap:6px;font-size:14px}
+.diag .resumen{font-weight:700}
+.diag ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.nivel{display:inline-block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:1px 6px;border-radius:5px;margin-right:6px;background:var(--linea);color:var(--tinta)}
+.nivel.error{background:var(--alerta);color:#fff}
+.nivel.aviso{background:color-mix(in srgb,var(--alerta) 25%,var(--hoja))}
+.tabla-num{font-variant-numeric:tabular-nums}
+.leyenda{list-style:none;margin:0;padding:0;display:grid;gap:8px;font-size:15px}
+.leyenda li{display:flex;align-items:center;gap:10px}
+.sw{flex:none;display:inline-grid;place-items:center;width:34px;height:18px}
+.sw-via{height:7px;border-radius:4px;background:var(--via);box-shadow:0 0 0 2px var(--borde-via)}
+.sw-pe{width:24px;height:24px;margin:0 5px;border-radius:50%;background:var(--seguro);color:#fff;font:700 11px/1 var(--f-rotulo);box-shadow:0 0 0 2px #fff}
+.sw-zona{border:1.5px solid var(--zona);border-radius:4px;background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--zona) 55%,transparent) 0 2px,color-mix(in srgb,var(--zona) 12%,transparent) 2px 7px)}
+.sw-auto{width:18px;height:18px;margin:0 8px;border-radius:4px;background:var(--via-fuerte);box-shadow:0 0 0 2px #fff}
+.sw-yo{width:16px;height:16px;margin:0 9px;border-radius:50%;background:var(--alerta);box-shadow:0 0 0 3px #fff,0 0 0 4px var(--linea)}
+
+/* Selección de emergencia */
+.amenazas{display:grid;gap:10px}
+.boton-amenaza{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:4px 14px;min-height:76px;border-radius:16px;border:2px solid var(--linea);background:var(--hoja);color:var(--tinta);padding:12px 16px;text-align:left;cursor:pointer;font:inherit}
+.boton-amenaza:active{border-color:var(--via)}
+.boton-amenaza .ico{grid-row:span 2;font-size:34px;line-height:1}
+.boton-amenaza b{font:700 26px/1 var(--f-rotulo);letter-spacing:.01em}
+.boton-amenaza span{font-size:14px;color:var(--tenue)}
+.boton-amenaza.tsunami{border-color:color-mix(in srgb,var(--via) 60%,transparent)}
+.boton-amenaza.volcan{border-color:color-mix(in srgb,var(--alerta) 70%,transparent)}
+select.campo{width:100%;min-height:46px;border-radius:10px;border:1px solid var(--linea);background:var(--hoja);color:var(--tinta);font:inherit;padding:8px 10px}
+.segmentado.tres{grid-template-columns:1fr 1fr 1fr}
+.barra-progreso{height:6px;border-radius:3px;background:var(--linea);overflow:hidden}
+.barra-progreso i{display:block;height:100%;width:0;background:var(--seguro);transition:width .3s}
+.idiomas{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.idiomas button{min-height:36px;padding:6px 12px;border-radius:999px;border:1px solid var(--linea);background:var(--hoja);color:var(--tenue);font:inherit;font-size:14px;cursor:pointer}
+.idiomas button[aria-pressed="true"]{border-color:var(--via);color:var(--tinta);font-weight:700}
+.idiomas.menu-idiomas{justify-content:flex-start}
+
+@media (min-width:900px){
+  #app{grid-template-columns:minmax(0,1fr) 420px;grid-template-rows:auto auto minmax(0,1fr)}
+  #app > .barra,#app > .franja{grid-column:1 / -1}
+  #app > .mapa-zona{grid-row:3;grid-column:1}
+  #app > .hoja{grid-row:3;grid-column:2;max-height:none;border-top:0;border-left:1px solid var(--linea);align-content:start}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="barra">
+    <div class="marca">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect width="34" height="34" rx="8" fill="var(--via)"/><path d="M6 25c3-1 5-4 8-4s5 3 8 3 4-2 6-3" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M17 17V7m0 0-4.5 4.5M17 7l4.5 4.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="nombres"><div class="eyebrow" data-i18n="app.nombre">Ruta de evacuación</div><h1 id="titulo">Caleta</h1></div>
+    </div>
+    <span class="chip" id="chipGps" data-estado="inactivo"><span class="punto"></span><span id="chipGpsTxt">GPS</span></span>
+    <button class="icono-btn" id="btnMenu" data-i18n-aria="aria.menu" aria-label="Abrir menú" aria-haspopup="dialog">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+  </header>
+
+  <div class="franja" id="franjaPrueba" hidden>
+    <span id="franjaTxt" data-i18n="prueba.franja">Modo prueba: toca el mapa para ubicarte.</span>
+    <button id="btnSimular" type="button">Simular caminata</button>
+    <button id="btnSalirPrueba" type="button" data-i18n="prueba.salir">Salir</button>
+  </div>
+
+  <div class="mapa-zona">
+    <div id="mapa" role="application" data-i18n-aria="aria.mapa" aria-label="Mapa con las vías de evacuación"></div>
+    <div class="controles">
+      <button class="icono-btn" id="btnMas" data-i18n-aria="aria.mas" aria-label="Acercar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
+      <button class="icono-btn" id="btnMenos" data-i18n-aria="aria.menos" aria-label="Alejar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14"/></svg></button>
+      <button class="icono-btn" id="btnCentrar" data-i18n-aria="aria.centrar" aria-label="Seguir mi ubicación" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
+      <button class="icono-btn" id="btnCapa" aria-label="Cambiar a vista satélite"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="m3 13 9 5 9-5"/></svg></button>
+    </div>
+    <div class="aviso-flotante" id="aviso" hidden></div>
+  </div>
+
+  <section class="hoja" id="hoja" aria-live="polite">
+    <!-- Inicio -->
+    <div id="vInicio" style="display:grid;gap:12px">
+      <div class="eyebrow-hoja" id="inicioEyebrow">Sismo · Tsunami</div>
+      <h2 id="inicioTitulo">Caleta</h2>
+      <p id="inicioTexto">Esta guía usa el GPS de tu teléfono para llevarte por la vía de evacuación hasta el punto de encuentro. Una vez abierta, funciona sin datos móviles.</p>
+      <div class="recuadro" id="inicioRecuadro"><strong>Si el sismo te impidió mantenerte en pie, evacúa de inmediato.</strong> Hazlo a pie, sin esperar la alerta.</div>
+      <button class="boton" id="btnIniciar" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V5M5.5 11.5 12 5l6.5 6.5"/></svg>
+        <span data-i18n="inicio.guiarme">Guiarme al punto de encuentro</span>
+      </button>
+      <button class="boton secundario" id="btnVehiculo" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14v-5l-2-5H7l-2 5v5Z"/><path d="M5 12h14"/><circle cx="8" cy="17" r="1.6"/><circle cx="16" cy="17" r="1.6"/></svg>
+        <span data-i18n="inicio.vehiculo">Voy en vehículo</span>
+      </button>
+      <button class="enlace-btn" id="btnPrueba" type="button" data-i18n="inicio.prueba">Probar sin GPS (modo prueba)</button>
+      <button class="enlace-btn" id="btnCambiar" type="button" hidden data-i18n="inicio.cambiar">Cambiar región o emergencia</button>
+      <button class="enlace-btn" id="btnInstalar" type="button" hidden data-i18n="inicio.instalar">Instalar en el teléfono</button>
+      <div class="idiomas" role="group" aria-label="Idioma · Language · Langue · Idioma">
+        <button type="button" data-lang="es" lang="es">Español</button><button type="button" data-lang="en" lang="en">English</button><button type="button" data-lang="fr" lang="fr">Français</button><button type="button" data-lang="pt" lang="pt">Português</button>
+      </div>
+      <p class="nota" id="estadoDatos" style="text-align:center"></p>
+    </div>
+
+    <!-- Elegir emergencia (donde hay más de una) -->
+    <div id="vAmenaza" hidden style="display:grid;gap:12px">
+      <div class="eyebrow-hoja" data-i18n="amenaza.eyebrow">Elige la emergencia</div>
+      <h2 id="amenazaTitulo" data-i18n="amenaza.titulo">¿De qué estás evacuando?</h2>
+      <p class="nota" id="amenazaNota" data-i18n="amenaza.nota">En tu zona hay planes de evacuación para más de una amenaza.</p>
+      <div class="amenazas" id="listaAmenazas"></div>
+    </div>
+
+    <!-- Guía -->
+    <div id="vGuia" hidden style="display:grid;gap:12px">
+      <div class="aviso-zona" id="avisoZona" hidden></div>
+      <div class="senal" id="senal">
+        <div class="brujula" aria-hidden="true">
+          <svg viewBox="0 0 100 100" id="anillo">
+            <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2"/>
+            <g stroke="rgba(255,255,255,.6)" stroke-width="2"><path d="M50 5v7M95 50h-7M50 95v-7M5 50h7"/></g>
+            <text x="50" y="25" text-anchor="middle" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="700" font-size="14" fill="#fff">N</text>
+          </svg>
+          <svg viewBox="0 0 100 100" id="flecha">
+            <path d="M50 14 76 76 50 62 24 76Z" fill="#fff" stroke="rgba(0,0,0,.25)" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="cifra" id="cifra">—</div>
+        <div class="tiempo" id="tiempo">Buscando tu ubicación…</div>
+        <div class="instruccion" id="instruccion">Sal a un lugar abierto para que el GPS te encuentre.</div>
+        <div class="brujula-pie" id="brujulaPie" data-i18n="guia.flechaIndica">La flecha indica hacia dónde caminar.</div>
+      </div>
+      <div class="meta" id="meta"><span id="destinoFila"><span id="destinoEtq" data-i18n="guia.destino">Destino</span>: <b id="destino">—</b></span><span id="estadoVia"></span><button class="enlace-chico" id="btnModo" type="button">¿Vas en vehículo?</button></div>
+      <div class="tarjeta-alt" id="tarjetaModo" hidden>
+        <p>Parece que vas en vehículo. En vehículo no se va al punto de encuentro: se sale de la zona de amenaza y se espera.</p>
+        <button type="button" id="btnSiVehiculo" data-i18n="guia.siVehiculo">Cambiar a modo vehículo</button>
+        <button type="button" class="secundario" id="btnNoVehiculo" data-i18n="guia.sigoPie">Sigo a pie</button>
+      </div>
+      <div class="tarjeta-alt" id="tarjetaGmaps" hidden>
+        <p id="gmapsTxt"></p>
+        <a class="btn-oscuro" id="btnGmapsIr" href="https://www.google.com/maps" target="_blank" rel="noopener" data-i18n="guia.abrirGmaps">Abrir Google Maps</a>
+        <button type="button" class="secundario" id="btnGmapsVolver" data-i18n="guia.volver">Volver</button>
+      </div>
+      <div class="tarjeta-alt" id="tarjetaAlt" hidden>
+        <p id="altTxt"></p>
+        <button type="button" id="btnUsarAlt">Seguir esta ruta</button>
+      </div>
+      <div class="acciones">
+        <button class="accion" id="btnAlt" type="button" aria-pressed="false" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 21V9a4 4 0 0 1 4-4h8"/><path d="m15 2 3 3-3 3"/><path d="M6 13a4 4 0 0 0 4 4h4" stroke-dasharray="2 3"/></svg>
+          <span id="btnAltTxt">Alternativa</span>
+        </button>
+        <a class="accion" id="btnGmaps" href="https://www.google.com/maps" target="_blank" rel="noopener" aria-disabled="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          <span class="gm" id="btnGmapsTxt">Ruta en Google Maps</span>
+        </a>
+        <button class="accion" id="btnVoz" type="button" aria-pressed="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4Z"/><path id="ondas" d="M16 9a4 4 0 0 1 0 6M18.5 6.5a7.5 7.5 0 0 1 0 11"/></svg>
+          <span id="btnVozTxt">Voz</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Llegada -->
+    <div id="vLlegada" hidden style="display:grid;gap:12px">
+      <div class="senal verde" style="grid-template-columns:auto 1fr">
+        <svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true" style="grid-row:span 2"><circle cx="32" cy="32" r="29" fill="none" stroke="#fff" stroke-width="3"/><path d="m19 33 9 9 18-19" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="cifra" style="font-size:36px" data-i18n="llegada.titulo">Llegaste</div>
+        <div class="tiempo" id="llegadaPE">Punto de encuentro</div>
+        <div class="instruccion" id="llegadaTxt">Quédate aquí hasta que la autoridad informe que terminó la alerta. No vuelvas a la costa.</div>
+      </div>
+      <p class="nota" id="llegadaSiguiente" hidden></p>
+      <button class="enlace-btn" id="btnSeguirGuia" type="button" data-i18n="llegada.volver">Volver a la guía</button>
+    </div>
+
+    <!-- Error de ubicación -->
+    <div id="vError" hidden style="display:grid;gap:12px">
+      <div class="eyebrow-hoja" style="color:var(--alerta)" data-i18n="error.titulo">Ubicación no disponible</div>
+      <p id="errorTxt" style="font-size:18px;font-weight:700"></p>
+      <button class="boton" id="btnManual" type="button" data-i18n="error.manual">Marcar dónde estoy en el mapa</button>
+      <button class="enlace-btn" id="btnReintentar" type="button" data-i18n="error.reintentar">Intentar de nuevo con GPS</button>
+    </div>
+  </section>
+</div>
+
+<dialog id="menu" aria-labelledby="menuTitulo">
+  <div class="menu-cab"><h2 id="menuTitulo" data-i18n="menu.titulo">Opciones</h2>
+    <button class="icono-btn" id="btnCerrarMenu" data-i18n-aria="aria.cerrar" aria-label="Cerrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="menu-cuerpo">
+    <section id="secRegion" hidden>
+      <h3 data-i18n="menu.region">Región y emergencia</h3>
+      <select class="campo" id="selPaquete" data-i18n-aria="menu.region" aria-label="Región y emergencia"></select>
+      <div class="barra-progreso" aria-hidden="true"><i id="barraOffline"></i></div>
+      <p class="nota" id="estadoOffline" data-i18n="menu.preparando">Preparando los datos para usar sin internet…</p>
+    </section>
+    <section>
+      <h3 data-i18n="menu.idioma">Idioma</h3>
+      <div class="idiomas menu-idiomas" role="group" aria-label="Idioma · Language · Langue · Idioma">
+        <button type="button" data-lang="es" lang="es">Español</button><button type="button" data-lang="en" lang="en">English</button><button type="button" data-lang="fr" lang="fr">Français</button><button type="button" data-lang="pt" lang="pt">Português</button>
+      </div>
+    </section>
+    <section>
+      <h3 data-i18n="menu.mapaBase">Mapa base</h3>
+      <div class="segmentado" role="group" data-i18n-aria="menu.mapaBase" aria-label="Mapa base">
+        <button type="button" id="baseCalles" aria-pressed="true" data-i18n="menu.calles">Calles</button>
+        <button type="button" id="baseSat" aria-pressed="false" data-i18n="menu.satelite">Satélite</button>
+      </div>
+    </section>
+    <section>
+      <h3 data-i18n="menu.tema">Tema</h3>
+      <div class="segmentado tres" role="group" data-i18n-aria="menu.tema" aria-label="Tema">
+        <button type="button" id="temaAuto" aria-pressed="true" data-i18n="menu.auto">Automático</button>
+        <button type="button" id="temaClaro" aria-pressed="false" data-i18n="menu.claro">Claro</button>
+        <button type="button" id="temaOscuro" aria-pressed="false" data-i18n="menu.noche">Noche</button>
+      </div>
+    </section>
+    <section>
+      <h3 data-i18n="menu.simbologia">Simbología</h3>
+      <ul class="leyenda">
+        <li><span class="sw sw-via"></span><span data-i18n="ley.via">Vía de evacuación (las flechas indican el sentido)</span></li>
+        <li><span class="sw sw-pe">PE</span><span id="leyendaPE">Punto de encuentro</span></li>
+        <li id="leyendaDef" hidden><span class="sw sw-pe" style="background:#3b2a63">PD</span><span data-i18n="ley.def">Punto de encuentro definitivo</span></li>
+        <li id="leyendaZona"><span class="sw sw-zona"></span><span id="leyendaZonaTxt">Zona de amenaza de tsunami (bajo cota 30 y áreas de evacuación)</span></li>
+        <li id="leyendaAuto" hidden><span class="sw sw-auto"></span><span data-i18n="ley.auto">Punto seguro vehicular (modo vehículo)</span></li>
+        <li><span class="sw sw-yo"></span><span data-i18n="ley.yo">Tu ubicación. La línea naranja punteada es el tramo hasta la vía.</span></li>
+      </ul>
+    </section>
+    <section>
+      <h3 data-i18n="menu.guia">Guía</h3>
+      <div class="fila"><label for="chkVoz" data-i18n="menu.vozInd">Indicaciones por voz</label><input type="checkbox" id="chkVoz" checked></div>
+      <div class="fila"><label for="chkPrueba" data-i18n="menu.modoPrueba">Modo prueba (marcar la ubicación tocando el mapa)</label><input type="checkbox" id="chkPrueba"></div>
+    </section>
+    <!-- Herramientas para equipos de SENAPRED: solo en español -->
+    <section id="secArchivos">
+      <h3>Probar otras vías</h3>
+      <p class="nota">Elige uno o varios KML o KMZ a la vez: las líneas se leen como vías, los puntos como puntos de encuentro y los polígonos de cota 30 o de áreas de evacuación como zona de amenaza. Pueden venir en archivos separados. Solo se usan en este equipo mientras la página esté abierta.</p>
+      <div class="fila"><label for="chkSumar">Sumar a lo que ya está cargado</label><input type="checkbox" id="chkSumar"></div>
+      <div class="archivo"><label for="archivoKml"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 16V4m0 0L7 9m5-5 5 5M5 20h14"/></svg>Elegir archivos KML o KMZ</label><input type="file" id="archivoKml" multiple accept=".kml,.kmz,application/vnd.google-earth.kml+xml,application/vnd.google-earth.kmz"></div>
+      <div class="nota" id="archivoEstado" aria-live="polite"></div>
+    </section>
+    <section id="secRevision">
+      <h3>Revisión de la red</h3>
+      <div class="diag" id="diag"></div>
+    </section>
+    <section id="secInstalar">
+      <h3 data-i18n="menu.instalar">Instalar en el teléfono</h3>
+      <p class="nota" id="instalarTxt">Instalada, se abre desde su propio ícono y funciona sin internet.</p>
+      <button class="boton secundario" id="btnInstalarMenu" type="button" hidden data-i18n="menu.instalarApp">Instalar app</button>
+    </section>
+    <section>
+      <h3 data-i18n="menu.privacidad">Privacidad</h3>
+      <p class="nota" data-i18n="menu.privacidadTxt">La ruta se calcula en el teléfono. Tu ubicación no se envía a ningún servidor. Si abres Google Maps, esa aplicación aplica sus propias reglas.</p>
+      <p class="nota"><a href="privacidad.html" data-i18n="menu.politica">Política de privacidad completa</a></p>
+    </section>
+    <section>
+      <h3 data-i18n="menu.autoria">Autoría</h3>
+      <p class="nota" data-i18n="menu.autoriaTxt">Ruta de Evacuación fue creada por Bárbara del Pilar González Lucero. Los datos de vías, puntos de encuentro y zonas de amenaza son capas públicas de SENAPRED (visor Chile Preparado).</p>
+      <p class="nota" data-i18n="menu.derechos">© 2026 Bárbara del Pilar González Lucero. Todos los derechos reservados. Prohibida su copia, modificación o redistribución sin autorización escrita de la autora.</p>
+    </section>
+  </div>
+</dialog>
+
+<script>
+/*DATOS_INICIO*/
+const DATOS = {"titulo":"","vias":[],"pe":[]};
+/*DATOS_FIN*/
+</script>
+<script>
+/* ===================== Configuración (editable) ===================== */
+const CONFIG = {
+  velocidadCaminata: 1.0,   // m/s para estimar minutos (1,0 m/s ≈ paso de un adulto mayor)
+  tolerancias: { snap: 40, peSnap: 100 }, // m: unión de extremos de vías entre sí y de vías con PE
+  radioLlegada: 25,         // m: distancia al PE que cuenta como llegada
+  distanciaEnVia: 20,       // m: a esta distancia o menos se considera que la persona va por la vía
+  distanciaMarAdentro: 200, // m desde la costa: más allá se considera "mar adentro" (mensaje para embarcaciones)
+  velocidadVehiculo: 7,     // m/s (~25 km/h): sobre esta velocidad se pregunta si va en vehículo
+  // Los mensajes de cada idioma y amenaza están en idiomas.js (CONFIG.textos se llena al elegir idioma y amenaza)
+  textos: {},
+  // Opcional: leer las capas directamente desde ArcGIS Online (capas públicas).
+  // Pega la URL de cada capa, terminando en /FeatureServer/0 (o el número que corresponda).
+  arcgis: { vias: '', pe: '' },
+  // Versión nacional: índice de paquetes por región y amenaza (vacío = solo los datos incluidos en la página)
+  indice: 'datos/indice.json',
+  velocidadAuto: 8.3        // m/s (~30 km/h) para estimar minutos en vehículo por vías de evacuación
+};
+// Comportamiento de cada amenaza (los textos están en idiomas.js)
+const AMENAZAS = {
+  tsunami: { ico: '🌊', modoInicial: 'pie', autoPorVias: false },
+  volcan: { ico: '🌋', modoInicial: 'vehiculo', autoPorVias: true }
+};
+const BASES = {
+  calles: { id: 'calles', url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', maxNativo: 19,
+    atribucion: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>' },
+  satelite: { id: 'sat', url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', maxNativo: 18,
+    atribucion: '© Esri, Maxar, Earthstar Geographics' }
+};
+</script>
+<script>
+/* Ruta de Evacuación · © 2026 Bárbara del Pilar González Lucero. Todos los derechos reservados. */
+/* ==========================================================================
+   Textos de la app en cada idioma: español, inglés, francés y portugués.
+   Para corregir una traducción, cambia el texto entre comillas y vuelve a armar la app.
+   {llaves} = valores que la app completa (distancias, nombres, cantidades). No las borres.
+   ========================================================================== */
+const IDIOMAS = {
+
+/* ------------------------------- Español ------------------------------- */
+es: {
+  nombre: 'Español', decimal: ',',
+  voz: ['es-CL', 'es-419', 'es-US', 'es-MX', 'es-ES'],
+  rumbos: ['el norte', 'el noreste', 'el este', 'el sureste', 'el sur', 'el suroeste', 'el oeste', 'el noroeste'],
+  prefijos: [],
+  t: {
+    'app.nombre': 'Ruta de evacuación', 'doc.titulo': 'Evacuación {t}',
+    'aria.mapa': 'Mapa con las vías de evacuación', 'aria.menu': 'Abrir menú', 'aria.mas': 'Acercar', 'aria.menos': 'Alejar',
+    'aria.centrar': 'Seguir mi ubicación', 'aria.sat': 'Cambiar a vista satélite', 'aria.calles': 'Cambiar a mapa de calles', 'aria.cerrar': 'Cerrar',
+    'prueba.franja': 'Modo prueba: toca el mapa para ubicarte.', 'prueba.simular': 'Simular caminata', 'prueba.detener': 'Detener', 'prueba.salir': 'Salir',
+    'prueba.modo': 'Modo prueba', 'prueba.toca': 'Toca el mapa para marcar dónde estás. La guía calcula la ruta desde ese punto.',
+    'prueba.primero': 'Primero toca el mapa para marcar un punto de partida.',
+    'manual.titulo': 'Ubicación manual', 'manual.toca': 'Toca el mapa en el lugar donde estás.',
+    'inicio.guiarme': 'Guiarme al punto de encuentro', 'inicio.vehiculo': 'Voy en vehículo', 'inicio.prueba': 'Probar sin GPS (modo prueba)',
+    'inicio.cambiar': 'Cambiar región o emergencia', 'inicio.instalar': 'Instalar en el teléfono',
+    'amenaza.eyebrow': 'Elige la emergencia', 'amenaza.titulo': '¿De qué estás evacuando?',
+    'amenaza.nota': 'En tu zona hay planes de evacuación para más de una amenaza.', 'amenaza.voz': 'Elige la emergencia: {lista}.', 'amenaza.o': ' o ',
+    'guia.buscando': 'Buscando tu ubicación…', 'guia.salAbierto': 'Sal a un lugar abierto para que el GPS te encuentre.',
+    'guia.sinSenal': 'Sal a un lugar abierto y espera unos segundos. Si no aparece, marca tu posición en el mapa desde el menú.',
+    'guia.flechaIndica': 'La flecha indica hacia dónde caminar.', 'guia.sinBrujula': 'Sin brújula: la flecha se orienta al norte (N), como el mapa.',
+    'guia.conBrujula': 'Sostén el teléfono frente a ti y sigue la flecha.', 'guia.destino': 'Destino',
+    'guia.vasVehiculo': '¿Vas en vehículo?', 'guia.aPie': 'Cambiar a modo a pie', 'guia.siVehiculo': 'Cambiar a modo vehículo', 'guia.sigoPie': 'Sigo a pie',
+    'guia.abrirGmaps': 'Abrir Google Maps', 'guia.volver': 'Volver', 'guia.seguirRuta': 'Seguir esta ruta', 'guia.volverRecomendada': 'Volver a la recomendada',
+    'guia.alternativa': 'Alternativa', 'guia.recomendada': 'Recomendada', 'guia.sinAlternativa': 'Sin alternativa',
+    'guia.gmaps': 'Ruta en Google Maps', 'guia.gmapsAuto': 'Ruta en auto (Google Maps)', 'guia.voz': 'Voz', 'guia.sinVoz': 'Sin voz',
+    'guia.enVia': 'En la vía', 'guia.fueraVia': 'Fuera de la vía', 'guia.deLaCosta': 'de la costa',
+    'guia.hastaPE': 'hasta el punto de encuentro más cercano', 'guia.noVias': 'No hay vías cargadas.',
+    'dir.camina': 'Camina', 'dir.conduce': 'Conduce',
+    'dir.alPE': '{verbo} hacia {rb} {d} hasta el punto de encuentro.', 'dir.aVia': '{verbo} hacia {rb} {d} hasta la vía de evacuación.',
+    'dir.seguir': 'Sigue la vía de evacuación hacia {rb}.',
+    'voz.faltan': 'Faltan {d}.', 'voz.enVia': 'Estás en la vía de evacuación. Síguela hacia {rb}.',
+    'voz.teAlejaste': 'Te alejaste de la vía. Vuelve hacia {rb}.', 'voz.salAgua': 'Sal del agua.',
+    'voz.pareceVehiculo': 'Parece que vas en vehículo. Puedes cambiar a modo vehículo.',
+    'alt.recomendada': 'Ruta recomendada: {x}, {d} en total.', 'alt.alternativa': 'Alternativa: {x}, {d} en total.',
+    'alt.irA': 'ir a {pe}', 'alt.porVia': 'por la vía «{via}»',
+    'alt.guiandoAlt': 'Guiando por la ruta alternativa', 'alt.guiandoRec': 'Guiando por la ruta recomendada',
+    'modo.pareceAuto': 'Parece que vas en vehículo. Cambia a modo vehículo para ver el tiempo de viaje en auto por la vía de evacuación.',
+    'modo.pareceNoPE': 'Parece que vas en vehículo. En vehículo no se va al punto de encuentro: se sale de la zona de amenaza y se espera.',
+    'veh.salZona': 'Sal de la zona de amenaza', 'veh.fueraZona': 'Estás fuera de la zona', 'veh.modo': 'Modo vehículo',
+    'veh.puntoSeguro': 'Punto seguro vehicular', 'veh.elPuntoSeguro': 'el punto seguro vehicular',
+    'veh.gmapsTxt': 'Se abrirá Google Maps con una ruta en auto hasta «{n}», fuera de la zona de amenaza.',
+    'gmaps.autoVia': 'Se abrirá Google Maps con una ruta en auto que pasa por tu vía de evacuación hasta el punto de encuentro.',
+    'gmaps.pantallaAuto': 'Si tu teléfono está conectado a Android Auto o CarPlay, la ruta aparece en la pantalla del auto.',
+    'gmaps.pie': 'Se abrirá Google Maps con una ruta a pie que pasa por tu vía de evacuación. Puede diferir en senderos que Google no conoce.',
+    'llegada.titulo': 'Llegaste', 'llegada.def': 'Punto de encuentro definitivo más cercano: {n} ({d}).', 'llegada.volver': 'Volver a la guía',
+    'error.titulo': 'Ubicación no disponible', 'error.manual': 'Marcar dónde estoy en el mapa', 'error.reintentar': 'Intentar de nuevo con GPS',
+    'error.https': 'Para usar el GPS, abre esta guía desde su dirección https://.',
+    'error.sinGeo': 'Este navegador no entrega la ubicación del teléfono.',
+    'error.permiso': 'No diste permiso de ubicación. Actívalo para este sitio en el navegador (icono junto a la dirección web) y en los ajustes de ubicación del teléfono.',
+    'chip.buscando': 'Buscando', 'chip.sinSenal': 'Sin señal', 'chip.sinGps': 'Sin GPS', 'chip.prueba': 'Prueba', 'chip.manual': 'Manual',
+    'u.km': '{n} kilómetros', 'u.m': '{n} metros', 'min.pie': '≈ {n} min caminando', 'min.auto': '≈ {n} min en vehículo',
+    'menu.titulo': 'Opciones', 'menu.region': 'Región y emergencia', 'menu.preparando': 'Preparando los datos para usar sin internet…',
+    'menu.mapaBase': 'Mapa base', 'menu.calles': 'Calles', 'menu.satelite': 'Satélite',
+    'menu.tema': 'Tema', 'menu.auto': 'Automático', 'menu.claro': 'Claro', 'menu.noche': 'Noche', 'menu.idioma': 'Idioma',
+    'menu.simbologia': 'Simbología', 'menu.guia': 'Guía', 'menu.vozInd': 'Indicaciones por voz',
+    'menu.modoPrueba': 'Modo prueba (marcar la ubicación tocando el mapa)', 'menu.instalar': 'Instalar en el teléfono',
+    'menu.instalarTxt': 'Instalada, se abre desde su propio ícono y funciona sin internet.',
+    'menu.instalarIphone': 'En iPhone: toca Compartir y luego «Agregar a inicio». Instalada, se abre desde su propio ícono y funciona sin internet.',
+    'menu.instalada': 'La app ya está instalada en este teléfono.', 'menu.instalarApp': 'Instalar app',
+    'menu.privacidad': 'Privacidad', 'menu.politica': 'Política de privacidad completa',
+    'menu.privacidadTxt': 'La ruta se calcula en el teléfono. Tu ubicación no se envía a ningún servidor. Si abres Google Maps, esa aplicación aplica sus propias reglas.',
+    'menu.autoria': 'Autoría',
+    'menu.autoriaTxt': 'Ruta de Evacuación fue creada por Bárbara del Pilar González Lucero. Los datos de vías, puntos de encuentro y zonas de amenaza son capas públicas de SENAPRED (visor Chile Preparado).',
+    'menu.derechos': '© 2026 Bárbara del Pilar González Lucero. Todos los derechos reservados. Prohibida su copia, modificación o redistribución sin autorización escrita de la autora.',
+    'ley.via': 'Vía de evacuación (las flechas indican el sentido)', 'ley.pe': 'Punto de encuentro', 'ley.pet': 'Punto de encuentro transitorio',
+    'ley.def': 'Punto de encuentro definitivo', 'ley.zonaTsunami': 'Zona de amenaza de tsunami (bajo cota 30 y áreas de evacuación)',
+    'ley.zonaVolcan': 'Zona de peligro volcánico', 'ley.auto': 'Punto seguro vehicular (modo vehículo)',
+    'ley.yo': 'Tu ubicación. La línea naranja punteada es el tramo hasta la vía.',
+    'datos.resumen': '{v} vías · {p} puntos de encuentro', 'datos.zona': 'zona de amenaza', 'datos.fecha': 'datos del {f}',
+    'datos.cargando': 'Cargando los datos…', 'datos.error': 'No se pudieron cargar los datos. Revisa la conexión y vuelve a abrir la página.',
+    'datos.errorPaquete': 'No se pudieron abrir los datos de {n}. Revisa la conexión.', 'datos.opcion': '{n} · {v} vías, {p} PE',
+    'off.lento': 'Conexión lenta o ahorro de datos activo: los datos se guardan a medida que los usas.',
+    'off.progreso': 'Guardando para usar sin internet: {ok} de {total} paquetes…',
+    'off.listo1': 'Listo: 1 paquete ({mb} MB) guardado en el teléfono. Funciona sin internet.',
+    'off.listo': 'Listo: {total} paquetes ({mb} MB) guardados en el teléfono. Funciona sin internet.',
+    'off.parcial': 'Se guardaron {ok} de {total} paquetes. El resto se guardará con la próxima conexión.'
+  },
+  textos: {
+    zonaDentroTitulo: 'Estás en zona de amenaza de tsunami',
+    zonaDentro: 'Evacúa ahora, a pie, por la vía hacia el punto de encuentro.',
+    zonaFueraTitulo: 'Estás fuera de la zona de amenaza',
+    zonaFuera: 'Mantente lejos de la costa y sigue las instrucciones de la autoridad.',
+    playaTitulo: 'Estás en zona de amenaza de tsunami',
+    playa: 'Estás en la playa o junto al mar. Sal del agua y evacúa ahora, a pie, por la vía hacia el punto de encuentro.',
+    marTitulo: 'Estás en el mar',
+    // PROVISORIO: reemplazar por la redacción oficial de la Autoridad Marítima
+    mar: 'Si estás en una embarcación, dirígete mar adentro y sigue las instrucciones de la Autoridad Marítima.',
+    vehiculoDentro: 'Conduce hacia terreno alto, lejos de la costa, sin ir al punto de encuentro. Al salir de la zona, detente en un lugar seguro.',
+    vehiculoFuera: 'Detente en un lugar seguro, sin bloquear el camino, y espera el término de la evacuación.',
+    vehiculoSinZona: 'Conduce hacia terreno alto, lejos de la costa, y espera hasta que la autoridad informe el término de la evacuación.',
+    salioZona: 'Saliste de la zona de amenaza de tsunami. Continúa hasta el punto de encuentro.',
+    entroZona: 'Entraste a la zona de amenaza de tsunami. Sigue la vía hacia el punto de encuentro.',
+    lejosDentro: 'No hay vías de evacuación cargadas cerca de ti. Aléjate de la costa hacia un lugar alto y sigue las instrucciones de la autoridad.',
+    lejosFuera: 'No hay vías de evacuación cerca de ti. Esta guía cubre las vías del borde costero.',
+    llegada: 'Quédate aquí hasta que la autoridad informe que terminó la alerta. No vuelvas a la costa.',
+    llegadaVoz: 'Llegaste al punto de encuentro. Quédate aquí hasta que la autoridad informe que terminó la alerta.'
+  },
+  amenazas: {
+    tsunami: {
+      nombre: 'Tsunami', etiqueta: 'Sismo · Tsunami', sub: 'Sismo fuerte en la costa: evacúa a pie',
+      inicioTexto: 'Esta guía usa el GPS de tu teléfono para llevarte por la vía de evacuación hasta el punto de encuentro. Una vez abierta, funciona sin datos móviles.',
+      inicioRecuadro: '<strong>Si el sismo te impidió mantenerte en pie, evacúa de inmediato.</strong> Hazlo a pie, sin esperar la alerta.',
+      textos: {}
+    },
+    volcan: {
+      nombre: 'Erupción volcánica', etiqueta: 'Erupción volcánica', sub: 'Evacúa en vehículo por la vía de evacuación',
+      inicioTexto: 'Esta guía usa el GPS de tu teléfono para llevarte por la vía de evacuación volcánica hasta el punto de encuentro transitorio. Una vez abierta, funciona sin datos móviles.',
+      inicioRecuadro: '<strong>Sigue siempre las instrucciones de la autoridad y la alerta SAE.</strong> Aléjate de ríos y quebradas: por ahí bajan los lahares.',
+      textos: {
+        zonaDentroTitulo: 'Estás en zona de peligro volcánico',
+        zonaDentro: 'Evacúa ahora por la vía de evacuación hacia el punto de encuentro.',
+        zonaFueraTitulo: 'Estás fuera de la zona de peligro',
+        zonaFuera: 'Sigue las instrucciones de la autoridad.',
+        salioZona: 'Saliste de la zona de peligro volcánico. Continúa hasta el punto de encuentro.',
+        entroZona: 'Entraste a la zona de peligro volcánico. Sigue la vía hacia el punto de encuentro.',
+        lejosDentro: 'No hay vías de evacuación cargadas cerca de ti. Aléjate del volcán, de ríos y quebradas, y sigue las instrucciones de la autoridad.',
+        lejosFuera: 'No hay vías de evacuación volcánica cerca de ti.',
+        llegada: 'Espera aquí las instrucciones de la autoridad para el traslado.',
+        llegadaVoz: 'Llegaste al punto de encuentro. Espera las instrucciones de la autoridad.'
+      }
+    }
+  }
+},
+
+/* ------------------------------- English ------------------------------- */
+en: {
+  nombre: 'English', decimal: '.',
+  voz: ['en-US', 'en-GB', 'en-AU', 'en-CA'],
+  rumbos: ['north', 'northeast', 'east', 'southeast', 'south', 'southwest', 'west', 'northwest'],
+  prefijos: [['Punto de encuentro transitorio', 'Temporary meeting point'], ['Punto de encuentro definitivo', 'Final meeting point'],
+    ['Punto de encuentro', 'Meeting point'], ['Punto seguro vehicular', 'Vehicle safe point'], ['Vía de evacuación', 'Evacuation route']],
+  t: {
+    'app.nombre': 'Evacuation route', 'doc.titulo': 'Evacuation – {t}',
+    'aria.mapa': 'Map of evacuation routes', 'aria.menu': 'Open menu', 'aria.mas': 'Zoom in', 'aria.menos': 'Zoom out',
+    'aria.centrar': 'Follow my location', 'aria.sat': 'Switch to satellite view', 'aria.calles': 'Switch to street map', 'aria.cerrar': 'Close',
+    'prueba.franja': 'Test mode: tap the map to set your location.', 'prueba.simular': 'Simulate walk', 'prueba.detener': 'Stop', 'prueba.salir': 'Exit',
+    'prueba.modo': 'Test mode', 'prueba.toca': 'Tap the map to mark where you are. The guide calculates the route from that point.',
+    'prueba.primero': 'First tap the map to set a starting point.',
+    'manual.titulo': 'Manual location', 'manual.toca': 'Tap the map where you are.',
+    'inicio.guiarme': 'Guide me to the meeting point', 'inicio.vehiculo': 'I am in a vehicle', 'inicio.prueba': 'Try without GPS (test mode)',
+    'inicio.cambiar': 'Change region or emergency', 'inicio.instalar': 'Install on this phone',
+    'amenaza.eyebrow': 'Choose the emergency', 'amenaza.titulo': 'What are you evacuating from?',
+    'amenaza.nota': 'Your area has evacuation plans for more than one hazard.', 'amenaza.voz': 'Choose the emergency: {lista}.', 'amenaza.o': ' or ',
+    'guia.buscando': 'Finding your location…', 'guia.salAbierto': 'Go to an open area so the GPS can find you.',
+    'guia.sinSenal': 'Go to an open area and wait a few seconds. If your location does not appear, mark it on the map from the menu.',
+    'guia.flechaIndica': 'The arrow shows which way to walk.', 'guia.sinBrujula': 'No compass: the arrow is drawn with north (N) up, like the map.',
+    'guia.conBrujula': 'Hold the phone in front of you and follow the arrow.', 'guia.destino': 'Destination',
+    'guia.vasVehiculo': 'In a vehicle?', 'guia.aPie': 'Switch to walking mode', 'guia.siVehiculo': 'Switch to vehicle mode', 'guia.sigoPie': 'Keep walking',
+    'guia.abrirGmaps': 'Open Google Maps', 'guia.volver': 'Back', 'guia.seguirRuta': 'Follow this route', 'guia.volverRecomendada': 'Back to the recommended route',
+    'guia.alternativa': 'Alternative', 'guia.recomendada': 'Recommended', 'guia.sinAlternativa': 'No alternative',
+    'guia.gmaps': 'Route in Google Maps', 'guia.gmapsAuto': 'Driving route (Google Maps)', 'guia.voz': 'Voice', 'guia.sinVoz': 'Voice off',
+    'guia.enVia': 'On the route', 'guia.fueraVia': 'Off the route', 'guia.deLaCosta': 'from the coast',
+    'guia.hastaPE': 'to the nearest meeting point', 'guia.noVias': 'No evacuation routes loaded.',
+    'dir.camina': 'Walk', 'dir.conduce': 'Drive',
+    'dir.alPE': '{verbo} {rb} {d} to the meeting point.', 'dir.aVia': '{verbo} {rb} {d} to the evacuation route.',
+    'dir.seguir': 'Follow the evacuation route heading {rb}.',
+    'voz.faltan': '{d} to go.', 'voz.enVia': 'You are on the evacuation route. Follow it heading {rb}.',
+    'voz.teAlejaste': 'You have left the route. Head back {rb}.', 'voz.salAgua': 'Get out of the water.',
+    'voz.pareceVehiculo': 'It looks like you are in a vehicle. You can switch to vehicle mode.',
+    'alt.recomendada': 'Recommended route: {x}, {d} in total.', 'alt.alternativa': 'Alternative: {x}, {d} in total.',
+    'alt.irA': 'go to {pe}', 'alt.porVia': 'along “{via}”',
+    'alt.guiandoAlt': 'Guiding along the alternative route', 'alt.guiandoRec': 'Guiding along the recommended route',
+    'modo.pareceAuto': 'It looks like you are in a vehicle. Switch to vehicle mode to see the driving time along the evacuation route.',
+    'modo.pareceNoPE': 'It looks like you are in a vehicle. In a vehicle, do not go to the meeting point: leave the hazard zone and wait.',
+    'veh.salZona': 'Leave the hazard zone', 'veh.fueraZona': 'You are outside the zone', 'veh.modo': 'Vehicle mode',
+    'veh.puntoSeguro': 'Vehicle safe point', 'veh.elPuntoSeguro': 'the vehicle safe point',
+    'veh.gmapsTxt': 'Google Maps will open with a driving route to “{n}”, outside the hazard zone.',
+    'gmaps.autoVia': 'Google Maps will open with a driving route that follows your evacuation route to the meeting point.',
+    'gmaps.pantallaAuto': 'If your phone is connected to Android Auto or CarPlay, the route appears on the car screen.',
+    'gmaps.pie': 'Google Maps will open with a walking route that follows your evacuation route. It may differ on paths Google does not know.',
+    'llegada.titulo': 'You made it', 'llegada.def': 'Nearest final meeting point: {n} ({d}).', 'llegada.volver': 'Back to the guide',
+    'error.titulo': 'Location unavailable', 'error.manual': 'Mark where I am on the map', 'error.reintentar': 'Try GPS again',
+    'error.https': 'To use GPS, open this guide from its https:// address.',
+    'error.sinGeo': 'This browser does not provide the phone’s location.',
+    'error.permiso': 'Location permission was not granted. Allow it for this site in the browser (icon next to the web address) and in the phone’s location settings.',
+    'chip.buscando': 'Searching', 'chip.sinSenal': 'No signal', 'chip.sinGps': 'No GPS', 'chip.prueba': 'Test', 'chip.manual': 'Manual',
+    'u.km': '{n} kilometers', 'u.m': '{n} meters', 'min.pie': '≈ {n} min walking', 'min.auto': '≈ {n} min by car',
+    'menu.titulo': 'Options', 'menu.region': 'Region and emergency', 'menu.preparando': 'Preparing data for offline use…',
+    'menu.mapaBase': 'Base map', 'menu.calles': 'Streets', 'menu.satelite': 'Satellite',
+    'menu.tema': 'Theme', 'menu.auto': 'Automatic', 'menu.claro': 'Light', 'menu.noche': 'Night', 'menu.idioma': 'Language',
+    'menu.simbologia': 'Legend', 'menu.guia': 'Guide', 'menu.vozInd': 'Voice directions',
+    'menu.modoPrueba': 'Test mode (set your location by tapping the map)', 'menu.instalar': 'Install on this phone',
+    'menu.instalarTxt': 'Once installed, it opens from its own icon and works offline.',
+    'menu.instalarIphone': 'On iPhone: tap Share and then “Add to Home Screen”. Once installed, it opens from its own icon and works offline.',
+    'menu.instalada': 'The app is already installed on this phone.', 'menu.instalarApp': 'Install app',
+    'menu.privacidad': 'Privacy', 'menu.politica': 'Full privacy policy',
+    'menu.privacidadTxt': 'The route is calculated on the phone. Your location is never sent to any server. If you open Google Maps, that app applies its own rules.',
+    'menu.autoria': 'Authorship',
+    'menu.autoriaTxt': 'Ruta de Evacuación was created by Bárbara del Pilar González Lucero. The evacuation route, meeting point and hazard zone data are public layers from SENAPRED (Chile Preparado viewer).',
+    'menu.derechos': '© 2026 Bárbara del Pilar González Lucero. All rights reserved. Copying, modification or redistribution without the author’s written permission is prohibited.',
+    'ley.via': 'Evacuation route (arrows show the direction)', 'ley.pe': 'Meeting point', 'ley.pet': 'Temporary meeting point',
+    'ley.def': 'Final meeting point', 'ley.zonaTsunami': 'Tsunami hazard zone (below the 30 m contour and evacuation areas)',
+    'ley.zonaVolcan': 'Volcanic hazard zone', 'ley.auto': 'Vehicle safe point (vehicle mode)',
+    'ley.yo': 'Your location. The dashed orange line is the stretch to the route.',
+    'datos.resumen': '{v} routes · {p} meeting points', 'datos.zona': 'hazard zone', 'datos.fecha': 'data from {f}',
+    'datos.cargando': 'Loading data…', 'datos.error': 'Could not load the data. Check your connection and open the page again.',
+    'datos.errorPaquete': 'Could not open the data for {n}. Check your connection.', 'datos.opcion': '{n} · {v} routes, {p} points',
+    'off.lento': 'Slow connection or data saver on: data is saved as you use it.',
+    'off.progreso': 'Saving for offline use: {ok} of {total} packages…',
+    'off.listo1': 'Ready: 1 package ({mb} MB) saved on the phone. Works offline.',
+    'off.listo': 'Ready: {total} packages ({mb} MB) saved on the phone. Works offline.',
+    'off.parcial': '{ok} of {total} packages saved. The rest will be saved next time you are online.'
+  },
+  textos: {
+    zonaDentroTitulo: 'You are in the tsunami hazard zone',
+    zonaDentro: 'Evacuate now, on foot, along the route to the meeting point.',
+    zonaFueraTitulo: 'You are outside the hazard zone',
+    zonaFuera: 'Stay away from the coast and follow the instructions of the authorities.',
+    playaTitulo: 'You are in the tsunami hazard zone',
+    playa: 'You are on the beach or next to the sea. Get out of the water and evacuate now, on foot, along the route to the meeting point.',
+    marTitulo: 'You are at sea',
+    mar: 'If you are on a boat, head out to open sea and follow the instructions of the Maritime Authority.',
+    vehiculoDentro: 'Drive to high ground, away from the coast, without going to the meeting point. Once out of the zone, stop in a safe place.',
+    vehiculoFuera: 'Stop in a safe place, without blocking the road, and wait until the evacuation is over.',
+    vehiculoSinZona: 'Drive to high ground, away from the coast, and wait until the authorities announce the end of the evacuation.',
+    salioZona: 'You have left the tsunami hazard zone. Continue to the meeting point.',
+    entroZona: 'You have entered the tsunami hazard zone. Follow the route to the meeting point.',
+    lejosDentro: 'There are no evacuation routes loaded near you. Move away from the coast to high ground and follow the instructions of the authorities.',
+    lejosFuera: 'There are no evacuation routes near you. This guide covers coastal evacuation routes.',
+    llegada: 'Stay here until the authorities announce that the alert is over. Do not return to the coast.',
+    llegadaVoz: 'You have reached the meeting point. Stay here until the authorities announce that the alert is over.'
+  },
+  amenazas: {
+    tsunami: {
+      nombre: 'Tsunami', etiqueta: 'Earthquake · Tsunami', sub: 'Strong earthquake on the coast: evacuate on foot',
+      inicioTexto: 'This guide uses your phone’s GPS to take you along the evacuation route to the meeting point. Once open, it works without mobile data.',
+      inicioRecuadro: '<strong>If the earthquake made it hard to stay on your feet, evacuate immediately.</strong> Go on foot, without waiting for the alert.',
+      textos: {}
+    },
+    volcan: {
+      nombre: 'Volcanic eruption', etiqueta: 'Volcanic eruption', sub: 'Evacuate by vehicle along the evacuation route',
+      inicioTexto: 'This guide uses your phone’s GPS to take you along the volcanic evacuation route to the temporary meeting point. Once open, it works without mobile data.',
+      inicioRecuadro: '<strong>Always follow the instructions of the authorities and the SAE emergency alert.</strong> Stay away from rivers and ravines: lahars flow down them.',
+      textos: {
+        zonaDentroTitulo: 'You are in the volcanic hazard zone',
+        zonaDentro: 'Evacuate now along the evacuation route to the meeting point.',
+        zonaFueraTitulo: 'You are outside the hazard zone',
+        zonaFuera: 'Follow the instructions of the authorities.',
+        salioZona: 'You have left the volcanic hazard zone. Continue to the meeting point.',
+        entroZona: 'You have entered the volcanic hazard zone. Follow the route to the meeting point.',
+        lejosDentro: 'There are no evacuation routes loaded near you. Move away from the volcano, rivers and ravines, and follow the instructions of the authorities.',
+        lejosFuera: 'There are no volcanic evacuation routes near you.',
+        llegada: 'Wait here for instructions from the authorities about the transfer.',
+        llegadaVoz: 'You have reached the meeting point. Wait for instructions from the authorities.'
+      }
+    }
+  }
+},
+
+/* ------------------------------- Français ------------------------------- */
+fr: {
+  nombre: 'Français', decimal: ',',
+  voz: ['fr-FR', 'fr-CA', 'fr-BE', 'fr-CH'],
+  rumbos: ['le nord', 'le nord-est', 'l’est', 'le sud-est', 'le sud', 'le sud-ouest', 'l’ouest', 'le nord-ouest'],
+  prefijos: [['Punto de encuentro transitorio', 'Point de rassemblement temporaire'], ['Punto de encuentro definitivo', 'Point de rassemblement définitif'],
+    ['Punto de encuentro', 'Point de rassemblement'], ['Punto seguro vehicular', 'Point sûr pour véhicules'], ['Vía de evacuación', 'Voie d’évacuation']],
+  t: {
+    'app.nombre': 'Itinéraire d’évacuation', 'doc.titulo': 'Évacuation – {t}',
+    'aria.mapa': 'Carte des voies d’évacuation', 'aria.menu': 'Ouvrir le menu', 'aria.mas': 'Zoom avant', 'aria.menos': 'Zoom arrière',
+    'aria.centrar': 'Suivre ma position', 'aria.sat': 'Passer à la vue satellite', 'aria.calles': 'Passer au plan des rues', 'aria.cerrar': 'Fermer',
+    'prueba.franja': 'Mode test : touchez la carte pour vous situer.', 'prueba.simular': 'Simuler la marche', 'prueba.detener': 'Arrêter', 'prueba.salir': 'Quitter',
+    'prueba.modo': 'Mode test', 'prueba.toca': 'Touchez la carte pour indiquer où vous êtes. Le guide calcule l’itinéraire depuis ce point.',
+    'prueba.primero': 'Touchez d’abord la carte pour choisir un point de départ.',
+    'manual.titulo': 'Position manuelle', 'manual.toca': 'Touchez la carte à l’endroit où vous êtes.',
+    'inicio.guiarme': 'Me guider vers le point de rassemblement', 'inicio.vehiculo': 'Je suis en véhicule', 'inicio.prueba': 'Essayer sans GPS (mode test)',
+    'inicio.cambiar': 'Changer de région ou d’urgence', 'inicio.instalar': 'Installer sur le téléphone',
+    'amenaza.eyebrow': 'Choisissez l’urgence', 'amenaza.titulo': 'Quel est le danger ?',
+    'amenaza.nota': 'Votre zone dispose de plans d’évacuation pour plusieurs dangers.', 'amenaza.voz': 'Choisissez l’urgence : {lista}.', 'amenaza.o': ' ou ',
+    'guia.buscando': 'Recherche de votre position…', 'guia.salAbierto': 'Allez dans un endroit dégagé pour que le GPS vous trouve.',
+    'guia.sinSenal': 'Allez dans un endroit dégagé et attendez quelques secondes. Si votre position n’apparaît pas, indiquez-la sur la carte depuis le menu.',
+    'guia.flechaIndica': 'La flèche indique où marcher.', 'guia.sinBrujula': 'Sans boussole : la flèche est orientée nord (N) en haut, comme la carte.',
+    'guia.conBrujula': 'Tenez le téléphone devant vous et suivez la flèche.', 'guia.destino': 'Destination',
+    'guia.vasVehiculo': 'En véhicule ?', 'guia.aPie': 'Passer en mode piéton', 'guia.siVehiculo': 'Passer en mode véhicule', 'guia.sigoPie': 'Je continue à pied',
+    'guia.abrirGmaps': 'Ouvrir Google Maps', 'guia.volver': 'Retour', 'guia.seguirRuta': 'Suivre cet itinéraire', 'guia.volverRecomendada': 'Revenir à l’itinéraire recommandé',
+    'guia.alternativa': 'Alternative', 'guia.recomendada': 'Recommandé', 'guia.sinAlternativa': 'Aucune alternative',
+    'guia.gmaps': 'Itinéraire dans Google Maps', 'guia.gmapsAuto': 'Itinéraire en voiture (Google Maps)', 'guia.voz': 'Voix', 'guia.sinVoz': 'Voix coupée',
+    'guia.enVia': 'Sur la voie', 'guia.fueraVia': 'Hors de la voie', 'guia.deLaCosta': 'de la côte',
+    'guia.hastaPE': 'jusqu’au point de rassemblement le plus proche', 'guia.noVias': 'Aucune voie d’évacuation chargée.',
+    'dir.camina': 'Marchez', 'dir.conduce': 'Conduisez',
+    'dir.alPE': '{verbo} vers {rb} sur {d} jusqu’au point de rassemblement.', 'dir.aVia': '{verbo} vers {rb} sur {d} jusqu’à la voie d’évacuation.',
+    'dir.seguir': 'Suivez la voie d’évacuation vers {rb}.',
+    'voz.faltan': 'Encore {d}.', 'voz.enVia': 'Vous êtes sur la voie d’évacuation. Suivez-la vers {rb}.',
+    'voz.teAlejaste': 'Vous vous êtes éloigné de la voie. Revenez vers {rb}.', 'voz.salAgua': 'Sortez de l’eau.',
+    'voz.pareceVehiculo': 'Vous semblez être en véhicule. Vous pouvez passer en mode véhicule.',
+    'alt.recomendada': 'Itinéraire recommandé : {x}, {d} au total.', 'alt.alternativa': 'Alternative : {x}, {d} au total.',
+    'alt.irA': 'aller à {pe}', 'alt.porVia': 'par « {via} »',
+    'alt.guiandoAlt': 'Guidage par l’itinéraire alternatif', 'alt.guiandoRec': 'Guidage par l’itinéraire recommandé',
+    'modo.pareceAuto': 'Vous semblez être en véhicule. Passez en mode véhicule pour voir le temps de trajet en voiture sur la voie d’évacuation.',
+    'modo.pareceNoPE': 'Vous semblez être en véhicule. En véhicule, on ne va pas au point de rassemblement : on quitte la zone de danger et on attend.',
+    'veh.salZona': 'Quittez la zone de danger', 'veh.fueraZona': 'Vous êtes hors de la zone', 'veh.modo': 'Mode véhicule',
+    'veh.puntoSeguro': 'Point sûr pour véhicules', 'veh.elPuntoSeguro': 'le point sûr pour véhicules',
+    'veh.gmapsTxt': 'Google Maps va s’ouvrir avec un itinéraire en voiture jusqu’à « {n} », hors de la zone de danger.',
+    'gmaps.autoVia': 'Google Maps va s’ouvrir avec un itinéraire en voiture qui suit votre voie d’évacuation jusqu’au point de rassemblement.',
+    'gmaps.pantallaAuto': 'Si votre téléphone est connecté à Android Auto ou CarPlay, l’itinéraire s’affiche sur l’écran de la voiture.',
+    'gmaps.pie': 'Google Maps va s’ouvrir avec un itinéraire à pied qui passe par votre voie d’évacuation. Il peut différer sur des sentiers que Google ne connaît pas.',
+    'llegada.titulo': 'Vous y êtes', 'llegada.def': 'Point de rassemblement définitif le plus proche : {n} ({d}).', 'llegada.volver': 'Revenir au guidage',
+    'error.titulo': 'Position indisponible', 'error.manual': 'Indiquer ma position sur la carte', 'error.reintentar': 'Réessayer avec le GPS',
+    'error.https': 'Pour utiliser le GPS, ouvrez ce guide depuis son adresse https://.',
+    'error.sinGeo': 'Ce navigateur ne fournit pas la position du téléphone.',
+    'error.permiso': 'Vous n’avez pas autorisé la localisation. Activez-la pour ce site dans le navigateur (icône à côté de l’adresse web) et dans les réglages de localisation du téléphone.',
+    'chip.buscando': 'Recherche', 'chip.sinSenal': 'Pas de signal', 'chip.sinGps': 'Pas de GPS', 'chip.prueba': 'Test', 'chip.manual': 'Manuel',
+    'u.km': '{n} kilomètres', 'u.m': '{n} mètres', 'min.pie': '≈ {n} min à pied', 'min.auto': '≈ {n} min en voiture',
+    'menu.titulo': 'Options', 'menu.region': 'Région et urgence', 'menu.preparando': 'Préparation des données pour une utilisation hors ligne…',
+    'menu.mapaBase': 'Fond de carte', 'menu.calles': 'Rues', 'menu.satelite': 'Satellite',
+    'menu.tema': 'Thème', 'menu.auto': 'Automatique', 'menu.claro': 'Clair', 'menu.noche': 'Nuit', 'menu.idioma': 'Langue',
+    'menu.simbologia': 'Légende', 'menu.guia': 'Guidage', 'menu.vozInd': 'Instructions vocales',
+    'menu.modoPrueba': 'Mode test (indiquer la position en touchant la carte)', 'menu.instalar': 'Installer sur le téléphone',
+    'menu.instalarTxt': 'Une fois installée, elle s’ouvre depuis sa propre icône et fonctionne hors ligne.',
+    'menu.instalarIphone': 'Sur iPhone : touchez Partager puis « Sur l’écran d’accueil ». Une fois installée, elle s’ouvre depuis sa propre icône et fonctionne hors ligne.',
+    'menu.instalada': 'L’application est déjà installée sur ce téléphone.', 'menu.instalarApp': 'Installer l’application',
+    'menu.privacidad': 'Confidentialité', 'menu.politica': 'Politique de confidentialité complète',
+    'menu.privacidadTxt': 'L’itinéraire est calculé sur le téléphone. Votre position n’est envoyée à aucun serveur. Si vous ouvrez Google Maps, cette application applique ses propres règles.',
+    'menu.autoria': 'Crédits',
+    'menu.autoriaTxt': 'Ruta de Evacuación a été créée par Bárbara del Pilar González Lucero. Les données des voies, points de rassemblement et zones de danger sont des couches publiques du SENAPRED (visualiseur Chile Preparado).',
+    'menu.derechos': '© 2026 Bárbara del Pilar González Lucero. Tous droits réservés. Toute copie, modification ou redistribution sans l’autorisation écrite de l’autrice est interdite.',
+    'ley.via': 'Voie d’évacuation (les flèches indiquent le sens)', 'ley.pe': 'Point de rassemblement', 'ley.pet': 'Point de rassemblement temporaire',
+    'ley.def': 'Point de rassemblement définitif', 'ley.zonaTsunami': 'Zone de danger tsunami (sous la cote 30 m et zones d’évacuation)',
+    'ley.zonaVolcan': 'Zone de danger volcanique', 'ley.auto': 'Point sûr pour véhicules (mode véhicule)',
+    'ley.yo': 'Votre position. La ligne orange en pointillés est le trajet jusqu’à la voie.',
+    'datos.resumen': '{v} voies · {p} points de rassemblement', 'datos.zona': 'zone de danger', 'datos.fecha': 'données du {f}',
+    'datos.cargando': 'Chargement des données…', 'datos.error': 'Impossible de charger les données. Vérifiez la connexion et rouvrez la page.',
+    'datos.errorPaquete': 'Impossible d’ouvrir les données de {n}. Vérifiez la connexion.', 'datos.opcion': '{n} · {v} voies, {p} points',
+    'off.lento': 'Connexion lente ou économiseur de données actif : les données sont enregistrées au fur et à mesure.',
+    'off.progreso': 'Enregistrement pour une utilisation hors ligne : {ok} sur {total} paquets…',
+    'off.listo1': 'Prêt : 1 paquet ({mb} Mo) enregistré sur le téléphone. Fonctionne hors ligne.',
+    'off.listo': 'Prêt : {total} paquets ({mb} Mo) enregistrés sur le téléphone. Fonctionne hors ligne.',
+    'off.parcial': '{ok} paquets sur {total} enregistrés. Le reste sera enregistré à la prochaine connexion.'
+  },
+  textos: {
+    zonaDentroTitulo: 'Vous êtes dans la zone de danger tsunami',
+    zonaDentro: 'Évacuez maintenant, à pied, par la voie vers le point de rassemblement.',
+    zonaFueraTitulo: 'Vous êtes hors de la zone de danger',
+    zonaFuera: 'Restez loin de la côte et suivez les instructions des autorités.',
+    playaTitulo: 'Vous êtes dans la zone de danger tsunami',
+    playa: 'Vous êtes sur la plage ou au bord de la mer. Sortez de l’eau et évacuez maintenant, à pied, par la voie vers le point de rassemblement.',
+    marTitulo: 'Vous êtes en mer',
+    mar: 'Si vous êtes sur une embarcation, dirigez-vous vers le large et suivez les instructions de l’Autorité maritime.',
+    vehiculoDentro: 'Roulez vers les hauteurs, loin de la côte, sans aller au point de rassemblement. Une fois hors de la zone, arrêtez-vous dans un endroit sûr.',
+    vehiculoFuera: 'Arrêtez-vous dans un endroit sûr, sans bloquer la route, et attendez la fin de l’évacuation.',
+    vehiculoSinZona: 'Roulez vers les hauteurs, loin de la côte, et attendez que les autorités annoncent la fin de l’évacuation.',
+    salioZona: 'Vous avez quitté la zone de danger tsunami. Continuez jusqu’au point de rassemblement.',
+    entroZona: 'Vous êtes entré dans la zone de danger tsunami. Suivez la voie vers le point de rassemblement.',
+    lejosDentro: 'Aucune voie d’évacuation chargée près de vous. Éloignez-vous de la côte vers un endroit élevé et suivez les instructions des autorités.',
+    lejosFuera: 'Aucune voie d’évacuation près de vous. Ce guide couvre les voies du littoral.',
+    llegada: 'Restez ici jusqu’à ce que les autorités annoncent la fin de l’alerte. Ne retournez pas sur la côte.',
+    llegadaVoz: 'Vous êtes arrivé au point de rassemblement. Restez ici jusqu’à ce que les autorités annoncent la fin de l’alerte.'
+  },
+  amenazas: {
+    tsunami: {
+      nombre: 'Tsunami', etiqueta: 'Séisme · Tsunami', sub: 'Fort séisme sur la côte : évacuez à pied',
+      inicioTexto: 'Ce guide utilise le GPS de votre téléphone pour vous conduire par la voie d’évacuation jusqu’au point de rassemblement. Une fois ouvert, il fonctionne sans données mobiles.',
+      inicioRecuadro: '<strong>Si le séisme vous a empêché de rester debout, évacuez immédiatement.</strong> À pied, sans attendre l’alerte.',
+      textos: {}
+    },
+    volcan: {
+      nombre: 'Éruption volcanique', etiqueta: 'Éruption volcanique', sub: 'Évacuez en véhicule par la voie d’évacuation',
+      inicioTexto: 'Ce guide utilise le GPS de votre téléphone pour vous conduire par la voie d’évacuation volcanique jusqu’au point de rassemblement temporaire. Une fois ouvert, il fonctionne sans données mobiles.',
+      inicioRecuadro: '<strong>Suivez toujours les instructions des autorités et l’alerte SAE.</strong> Éloignez-vous des rivières et des ravins : les lahars y descendent.',
+      textos: {
+        zonaDentroTitulo: 'Vous êtes dans la zone de danger volcanique',
+        zonaDentro: 'Évacuez maintenant par la voie d’évacuation vers le point de rassemblement.',
+        zonaFueraTitulo: 'Vous êtes hors de la zone de danger',
+        zonaFuera: 'Suivez les instructions des autorités.',
+        salioZona: 'Vous avez quitté la zone de danger volcanique. Continuez jusqu’au point de rassemblement.',
+        entroZona: 'Vous êtes entré dans la zone de danger volcanique. Suivez la voie vers le point de rassemblement.',
+        lejosDentro: 'Aucune voie d’évacuation chargée près de vous. Éloignez-vous du volcan, des rivières et des ravins, et suivez les instructions des autorités.',
+        lejosFuera: 'Aucune voie d’évacuation volcanique près de vous.',
+        llegada: 'Attendez ici les instructions des autorités pour le transfert.',
+        llegadaVoz: 'Vous êtes arrivé au point de rassemblement. Attendez les instructions des autorités.'
+      }
+    }
+  }
+},
+
+/* ------------------------------- Português ------------------------------- */
+pt: {
+  nombre: 'Português', decimal: ',',
+  voz: ['pt-BR', 'pt-PT'],
+  rumbos: ['o norte', 'o nordeste', 'o leste', 'o sudeste', 'o sul', 'o sudoeste', 'o oeste', 'o noroeste'],
+  prefijos: [['Punto de encuentro transitorio', 'Ponto de encontro temporário'], ['Punto de encuentro definitivo', 'Ponto de encontro definitivo'],
+    ['Punto de encuentro', 'Ponto de encontro'], ['Punto seguro vehicular', 'Ponto seguro para veículos'], ['Vía de evacuación', 'Rota de evacuação']],
+  t: {
+    'app.nombre': 'Rota de evacuação', 'doc.titulo': 'Evacuação – {t}',
+    'aria.mapa': 'Mapa com as rotas de evacuação', 'aria.menu': 'Abrir menu', 'aria.mas': 'Aproximar', 'aria.menos': 'Afastar',
+    'aria.centrar': 'Seguir minha localização', 'aria.sat': 'Mudar para vista de satélite', 'aria.calles': 'Mudar para mapa de ruas', 'aria.cerrar': 'Fechar',
+    'prueba.franja': 'Modo de teste: toque no mapa para se localizar.', 'prueba.simular': 'Simular caminhada', 'prueba.detener': 'Parar', 'prueba.salir': 'Sair',
+    'prueba.modo': 'Modo de teste', 'prueba.toca': 'Toque no mapa para marcar onde você está. O guia calcula a rota a partir desse ponto.',
+    'prueba.primero': 'Primeiro toque no mapa para marcar um ponto de partida.',
+    'manual.titulo': 'Localização manual', 'manual.toca': 'Toque no mapa no lugar onde você está.',
+    'inicio.guiarme': 'Guiar-me até o ponto de encontro', 'inicio.vehiculo': 'Estou em um veículo', 'inicio.prueba': 'Testar sem GPS (modo de teste)',
+    'inicio.cambiar': 'Mudar região ou emergência', 'inicio.instalar': 'Instalar no celular',
+    'amenaza.eyebrow': 'Escolha a emergência', 'amenaza.titulo': 'Do que você está evacuando?',
+    'amenaza.nota': 'Na sua área há planos de evacuação para mais de uma ameaça.', 'amenaza.voz': 'Escolha a emergência: {lista}.', 'amenaza.o': ' ou ',
+    'guia.buscando': 'Buscando sua localização…', 'guia.salAbierto': 'Vá para um local aberto para que o GPS encontre você.',
+    'guia.sinSenal': 'Vá para um local aberto e espere alguns segundos. Se sua posição não aparecer, marque-a no mapa pelo menu.',
+    'guia.flechaIndica': 'A seta indica para onde caminhar.', 'guia.sinBrujula': 'Sem bússola: a seta fica com o norte (N) para cima, como o mapa.',
+    'guia.conBrujula': 'Segure o celular à sua frente e siga a seta.', 'guia.destino': 'Destino',
+    'guia.vasVehiculo': 'Está em um veículo?', 'guia.aPie': 'Mudar para modo a pé', 'guia.siVehiculo': 'Mudar para modo veículo', 'guia.sigoPie': 'Continuo a pé',
+    'guia.abrirGmaps': 'Abrir Google Maps', 'guia.volver': 'Voltar', 'guia.seguirRuta': 'Seguir esta rota', 'guia.volverRecomendada': 'Voltar à recomendada',
+    'guia.alternativa': 'Alternativa', 'guia.recomendada': 'Recomendada', 'guia.sinAlternativa': 'Sem alternativa',
+    'guia.gmaps': 'Rota no Google Maps', 'guia.gmapsAuto': 'Rota de carro (Google Maps)', 'guia.voz': 'Voz', 'guia.sinVoz': 'Sem voz',
+    'guia.enVia': 'Na rota', 'guia.fueraVia': 'Fora da rota', 'guia.deLaCosta': 'da costa',
+    'guia.hastaPE': 'até o ponto de encontro mais próximo', 'guia.noVias': 'Não há rotas carregadas.',
+    'dir.camina': 'Caminhe', 'dir.conduce': 'Dirija',
+    'dir.alPE': '{verbo} para {rb} por {d} até o ponto de encontro.', 'dir.aVia': '{verbo} para {rb} por {d} até a rota de evacuação.',
+    'dir.seguir': 'Siga a rota de evacuação para {rb}.',
+    'voz.faltan': 'Faltam {d}.', 'voz.enVia': 'Você está na rota de evacuação. Siga-a para {rb}.',
+    'voz.teAlejaste': 'Você se afastou da rota. Volte para {rb}.', 'voz.salAgua': 'Saia da água.',
+    'voz.pareceVehiculo': 'Parece que você está em um veículo. Você pode mudar para o modo veículo.',
+    'alt.recomendada': 'Rota recomendada: {x}, {d} no total.', 'alt.alternativa': 'Alternativa: {x}, {d} no total.',
+    'alt.irA': 'ir para {pe}', 'alt.porVia': 'pela rota “{via}”',
+    'alt.guiandoAlt': 'Guiando pela rota alternativa', 'alt.guiandoRec': 'Guiando pela rota recomendada',
+    'modo.pareceAuto': 'Parece que você está em um veículo. Mude para o modo veículo para ver o tempo de viagem de carro pela rota de evacuação.',
+    'modo.pareceNoPE': 'Parece que você está em um veículo. De veículo não se vai ao ponto de encontro: saia da zona de risco e espere.',
+    'veh.salZona': 'Saia da zona de risco', 'veh.fueraZona': 'Você está fora da zona', 'veh.modo': 'Modo veículo',
+    'veh.puntoSeguro': 'Ponto seguro para veículos', 'veh.elPuntoSeguro': 'o ponto seguro para veículos',
+    'veh.gmapsTxt': 'O Google Maps será aberto com uma rota de carro até “{n}”, fora da zona de risco.',
+    'gmaps.autoVia': 'O Google Maps será aberto com uma rota de carro que passa pela sua rota de evacuação até o ponto de encontro.',
+    'gmaps.pantallaAuto': 'Se o seu celular estiver conectado ao Android Auto ou CarPlay, a rota aparece na tela do carro.',
+    'gmaps.pie': 'O Google Maps será aberto com uma rota a pé que passa pela sua rota de evacuação. Pode diferir em trilhas que o Google não conhece.',
+    'llegada.titulo': 'Você chegou', 'llegada.def': 'Ponto de encontro definitivo mais próximo: {n} ({d}).', 'llegada.volver': 'Voltar à orientação',
+    'error.titulo': 'Localização indisponível', 'error.manual': 'Marcar onde estou no mapa', 'error.reintentar': 'Tentar novamente com GPS',
+    'error.https': 'Para usar o GPS, abra este guia pelo endereço https://.',
+    'error.sinGeo': 'Este navegador não fornece a localização do celular.',
+    'error.permiso': 'Você não permitiu a localização. Ative-a para este site no navegador (ícone ao lado do endereço) e nas configurações de localização do celular.',
+    'chip.buscando': 'Buscando', 'chip.sinSenal': 'Sem sinal', 'chip.sinGps': 'Sem GPS', 'chip.prueba': 'Teste', 'chip.manual': 'Manual',
+    'u.km': '{n} quilômetros', 'u.m': '{n} metros', 'min.pie': '≈ {n} min a pé', 'min.auto': '≈ {n} min de carro',
+    'menu.titulo': 'Opções', 'menu.region': 'Região e emergência', 'menu.preparando': 'Preparando os dados para uso sem internet…',
+    'menu.mapaBase': 'Mapa base', 'menu.calles': 'Ruas', 'menu.satelite': 'Satélite',
+    'menu.tema': 'Tema', 'menu.auto': 'Automático', 'menu.claro': 'Claro', 'menu.noche': 'Noite', 'menu.idioma': 'Idioma',
+    'menu.simbologia': 'Legenda', 'menu.guia': 'Guia', 'menu.vozInd': 'Instruções por voz',
+    'menu.modoPrueba': 'Modo de teste (marcar a localização tocando no mapa)', 'menu.instalar': 'Instalar no celular',
+    'menu.instalarTxt': 'Instalado, abre pelo próprio ícone e funciona sem internet.',
+    'menu.instalarIphone': 'No iPhone: toque em Compartilhar e depois em “Adicionar à Tela de Início”. Instalado, abre pelo próprio ícone e funciona sem internet.',
+    'menu.instalada': 'O app já está instalado neste celular.', 'menu.instalarApp': 'Instalar app',
+    'menu.privacidad': 'Privacidade', 'menu.politica': 'Política de privacidade completa',
+    'menu.privacidadTxt': 'A rota é calculada no celular. Sua localização não é enviada a nenhum servidor. Se você abrir o Google Maps, esse aplicativo aplica suas próprias regras.',
+    'menu.autoria': 'Autoria',
+    'menu.autoriaTxt': 'Ruta de Evacuación foi criada por Bárbara del Pilar González Lucero. Os dados de rotas, pontos de encontro e zonas de risco são camadas públicas do SENAPRED (visualizador Chile Preparado).',
+    'menu.derechos': '© 2026 Bárbara del Pilar González Lucero. Todos os direitos reservados. É proibida a cópia, modificação ou redistribuição sem autorização escrita da autora.',
+    'ley.via': 'Rota de evacuação (as setas indicam o sentido)', 'ley.pe': 'Ponto de encontro', 'ley.pet': 'Ponto de encontro temporário',
+    'ley.def': 'Ponto de encontro definitivo', 'ley.zonaTsunami': 'Zona de risco de tsunami (abaixo da cota de 30 m e áreas de evacuação)',
+    'ley.zonaVolcan': 'Zona de perigo vulcânico', 'ley.auto': 'Ponto seguro para veículos (modo veículo)',
+    'ley.yo': 'Sua localização. A linha laranja tracejada é o trecho até a rota.',
+    'datos.resumen': '{v} rotas · {p} pontos de encontro', 'datos.zona': 'zona de risco', 'datos.fecha': 'dados de {f}',
+    'datos.cargando': 'Carregando os dados…', 'datos.error': 'Não foi possível carregar os dados. Verifique a conexão e abra a página novamente.',
+    'datos.errorPaquete': 'Não foi possível abrir os dados de {n}. Verifique a conexão.', 'datos.opcion': '{n} · {v} rotas, {p} pontos',
+    'off.lento': 'Conexão lenta ou economia de dados ativa: os dados são salvos conforme você os usa.',
+    'off.progreso': 'Salvando para usar sem internet: {ok} de {total} pacotes…',
+    'off.listo1': 'Pronto: 1 pacote ({mb} MB) salvo no celular. Funciona sem internet.',
+    'off.listo': 'Pronto: {total} pacotes ({mb} MB) salvos no celular. Funciona sem internet.',
+    'off.parcial': '{ok} de {total} pacotes salvos. O restante será salvo na próxima conexão.'
+  },
+  textos: {
+    zonaDentroTitulo: 'Você está na zona de risco de tsunami',
+    zonaDentro: 'Evacue agora, a pé, pela rota até o ponto de encontro.',
+    zonaFueraTitulo: 'Você está fora da zona de risco',
+    zonaFuera: 'Fique longe da costa e siga as instruções das autoridades.',
+    playaTitulo: 'Você está na zona de risco de tsunami',
+    playa: 'Você está na praia ou perto do mar. Saia da água e evacue agora, a pé, pela rota até o ponto de encontro.',
+    marTitulo: 'Você está no mar',
+    mar: 'Se você está em uma embarcação, siga para o mar aberto e siga as instruções da Autoridade Marítima.',
+    vehiculoDentro: 'Dirija para um terreno alto, longe da costa, sem ir ao ponto de encontro. Ao sair da zona, pare em um local seguro.',
+    vehiculoFuera: 'Pare em um local seguro, sem bloquear a via, e espere o fim da evacuação.',
+    vehiculoSinZona: 'Dirija para um terreno alto, longe da costa, e espere até que as autoridades anunciem o fim da evacuação.',
+    salioZona: 'Você saiu da zona de risco de tsunami. Continue até o ponto de encontro.',
+    entroZona: 'Você entrou na zona de risco de tsunami. Siga a rota até o ponto de encontro.',
+    lejosDentro: 'Não há rotas de evacuação carregadas perto de você. Afaste-se da costa para um lugar alto e siga as instruções das autoridades.',
+    lejosFuera: 'Não há rotas de evacuação perto de você. Este guia cobre as rotas do litoral.',
+    llegada: 'Fique aqui até que as autoridades anunciem o fim do alerta. Não volte para a costa.',
+    llegadaVoz: 'Você chegou ao ponto de encontro. Fique aqui até que as autoridades anunciem o fim do alerta.'
+  },
+  amenazas: {
+    tsunami: {
+      nombre: 'Tsunami', etiqueta: 'Terremoto · Tsunami', sub: 'Terremoto forte na costa: evacue a pé',
+      inicioTexto: 'Este guia usa o GPS do seu celular para levar você pela rota de evacuação até o ponto de encontro. Depois de aberto, funciona sem dados móveis.',
+      inicioRecuadro: '<strong>Se o terremoto impediu você de ficar em pé, evacue imediatamente.</strong> Vá a pé, sem esperar o alerta.',
+      textos: {}
+    },
+    volcan: {
+      nombre: 'Erupção vulcânica', etiqueta: 'Erupção vulcânica', sub: 'Evacue de veículo pela rota de evacuação',
+      inicioTexto: 'Este guia usa o GPS do seu celular para levar você pela rota de evacuação vulcânica até o ponto de encontro temporário. Depois de aberto, funciona sem dados móveis.',
+      inicioRecuadro: '<strong>Siga sempre as instruções das autoridades e o alerta SAE.</strong> Afaste-se de rios e ravinas: por ali descem os lahares.',
+      textos: {
+        zonaDentroTitulo: 'Você está na zona de perigo vulcânico',
+        zonaDentro: 'Evacue agora pela rota de evacuação até o ponto de encontro.',
+        zonaFueraTitulo: 'Você está fora da zona de perigo',
+        zonaFuera: 'Siga as instruções das autoridades.',
+        salioZona: 'Você saiu da zona de perigo vulcânico. Continue até o ponto de encontro.',
+        entroZona: 'Você entrou na zona de perigo vulcânico. Siga a rota até o ponto de encontro.',
+        lejosDentro: 'Não há rotas de evacuação carregadas perto de você. Afaste-se do vulcão, de rios e ravinas, e siga as instruções das autoridades.',
+        lejosFuera: 'Não há rotas de evacuação vulcânica perto de você.',
+        llegada: 'Espere aqui as instruções das autoridades para a transferência.',
+        llegadaVoz: 'Você chegou ao ponto de encontro. Espere as instruções das autoridades.'
+      }
+    }
+  }
+}
+};
+
+</script>
+<script>
+/* Ruta de Evacuación · © 2026 Bárbara del Pilar González Lucero. Todos los derechos reservados. */
+/* ==========================================================================
+   EvacCore — ruteo sobre las vías de evacuación dibujadas (sin dependencias)
+   - Une las vías en una red: vértices compartidos, cruces entre líneas y
+     extremos que terminan cerca de otra vía (tolerancia configurable).
+   - Calcula, desde cada punto de encuentro (PE), la distancia por la red.
+   - Para una posición GPS elige la mejor forma de entrar a la red y devuelve
+     la ruta completa hasta el PE, más una alternativa.
+   Coordenadas siempre como [lon, lat].
+   ========================================================================== */
+(function (global) {
+  'use strict';
+  const R = 6371008.8, D2R = Math.PI / 180;
+
+  function dist(a, b) {
+    const dLat = (b[1] - a[1]) * D2R, dLon = (b[0] - a[0]) * D2R;
+    const s = Math.sin(dLat / 2) ** 2 + Math.cos(a[1] * D2R) * Math.cos(b[1] * D2R) * Math.sin(dLon / 2) ** 2;
+    return 2 * R * Math.asin(Math.min(1, Math.sqrt(s)));
+  }
+  function bearing(a, b) {
+    const f1 = a[1] * D2R, f2 = b[1] * D2R, dl = (b[0] - a[0]) * D2R;
+    const y = Math.sin(dl) * Math.cos(f2);
+    const x = Math.cos(f1) * Math.sin(f2) - Math.sin(f1) * Math.cos(f2) * Math.cos(dl);
+    return (Math.atan2(y, x) / D2R + 360) % 360;
+  }
+  const RUMBOS = ['norte', 'noreste', 'este', 'sureste', 'sur', 'suroeste', 'oeste', 'noroeste'];
+  function rumbo(deg) { return RUMBOS[Math.round(((deg % 360) + 360) % 360 / 45) % 8]; }
+
+  // Proyección de p sobre el segmento ab (plano local centrado en p)
+  function projectOnSegment(p, a, b) {
+    const kx = Math.cos(p[1] * D2R) * R * D2R, ky = R * D2R;
+    const ax = (a[0] - p[0]) * kx, ay = (a[1] - p[1]) * ky;
+    const bx = (b[0] - p[0]) * kx, by = (b[1] - p[1]) * ky;
+    const dx = bx - ax, dy = by - ay, L2 = dx * dx + dy * dy;
+    let t = L2 > 0 ? -(ax * dx + ay * dy) / L2 : 0;
+    t = t < 0 ? 0 : t > 1 ? 1 : t;
+    const qx = ax + t * dx, qy = ay + t * dy;
+    return { t, d: Math.hypot(qx, qy), q: [p[0] + qx / kx, p[1] + qy / ky] };
+  }
+  // Intersección propia de dos segmentos (plano local centrado en a1)
+  function intersect(a1, a2, b1, b2) {
+    const kx = Math.cos(a1[1] * D2R), f = (p) => [(p[0] - a1[0]) * kx, p[1] - a1[1]];
+    const p = [0, 0], r = f(a2), q = f(b1), s0 = f(b2), s = [s0[0] - q[0], s0[1] - q[1]];
+    const den = r[0] * s[1] - r[1] * s[0];
+    if (Math.abs(den) < 1e-18) return null;
+    const qp = [q[0] - p[0], q[1] - p[1]];
+    const t = (qp[0] * s[1] - qp[1] * s[0]) / den;
+    const u = (qp[0] * r[1] - qp[1] * r[0]) / den;
+    const eps = 1e-6;
+    if (t <= eps || t >= 1 - eps || u <= eps || u >= 1 - eps) return null;
+    return { t, u, c: [a1[0] + (a2[0] - a1[0]) * t, a1[1] + (a2[1] - a1[1]) * t] };
+  }
+
+  // Índice espacial simple por grilla (celdas de ~0,002°)
+  function Grid(cell) {
+    const m = new Map();
+    const k = (ix, iy) => ix + ':' + iy;
+    return {
+      add(id, bb) {
+        for (let ix = Math.floor(bb[0] / cell); ix <= Math.floor(bb[2] / cell); ix++)
+          for (let iy = Math.floor(bb[1] / cell); iy <= Math.floor(bb[3] / cell); iy++) {
+            const key = k(ix, iy); let a = m.get(key); if (!a) m.set(key, a = []); a.push(id);
+          }
+      },
+      query(bb) {
+        const out = new Set();
+        for (let ix = Math.floor(bb[0] / cell); ix <= Math.floor(bb[2] / cell); ix++)
+          for (let iy = Math.floor(bb[1] / cell); iy <= Math.floor(bb[3] / cell); iy++) {
+            const a = m.get(k(ix, iy)); if (a) for (const id of a) out.add(id);
+          }
+        return out;
+      }
+    };
+  }
+  function bboxAround(p, meters) {
+    const dLat = meters / 111320, dLon = meters / (111320 * Math.max(0.05, Math.cos(p[1] * D2R)));
+    return [p[0] - dLon, p[1] - dLat, p[0] + dLon, p[1] + dLat];
+  }
+
+  function Heap() { // min-heap de [costo, nodo]
+    const h = [];
+    return {
+      get size() { return h.length; },
+      push(x) { h.push(x); let i = h.length - 1; while (i > 0) { const p = (i - 1) >> 1; if (h[p][0] <= h[i][0]) break; [h[p], h[i]] = [h[i], h[p]]; i = p; } },
+      pop() {
+        const top = h[0], last = h.pop();
+        if (h.length) { h[0] = last; let i = 0; for (;;) { const l = 2 * i + 1, r = l + 1; let m = i; if (l < h.length && h[l][0] < h[m][0]) m = l; if (r < h.length && h[r][0] < h[m][0]) m = r; if (m === i) break; [h[m], h[i]] = [h[i], h[m]]; i = m; } }
+        return top;
+      }
+    };
+  }
+
+  /* ---------------------------- Construcción de la red --------------------------- */
+  function buildNetwork(data, opt) {
+    opt = opt || {};
+    const SNAP = opt.snap ?? 30;          // m: un extremo de vía se une a otra vía si queda a esta distancia
+    const PE_SNAP = opt.peSnap ?? 80;     // m: una vía o PE se une al PE / red a esta distancia
+    const NEAR_WARN = opt.nearWarn ?? 150;// m: avisar extremos sueltos cercanos a otra vía
+    const CELL = 0.002;
+
+    const nodes = [], adj = [], segs = [], lines = [], pes = [], avisos = [], uniones = [];
+    const keyIdx = new Map();
+    const grid = Grid(CELL);
+
+    function addNode(c, merge) {
+      if (merge) {
+        const k = c[0].toFixed(6) + ',' + c[1].toFixed(6);
+        const f = keyIdx.get(k); if (f !== undefined) return f;
+        keyIdx.set(k, nodes.length);
+      }
+      nodes.push(c); adj.push([]); return nodes.length - 1;
+    }
+    function addEdge(a, b, w, tipo) {
+      if (a === b) return;
+      adj[a].push({ to: b, w, seg: -1, tipo }); adj[b].push({ to: a, w, seg: -1, tipo });
+    }
+    function addSeg(a, b, line) {
+      const A = nodes[a], B = nodes[b];
+      const s = { a, b, line, len: dist(A, B), alive: true,
+        bb: [Math.min(A[0], B[0]), Math.min(A[1], B[1]), Math.max(A[0], B[0]), Math.max(A[1], B[1])] };
+      const id = segs.length; segs.push(s);
+      adj[a].push({ to: b, w: s.len, seg: id }); adj[b].push({ to: a, w: s.len, seg: id });
+      grid.add(id, s.bb);
+      return id;
+    }
+    function killSeg(id) {
+      const s = segs[id]; s.alive = false;
+      adj[s.a] = adj[s.a].filter(e => e.seg !== id);
+      adj[s.b] = adj[s.b].filter(e => e.seg !== id);
+    }
+    function segsNear(p, meters) {
+      const out = [];
+      for (const id of grid.query(bboxAround(p, meters))) if (segs[id].alive) out.push(id);
+      return out;
+    }
+    function nearest(p, excludeLine, maxD) {
+      let best = null;
+      for (const id of segsNear(p, maxD)) {
+        const s = segs[id]; if (s.line === excludeLine) continue;
+        const pr = projectOnSegment(p, nodes[s.a], nodes[s.b]);
+        if (pr.d <= maxD && (!best || pr.d < best.d)) best = { seg: id, t: pr.t, d: pr.d, q: pr.q };
+      }
+      return best;
+    }
+    function attach(hit) { // nodo en el punto de contacto, cortando el segmento si hace falta
+      const s = segs[hit.seg];
+      if (hit.t * s.len < 1) return s.a;
+      if ((1 - hit.t) * s.len < 1) return s.b;
+      const n = addNode(hit.q, false);
+      killSeg(hit.seg); addSeg(s.a, n, s.line); addSeg(n, s.b, s.line);
+      return n;
+    }
+
+    // 1) Vías
+    (data.vias || []).forEach((v, i) => {
+      const ids = [];
+      for (const c of v.coords || []) {
+        const id = addNode([+c[0], +c[1]], true);
+        if (ids[ids.length - 1] !== id) ids.push(id);
+      }
+      const nombre = v.nombre || ('Vía ' + (i + 1));
+      if (ids.length < 2) { avisos.push({ nivel: 'aviso', texto: `La vía "${nombre}" tiene menos de 2 puntos y se omitió.` }); return; }
+      lines.push({ nombre, sector: v.sector || '', ids, coords: ids.map(n => nodes[n]) });
+      const L = lines.length - 1;
+      for (let k = 0; k < ids.length - 1; k++) addSeg(ids[k], ids[k + 1], L);
+    });
+
+    // 2) Cruces entre vías distintas (sin vértice común)
+    const cortes = new Map(); let nCruces = 0;
+    const nSegs0 = segs.length;
+    for (let i = 0; i < nSegs0; i++) {
+      const si = segs[i];
+      for (const j of grid.query(si.bb)) {
+        if (j <= i || j >= nSegs0) continue;
+        const sj = segs[j];
+        if (si.line === sj.line || si.a === sj.a || si.a === sj.b || si.b === sj.a || si.b === sj.b) continue;
+        const x = intersect(nodes[si.a], nodes[si.b], nodes[sj.a], nodes[sj.b]);
+        if (!x) continue;
+        const n = addNode(x.c, false); nCruces++;
+        (cortes.get(i) || cortes.set(i, []).get(i)).push({ t: x.t, n });
+        (cortes.get(j) || cortes.set(j, []).get(j)).push({ t: x.u, n });
+      }
+    }
+    for (const [id, cs] of cortes) {
+      const s = segs[id]; cs.sort((p, q) => p.t - q.t);
+      killSeg(id);
+      let prev = s.a; for (const c of cs) { addSeg(prev, c.n, s.line); prev = c.n; } addSeg(prev, s.b, s.line);
+    }
+
+    // 3) Puntos de encuentro
+    (data.pe || []).forEach((p, i) => {
+      const n = addNode([+p.coord[0], +p.coord[1]], false);
+      pes.push({ nombre: p.nombre || ('Punto de encuentro ' + (i + 1)), sector: p.sector || '', coord: nodes[n], node: n, enlaces: 0 });
+    });
+
+    // 4) Extremos de cada vía: unir a PE cercanos y a otras vías
+    lines.forEach((ln, L) => {
+      for (const idx of [0, ln.ids.length - 1]) {
+        const nid = ln.ids[idx], p = nodes[nid];
+        let unido = false;
+        for (const pe of pes) {
+          const d = dist(p, pe.coord);
+          if (d <= PE_SNAP) { addEdge(nid, pe.node, d, 'pe'); pe.enlaces++; unido = true; uniones.push({ tipo: 'pe', via: ln.nombre, con: pe.nombre, d }); }
+        }
+        if (adj[nid].filter(e => e.seg >= 0).length > 1) unido = true; // ya comparte vértice con otra vía
+        // Unir con cada vía que pase a menos de SNAP (la más cercana de cada una), como en un cruce de 3 o más
+        const porLinea = new Map();
+        for (const id of segsNear(p, SNAP)) {
+          const sg = segs[id]; if (sg.line === L) continue;
+          const pr = projectOnSegment(p, nodes[sg.a], nodes[sg.b]);
+          if (pr.d > SNAP) continue;
+          const cur = porLinea.get(sg.line);
+          if (!cur || pr.d < cur.d) porLinea.set(sg.line, { seg: id, t: pr.t, d: pr.d, q: pr.q });
+        }
+        for (const [linea, hit] of porLinea) {
+          if (!segs[hit.seg].alive) { const h2 = nearest(p, L, SNAP); if (!h2 || segs[h2.seg].line !== linea) continue; Object.assign(hit, h2); }
+          const m = attach(hit);
+          if (m !== nid) { addEdge(nid, m, hit.d, 'union'); uniones.push({ tipo: 'via', via: ln.nombre, con: lines[linea].nombre, d: hit.d }); }
+          unido = true;
+        }
+      }
+    });
+
+    // 5) PE que ninguna vía alcanzó: unir al tramo más cercano
+    for (const pe of pes) {
+      if (pe.enlaces > 0) continue;
+      const hit = nearest(pe.coord, -999, PE_SNAP);
+      if (hit) { const m = attach(hit); addEdge(pe.node, m, hit.d, 'pe'); pe.enlaces++; uniones.push({ tipo: 'pe', via: lines[segs[hit.seg].line].nombre, con: pe.nombre, d: hit.d }); }
+      else avisos.push({ nivel: 'aviso', texto: `El punto "${pe.nombre}" no está a menos de ${PE_SNAP} m de ninguna vía. Se guiará en línea recta solo si la persona está cerca.` });
+    }
+
+    lines.forEach(ln => { const b = [Infinity, Infinity, -Infinity, -Infinity]; for (const c of ln.coords) { b[0] = Math.min(b[0], c[0]); b[1] = Math.min(b[1], c[1]); b[2] = Math.max(b[2], c[0]); b[3] = Math.max(b[3], c[1]); } ln.bb = b; ln.largo = ln.coords.reduce((s, c, i, a) => i ? s + dist(a[i - 1], c) : 0, 0); });
+
+    // 6) Componentes conexas
+    const N = nodes.length, comp = new Int32Array(N).fill(-1), local = new Int32Array(N);
+    const compNodes = [];
+    for (let s = 0; s < N; s++) {
+      if (comp[s] >= 0) continue;
+      const c = compNodes.length, lista = [s]; comp[s] = c;
+      for (let q = 0; q < lista.length; q++) for (const e of adj[lista[q]]) if (comp[e.to] < 0) { comp[e.to] = c; lista.push(e.to); }
+      lista.forEach((n, i) => { local[n] = i; });
+      compNodes.push(lista);
+    }
+    const compPE = compNodes.map(() => []);
+    pes.forEach((pe, k) => compPE[comp[pe.node]].push(k));
+
+    // 7) Dijkstra desde cada PE dentro de su componente
+    pes.forEach(pe => {
+      const c = comp[pe.node], M = compNodes[c].length;
+      const d = new Float64Array(M).fill(Infinity), next = new Int32Array(M).fill(-1);
+      d[local[pe.node]] = 0;
+      const h = Heap(); h.push([0, pe.node]);
+      while (h.size) {
+        const [du, u] = h.pop(); if (du > d[local[u]]) continue;
+        for (const e of adj[u]) {
+          const nd = du + e.w, lv = local[e.to];
+          if (nd < d[lv]) { d[lv] = nd; next[lv] = u; h.push([nd, e.to]); }
+        }
+      }
+      pe.dist = d; pe.next = next; pe.comp = c;
+    });
+
+    // 8) Diagnóstico: vías que no llegan a ningún PE, con la pista más útil para corregirlas
+    lines.forEach(ln => { ln.llegaAPE = compPE[comp[ln.ids[0]]].length > 0; });
+    const fmt = (c) => c[1].toFixed(5) + ', ' + c[0].toFixed(5);
+    lines.forEach(ln => {
+      if (ln.llegaAPE) return;
+      let mejor = null;
+      for (const idx of [0, ln.ids.length - 1]) {
+        const p = nodes[ln.ids[idx]];
+        let dPe = Infinity; for (const pe of pes) dPe = Math.min(dPe, dist(p, pe.coord));
+        let dVia = Infinity;
+        for (const id of segsNear(p, 2000)) {
+          const sg = segs[id];
+          if (!compPE[comp[sg.a]].length) continue;
+          dVia = Math.min(dVia, projectOnSegment(p, nodes[sg.a], nodes[sg.b]).d);
+        }
+        const d = Math.min(dPe, dVia);
+        if (!mejor || d < mejor.d) mejor = { p, d, dPe, dVia };
+      }
+      const pista = !mejor || !isFinite(mejor.d) ? 'No hay ningún PE ni vía conectada en 2 km: probablemente falta un punto de encuentro.'
+        : mejor.dVia <= mejor.dPe ? `Su extremo en ${fmt(mejor.p)} queda a ${Math.round(mejor.dVia)} m de una vía que sí llega a un PE: prolóngalo hasta tocarla.`
+        : mejor.dPe <= 300 ? `Su extremo en ${fmt(mejor.p)} queda a ${Math.round(mejor.dPe)} m del PE más cercano: prolóngalo hasta el PE.`
+        : `Su extremo en ${fmt(mejor.p)} queda a ${Math.round(mejor.dPe)} m del PE más cercano: probablemente falta un punto de encuentro ahí.`;
+      avisos.push({ nivel: 'error', texto: `"${ln.nombre}" (${Math.round(ln.largo || 0)} m) no llega a ningún punto de encuentro. ${pista}`, coord: mejor && mejor.p });
+    });
+
+    let bbox = [Infinity, Infinity, -Infinity, -Infinity];
+    for (const ln of lines) for (const c of ln.coords) { bbox[0] = Math.min(bbox[0], c[0]); bbox[1] = Math.min(bbox[1], c[1]); bbox[2] = Math.max(bbox[2], c[0]); bbox[3] = Math.max(bbox[3], c[1]); }
+    for (const pe of pes) { const c = pe.coord; bbox[0] = Math.min(bbox[0], c[0]); bbox[1] = Math.min(bbox[1], c[1]); bbox[2] = Math.max(bbox[2], c[0]); bbox[3] = Math.max(bbox[3], c[1]); }
+
+    return { nodes, adj, segs, lines, pes, comp, local, compPE, segsNear, avisos, uniones, nCruces, bbox,
+      opciones: { SNAP, PE_SNAP } };
+  }
+
+  /* ---------------------------------- Ruteo ---------------------------------- */
+  function rutaDesde(net, u, opt) {
+    opt = opt || {};
+    const FACTOR = opt.factorAproximacion ?? 3;   // caminar fuera de la vía "cuesta" el triple
+    const MARGEN = opt.margenEntrada ?? 40;       // m extra tolerados respecto de la vía más cercana
+    const MAXR = opt.radioMax ?? 5000;            // m: radio de búsqueda de vías
+    const DIRECTO = opt.radioDirecto ?? 60;       // m: cerca del PE se va en línea recta
+    const LLEGADA = opt.radioLlegada ?? 25;       // m: se considera llegada
+    const HIST = opt.histeresis ?? 1.15;
+
+    // ¿Llegó a algún PE?
+    let peCerca = null, dPe = Infinity;
+    net.pes.forEach((pe, k) => { const d = dist(u, pe.coord); if (d < dPe) { dPe = d; peCerca = k; } });
+    if (peCerca !== null && dPe <= LLEGADA) return { llegada: true, pe: peCerca, nombrePE: net.pes[peCerca].nombre, dPe };
+
+    const todos = [];
+    for (const id of net.segsNear(u, MAXR)) {
+      const s = net.segs[id];
+      const pr = projectOnSegment(u, net.nodes[s.a], net.nodes[s.b]);
+      if (pr.d > MAXR) continue;
+      for (const k of net.compPE[net.comp[s.a]]) {
+        const pe = net.pes[k];
+        const da = pe.dist[net.local[s.a]], db = pe.dist[net.local[s.b]];
+        const viaA = pr.t * s.len + da, viaB = (1 - pr.t) * s.len + db;
+        const dRed = Math.min(viaA, viaB);
+        if (!isFinite(dRed)) continue;
+        todos.push({ key: k + '|' + s.line, costo: FACTOR * pr.d + dRed, pe: k, line: s.line, seg: id, q: pr.q, dAprox: pr.d, dRed, salida: viaA <= viaB ? s.a : s.b });
+      }
+    }
+    net.pes.forEach((pe, k) => {
+      const d = dist(u, pe.coord);
+      if (d <= DIRECTO) todos.push({ key: k + '|directo', costo: d, pe: k, line: -1, directo: true, q: pe.coord, dAprox: d, dRed: 0 });
+    });
+
+    if (!todos.length) {
+      // Lejos de toda vía: orientar al PE más cercano en línea recta
+      if (peCerca === null) return { sinDatos: true };
+      return { lejos: true, principal: armar(net, u, { key: peCerca + '|lejos', pe: peCerca, line: -1, directo: true, q: net.pes[peCerca].coord, dAprox: dPe, dRed: 0 }), alternativa: null };
+    }
+    // Seguridad: entrar por la vía más cercana. Solo se consideran entradas que no estén mucho más lejos
+    // que la vía más próxima (evita mandar a la persona a campo traviesa hacia otra vía "más corta").
+    let dMin = Infinity; for (const c of todos) if (!c.directo) dMin = Math.min(dMin, c.dAprox);
+    const limite = dMin + Math.max(MARGEN, 0.5 * dMin);
+    const validos = todos.filter(c => c.directo || c.dAprox <= limite);
+    validos.sort((a, b) => a.costo - b.costo);
+    todos.sort((a, b) => a.costo - b.costo);
+    let principal = validos[0];
+    if (opt.claveAnterior) {
+      const prev = validos.find(c => c.key === opt.claveAnterior);
+      if (prev && prev.costo <= principal.costo * HIST + 10) principal = prev;
+    }
+    const P = armar(net, u, principal);
+    // Si la persona eligió seguir la alternativa, se la guía sobre ese trazado fijo
+    // y la ruta recomendada queda como "la otra opción".
+    if (opt.rutaFija) return { principal: seguirTrazado(net, u, opt.rutaFija), alternativa: P, forzada: true };
+    return { principal: P, alternativa: elegirAlternativa(net, u, todos, principal, P), forzada: false };
+  }
+
+  // Guía sobre un trazado fijo (la alternativa elegida): punto más cercano y lo que resta hasta el PE
+  function seguirTrazado(net, u, fija) {
+    const pts = fija.ruta;
+    let best = null, acc = 0;
+    const largos = [];
+    for (let i = 1; i < pts.length; i++) largos.push(dist(pts[i - 1], pts[i]));
+    for (let i = 1; i < pts.length; i++) {
+      const pr = projectOnSegment(u, pts[i - 1], pts[i]);
+      if (!best || pr.d < best.d - 0.5) best = { i, t: pr.t, d: pr.d, q: pr.q, desde: acc + pr.t * largos[i - 1] };
+      acc += largos[i - 1];
+    }
+    if (!best) best = { i: 1, d: dist(u, pts[0]), q: pts[0], desde: 0 };
+    const ruta = [best.q].concat(pts.slice(best.i));
+    const pe = net.pes[fija.pe];
+    return { key: 'fija', pe: fija.pe, nombrePE: pe.nombre, coordPE: pe.coord, directo: false, via: fija.via,
+      entrada: best.q, dAprox: best.d, dRed: Math.max(0, acc - best.desde), total: best.d + Math.max(0, acc - best.desde),
+      ruta, camino: [u].concat(ruta) };
+  }
+
+  // Alternativa útil: otro PE, u otra entrada cuyo tramo inicial no repita la ruta principal,
+  // sin largas caminatas fuera de la vía.
+  function elegirAlternativa(net, u, todos, principal, P) {
+    const enRuta = new Set(P.ruta.slice(1));
+    const limAprox = Math.max(120, 2 * principal.dAprox);
+    const vistos = new Set();
+    let revisados = 0;
+    for (const c of todos) {
+      if (c === principal || c.directo || c.dAprox > limAprox) continue;
+      const s = net.segs[c.seg];
+      if (c.pe === principal.pe && enRuta.has(net.nodes[s.a]) && enRuta.has(net.nodes[s.b])) continue;
+      const k = c.pe + '|' + c.salida;
+      if (vistos.has(k)) continue; vistos.add(k);
+      if (++revisados > 60) break;
+      const a = armar(net, u, c);
+      if (c.pe !== principal.pe) return a;
+      let propio = 0;
+      for (let i = 1; i < a.ruta.length; i++) {
+        if (enRuta.has(a.ruta[i - 1]) && enRuta.has(a.ruta[i])) break;
+        propio += dist(a.ruta[i - 1], a.ruta[i]);
+      }
+      if (propio >= Math.min(100, 0.3 * largo(a.ruta))) return a;
+    }
+    return null;
+  }
+
+  function armar(net, u, c) {
+    const pe = net.pes[c.pe];
+    const ruta = [c.q];
+    if (!c.directo) {
+      let n = c.salida, guard = 0;
+      ruta.push(net.nodes[n]);
+      while (n !== pe.node && guard++ < 200000) {
+        const nx = pe.next[net.local[n]]; if (nx < 0) break;
+        n = nx; ruta.push(net.nodes[n]);
+      }
+    }
+    const camino = [u].concat(ruta);
+    return {
+      key: c.key, pe: c.pe, nombrePE: pe.nombre, coordPE: pe.coord, directo: !!c.directo,
+      via: c.line >= 0 ? net.lines[c.line].nombre : null,
+      entrada: c.q, dAprox: c.dAprox, dRed: c.dRed, total: c.dAprox + c.dRed,
+      ruta,           // desde el punto de entrada hasta el PE (por la vía)
+      camino          // desde la persona hasta el PE
+    };
+  }
+
+  // Punto a "m" metros a lo largo de una polilínea
+  function puntoA(lista, m) {
+    let acc = 0;
+    for (let i = 1; i < lista.length; i++) {
+      const d = dist(lista[i - 1], lista[i]);
+      if (acc + d >= m && d > 0) { const f = (m - acc) / d; return [lista[i - 1][0] + (lista[i][0] - lista[i - 1][0]) * f, lista[i - 1][1] + (lista[i][1] - lista[i - 1][1]) * f]; }
+      acc += d;
+    }
+    return lista[lista.length - 1];
+  }
+  function largo(lista) { let s = 0; for (let i = 1; i < lista.length; i++) s += dist(lista[i - 1], lista[i]); return s; }
+
+  // Enlace de respaldo a Google Maps (a pie, con hasta 3 puntos intermedios sobre la vía)
+  // modo 'driving': ruta en auto por la vía de evacuación (Google Maps la muestra también en Android Auto y CarPlay)
+  function enlaceGoogleMaps(r, origen, modo) {
+    const f = (c) => c[1].toFixed(6) + ',' + c[0].toFixed(6);
+    const L = largo(r.ruta);
+    let wps = [];
+    if (!r.directo && L > 150) wps = [0.25, 0.5, 0.75].map(x => puntoA(r.ruta, L * x));
+    let url = 'https://www.google.com/maps/dir/?api=1&travelmode=' + (modo === 'driving' ? 'driving&dir_action=navigate' : 'walking') + '&destination=' + encodeURIComponent(f(r.coordPE));
+    if (origen) url += '&origin=' + encodeURIComponent(f(origen));
+    if (wps.length) url += '&waypoints=' + encodeURIComponent(wps.map(f).join('|'));
+    return url;
+  }
+
+  /* ------------------------ Zona de amenaza (bajo cota 30) ------------------------ */
+  function prepararZonas(zonas) {
+    return (zonas || []).map(z => {
+      const bb = [Infinity, Infinity, -Infinity, -Infinity];
+      const anillos = (z.anillos || []).filter(r => r.length >= 3);
+      for (const r of anillos) for (const c of r) { bb[0] = Math.min(bb[0], c[0]); bb[1] = Math.min(bb[1], c[1]); bb[2] = Math.max(bb[2], c[0]); bb[3] = Math.max(bb[3], c[1]); }
+      return { nombre: z.nombre || 'Zona de amenaza', sector: z.sector || '', anillos, bb };
+    }).filter(z => z.anillos.length);
+  }
+  // Regla par-impar sobre todos los anillos (los huecos quedan fuera)
+  function dentro(p, anillos) {
+    let ins = false;
+    for (const r of anillos) {
+      for (let i = 0, j = r.length - 1; i < r.length; j = i++) {
+        const xi = r[i][0], yi = r[i][1], xj = r[j][0], yj = r[j][1];
+        if ((yi > p[1]) !== (yj > p[1]) && p[0] < (xj - xi) * (p[1] - yi) / (yj - yi) + xi) ins = !ins;
+      }
+    }
+    return ins;
+  }
+  function zonaEn(zonas, p) {
+    for (const z of zonas) {
+      if (p[0] < z.bb[0] || p[0] > z.bb[2] || p[1] < z.bb[1] || p[1] > z.bb[3]) continue;
+      if (dentro(p, z.anillos)) return z;
+    }
+    return null;
+  }
+
+  /* ------------------------------- Mar y costa -------------------------------
+     ¿La persona está en el mar? Con línea de costa: se cuenta cuántas veces la recta
+     hacia el PE más cercano (que siempre está en tierra) cruza la costa; si es impar,
+     la persona está en el agua. Sin línea de costa (provisorio): si para llegar al PE
+     hay que atravesar la zona de amenaza, la persona está del lado del mar.          */
+  function prepararMar(costa, zonas, pes, tierra, aguas) {
+    const segs = [], grid = Grid(0.01);
+    const agregar = (a, b) => {
+      const bb = [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1])];
+      grid.add(segs.length, bb); segs.push([a, b]);
+    };
+    const pesC = (pes || []).map(p => p.coord || p);
+    let tierras = prepararZonas(tierra || []), mares = prepararZonas(aguas || []);
+    const avisos = [];
+    // Control de seguridad: los PE están en tierra. Si la capa viene "al revés", se corrige.
+    const fraccionDentro = (pols) => { if (!pesC.length) return null; let n = 0; for (const c of pesC) if (zonaEn(pols, c)) n++; return n / pesC.length; };
+    if (tierras.length) { const f = fraccionDentro(tierras); if (f !== null && f < 0.2) { avisos.push('La capa de tierra parece ser mar (los puntos de encuentro quedan fuera): se usó como mar.'); mares = mares.concat(tierras); tierras = []; } }
+    if (mares.length) { const f = fraccionDentro(mares); if (f !== null && f > 0.8) { avisos.push('La capa de mar parece ser tierra (los puntos de encuentro quedan dentro): se usó como tierra.'); tierras = tierras.concat(mares); mares = []; } }
+    for (const linea of costa || []) for (let i = 1; i < linea.length; i++) agregar(linea[i - 1], linea[i]);
+    for (const t of tierras) for (const r of t.anillos) for (let i = 1; i < r.length; i++) agregar(r[i - 1], r[i]);
+    if (mares.length) {
+      // Del borde del polígono de mar, solo el tramo costero (cerca de zonas de amenaza o PE) cuenta como costa
+      const ref = Grid(0.03), refPts = [];
+      const addRef = c => { ref.add(refPts.length, [c[0], c[1], c[0], c[1]]); refPts.push(c); };
+      for (const z of zonas || []) for (const r of z.anillos) for (let i = 0; i < r.length; i += 6) addRef(r[i]);
+      for (const c of pesC) addRef(c);
+      const cerca = (c, m) => { for (const id of ref.query(bboxAround(c, m))) if (dist(c, refPts[id]) <= m) return true; return false; };
+      // Se evalúa cada 8 vértices (los tramos vecinos comparten la respuesta)
+      for (const m of mares) for (const r of m.anillos) {
+        let costero = false;
+        for (let i = 1; i < r.length; i++) {
+          if ((i - 1) % 8 === 0) costero = cerca(r[i], 3200);
+          if (costero) agregar(r[i - 1], r[i]);
+        }
+      }
+    }
+    return { segs, grid, zonas: zonas || [], pes: pesC, tierras, mares, avisos,
+      conCosta: segs.length > 0, conTierra: tierras.length > 0, conMar: mares.length > 0 };
+  }
+  function estadoMar(M, p) {
+    if (!M || !M.pes.length) return { mar: false, dCosta: null, metodo: null };
+    let q = null, dq = Infinity;
+    for (const c of M.pes) { const d = dist(p, c); if (d < dq) { dq = d; q = c; } }
+    if (dq > 60000) return { mar: false, dCosta: null, metodo: null };   // fuera del área de trabajo
+    let dC = Infinity;
+    if (M.conCosta) for (const id of M.grid.query(bboxAround(p, 5000))) { const s = M.segs[id]; dC = Math.min(dC, projectOnSegment(p, s[0], s[1]).d); }
+    // Recorre la recta hacia el PE (que está en tierra) y avisa si algún punto cumple la condición
+    const cruza = (cond) => { const paso = Math.max(25, dq / 400), n = Math.ceil(dq / paso); for (let i = 1; i < n; i++) { const t = i / n; if (cond([p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t])) return t; } return null; };
+    if (M.conTierra) {
+      // Polígonos de tierra (regiones o comunas): fuera de todos ellos es mar
+      return { mar: !zonaEn(M.tierras, p), dCosta: dC, metodo: 'tierra' };
+    }
+    if (M.conMar) {
+      // Dentro del polígono de mar (p. ej. la franja de 5 millas). Fuera de él se considera tierra:
+      // así una bahía entre la persona y su PE no produce falsas alarmas.
+      return { mar: !!zonaEn(M.mares, p), dCosta: dC, metodo: 'mar' };
+    }
+    if (M.conCosta) {
+      const bb = [Math.min(p[0], q[0]), Math.min(p[1], q[1]), Math.max(p[0], q[0]), Math.max(p[1], q[1])];
+      let cruces = 0;
+      for (const id of M.grid.query(bb)) { const s = M.segs[id]; if (intersect(p, q, s[0], s[1])) cruces++; }
+      return { mar: cruces % 2 === 1, dCosta: dC, metodo: 'costa' };
+    }
+    if (!M.zonas.length || dq > 30000 || zonaEn(M.zonas, p)) return { mar: false, dCosta: null, metodo: 'zona' };
+    const t = cruza(c => zonaEn(M.zonas, c));
+    return t !== null ? { mar: true, dCosta: dq * t, metodo: 'zona' } : { mar: false, dCosta: null, metodo: 'zona' };
+  }
+
+  // Recorta un anillo de polígono a un rectángulo (Sutherland–Hodgman)
+  function recortarAnillo(anillo, bb) {
+    let pts = anillo.slice();
+    const bordes = [[0, bb[0], 1], [0, bb[2], -1], [1, bb[1], 1], [1, bb[3], -1]];
+    for (const [eje, v, sgn] of bordes) {
+      const out = [], dentro = c => sgn * (c[eje] - v) >= 0;
+      for (let i = 0; i < pts.length; i++) {
+        const a = pts[i], b = pts[(i + 1) % pts.length], ai = dentro(a), bi = dentro(b);
+        if (ai) out.push(a);
+        if (ai !== bi) { const t = (v - a[eje]) / (b[eje] - a[eje]); out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t]); }
+      }
+      pts = out; if (!pts.length) break;
+    }
+    return pts.length >= 3 ? pts.concat([pts[0]]) : [];
+  }
+
+  // Recorta líneas a un rectángulo (con margen), para no cargar toda la costa de Chile
+  function recortarLineas(lineas, bb) {
+    const dentro = c => c[0] >= bb[0] && c[0] <= bb[2] && c[1] >= bb[1] && c[1] <= bb[3];
+    const out = [];
+    for (const l of lineas) {
+      let tramo = [];
+      for (let i = 0; i < l.length; i++) {
+        const c = l[i], si = dentro(c), prevIn = i > 0 && dentro(l[i - 1]), nextIn = i < l.length - 1 && dentro(l[i + 1]);
+        if (si || prevIn || nextIn) tramo.push(c);
+        else if (tramo.length) { if (tramo.length > 1) out.push(tramo); tramo = []; }
+      }
+      if (tramo.length > 1) out.push(tramo);
+    }
+    return out;
+  }
+
+  // Enlace a Google Maps en auto hacia un punto seguro vehicular
+  function enlaceGoogleMapsAuto(destino) {
+    const f = (c) => c[1].toFixed(6) + ',' + c[0].toFixed(6);
+    return 'https://www.google.com/maps/dir/?api=1&travelmode=driving&dir_action=navigate&destination=' + encodeURIComponent(f(destino));
+  }
+
+  const api = { dist, bearing, rumbo, projectOnSegment, buildNetwork, rutaDesde, puntoA, largo, enlaceGoogleMaps, enlaceGoogleMapsAuto, prepararZonas, zonaEn, prepararMar, estadoMar, recortarLineas, recortarAnillo };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api; else global.EvacCore = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* Ruta de Evacuación · © 2026 Bárbara del Pilar González Lucero. Todos los derechos reservados. */
+/* ==========================================================================
+   MapaLigero — mapa por mosaicos (Web Mercator) + lienzo vectorial.
+   Sin dependencias. Arrastre, pellizco, rueda y doble clic.
+   ========================================================================== */
+function MapaLigero(el, opciones) {
+  'use strict';
+  const TS = 256, MINZ = 3, MAXZ = 19;
+  const st = { lon: opciones.centro[0], lat: opciones.centro[1], z: opciones.zoom || 15, w: 1, h: 1, dpr: 1 };
+  const capa = document.createElement('div'); capa.className = 'ml-teselas';
+  const cv = document.createElement('canvas'); cv.className = 'ml-lienzo';
+  const ctx = cv.getContext('2d');
+  const atrib = document.createElement('div'); atrib.className = 'ml-atrib';
+  el.append(capa, cv, atrib);
+  let base = null, dibujo = null, pend = false, anim = null;
+  const teselas = new Map(), oyentes = {};
+
+  const clampZ = z => Math.max(MINZ, Math.min(MAXZ, z));
+  const clampLat = l => Math.max(-85, Math.min(85, l));
+  const mundo = z => TS * Math.pow(2, z);
+  function aPx(lon, lat, z) {
+    const s = mundo(z), sn = Math.sin(clampLat(lat) * Math.PI / 180);
+    return [(lon + 180) / 360 * s, (0.5 - Math.log((1 + sn) / (1 - sn)) / (4 * Math.PI)) * s];
+  }
+  function desdePx(x, y, z) {
+    const s = mundo(z), n = Math.PI - 2 * Math.PI * y / s;
+    return [x / s * 360 - 180, 180 / Math.PI * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)))];
+  }
+  function aPantalla(c) {
+    const o = aPx(st.lon, st.lat, st.z), p = aPx(c[0], c[1], st.z);
+    return [p[0] - o[0] + st.w / 2, p[1] - o[1] + st.h / 2];
+  }
+  function desdePantalla(x, y) {
+    const o = aPx(st.lon, st.lat, st.z);
+    return desdePx(o[0] + x - st.w / 2, o[1] + y - st.h / 2, st.z);
+  }
+  function metrosPorPx() { return Math.cos(st.lat * Math.PI / 180) * 2 * Math.PI * 6378137 / mundo(st.z); }
+  function emitir(ev, d) { (oyentes[ev] || []).forEach(f => f(d)); }
+
+  function pedir() { if (!pend) { pend = true; requestAnimationFrame(render); } }
+  function render() {
+    pend = false;
+    renderTeselas();
+    ctx.setTransform(st.dpr, 0, 0, st.dpr, 0, 0);
+    ctx.clearRect(0, 0, st.w, st.h);
+    if (dibujo) { try { dibujo(ctx, aPantalla, st, metrosPorPx()); } catch (e) { console.error(e); } }
+  }
+
+  function crearTesela(z, x, y, tx, key) {
+    const img = new Image();
+    img.className = 'ml-tesela'; img.alt = ''; img.draggable = false; img.decoding = 'async';
+    img.crossOrigin = 'anonymous';
+    const t = { img, z, x, y, tx, ok: false, base: base.id };
+    img.onload = () => { t.ok = true; img.classList.add('lista'); pedir(); };
+    img.onerror = () => { t.ok = true; img.style.visibility = 'hidden'; pedir(); };
+    img.src = base.url.replace('{z}', z).replace('{x}', x).replace('{y}', y);
+    capa.appendChild(img); teselas.set(key, t);
+    return t;
+  }
+  function quitar(key) { const t = teselas.get(key); if (t) { t.img.remove(); teselas.delete(key); } }
+
+  function renderTeselas() {
+    if (!base) return;
+    const tz = Math.max(0, Math.min(base.maxNativo, Math.round(st.z)));
+    const esc = Math.pow(2, st.z - tz), n = Math.pow(2, tz);
+    const c = aPx(st.lon, st.lat, tz);
+    const x0 = c[0] - st.w / 2 / esc, y0 = c[1] - st.h / 2 / esc;
+    const tx0 = Math.floor(x0 / TS), ty0 = Math.floor(y0 / TS);
+    const tx1 = Math.floor((x0 + st.w / esc) / TS), ty1 = Math.floor((y0 + st.h / esc) / TS);
+    const visibles = new Set(); let faltan = 0;
+    for (let ty = Math.max(0, ty0); ty <= Math.min(n - 1, ty1); ty++) {
+      for (let tx = tx0; tx <= tx1; tx++) {
+        const wx = ((tx % n) + n) % n, key = base.id + '/' + tz + '/' + tx + '/' + ty;
+        visibles.add(key);
+        const t = teselas.get(key) || crearTesela(tz, wx, ty, tx, key);
+        if (!t.ok) faltan++;
+      }
+    }
+    for (const [key, t] of teselas) {
+      if (t.base !== base.id) { quitar(key); continue; }
+      const e = Math.pow(2, st.z - t.z), size = TS * e, o = aPx(st.lon, st.lat, t.z);
+      const sx = Math.round((t.tx * TS - o[0]) * e + st.w / 2), sy = Math.round((t.y * TS - o[1]) * e + st.h / 2);
+      const fuera = sx > st.w || sy > st.h || sx + size < 0 || sy + size < 0;
+      if (!visibles.has(key) && (fuera || t.z === tz || faltan === 0 || Math.abs(t.z - tz) > 2)) { quitar(key); continue; }
+      const s = Math.ceil(size) + 1;
+      t.img.style.width = s + 'px'; t.img.style.height = s + 'px';
+      t.img.style.transform = 'translate3d(' + sx + 'px,' + sy + 'px,0)';
+      t.img.style.zIndex = t.z === tz ? 2 : 1;
+    }
+  }
+
+  function redimensionar() {
+    const r = el.getBoundingClientRect();
+    st.w = Math.max(1, r.width); st.h = Math.max(1, r.height);
+    st.dpr = Math.min(3, window.devicePixelRatio || 1);
+    cv.width = Math.round(st.w * st.dpr); cv.height = Math.round(st.h * st.dpr);
+    cv.style.width = st.w + 'px'; cv.style.height = st.h + 'px';
+    pedir();
+  }
+  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(redimensionar).observe(el);
+  window.addEventListener('resize', redimensionar);
+  redimensionar();
+
+  function anclarEn(ll, px, py) {
+    const a = aPx(ll[0], ll[1], st.z);
+    const p = desdePx(a[0] - (px - st.w / 2), a[1] - (py - st.h / 2), st.z);
+    st.lon = p[0]; st.lat = clampLat(p[1]);
+  }
+  function detenerAnim() { if (anim) { cancelAnimationFrame(anim); anim = null; } }
+
+  /* ---- Gestos: punteros (mouse, dedo, lápiz) ---- */
+  const punteros = new Map();
+  let gesto = null, toque = null, avisoArrastre = false;
+  const rel = (x, y) => { const r = el.getBoundingClientRect(); return [x - r.left, y - r.top]; };
+  const centro = pts => [pts.reduce((s, p) => s + p[0], 0) / pts.length, pts.reduce((s, p) => s + p[1], 0) / pts.length];
+  const sep = pts => Math.hypot(pts[0][0] - pts[1][0], pts[0][1] - pts[1][1]);
+  function iniciarGesto() {
+    if (!punteros.size) { gesto = null; return; }
+    const pts = [...punteros.values()], c = centro(pts), p = rel(c[0], c[1]);
+    gesto = { z0: st.z, d0: pts.length > 1 ? sep(pts) : 0, ancla: desdePantalla(p[0], p[1]) };
+  }
+  el.addEventListener('pointerdown', e => {
+    if (e.button && e.button !== 0) return;
+    detenerAnim();
+    try { el.setPointerCapture(e.pointerId); } catch (_) { /* sin captura */ }
+    punteros.set(e.pointerId, [e.clientX, e.clientY]);
+    toque = punteros.size === 1 ? { x: e.clientX, y: e.clientY, t: performance.now(), movido: false } : null;
+    avisoArrastre = false;
+    iniciarGesto();
+  });
+  el.addEventListener('pointermove', e => {
+    if (!punteros.has(e.pointerId) || !gesto) return;
+    punteros.set(e.pointerId, [e.clientX, e.clientY]);
+    const pts = [...punteros.values()], c = centro(pts);
+    if (toque && Math.hypot(c[0] - toque.x, c[1] - toque.y) > 8) toque.movido = true;
+    if (toque && !toque.movido) return;
+    if (!avisoArrastre) { avisoArrastre = true; emitir('arrastre'); }
+    if (pts.length > 1 && gesto.d0 > 0) st.z = clampZ(gesto.z0 + Math.log2(sep(pts) / gesto.d0));
+    const p = rel(c[0], c[1]);
+    anclarEn(gesto.ancla, p[0], p[1]);
+    pedir();
+  });
+  function soltar(e) {
+    if (!punteros.has(e.pointerId)) return;
+    punteros.delete(e.pointerId);
+    if (e.type === 'pointerup' && toque && !toque.movido && performance.now() - toque.t < 600 && !punteros.size) {
+      const p = rel(e.clientX, e.clientY);
+      emitir('toque', { lonlat: desdePantalla(p[0], p[1]), px: p });
+    }
+    if (punteros.size !== 1) toque = null;
+    iniciarGesto();
+  }
+  el.addEventListener('pointerup', soltar);
+  el.addEventListener('pointercancel', soltar);
+  el.addEventListener('wheel', e => {
+    e.preventDefault(); detenerAnim();
+    const p = rel(e.clientX, e.clientY), ll = desdePantalla(p[0], p[1]);
+    st.z = clampZ(st.z - e.deltaY * (e.deltaMode === 1 ? 0.05 : 0.0025));
+    anclarEn(ll, p[0], p[1]); emitir('arrastre'); pedir();
+  }, { passive: false });
+  el.addEventListener('dblclick', e => {
+    const p = rel(e.clientX, e.clientY), ll = desdePantalla(p[0], p[1]);
+    animar(st.z + 1, ll, p);
+  });
+
+  function animar(zFin, ll, p, centroFin) {
+    detenerAnim();
+    const z0 = st.z, lon0 = st.lon, lat0 = st.lat, t0 = performance.now(), dur = 260;
+    zFin = clampZ(zFin);
+    const paso = (now) => {
+      const k = Math.min(1, (now - t0) / dur), f = 1 - Math.pow(1 - k, 3);
+      st.z = z0 + (zFin - z0) * f;
+      if (ll && p) anclarEn(ll, p[0], p[1]);
+      else if (centroFin) { st.lon = lon0 + (centroFin[0] - lon0) * f; st.lat = lat0 + (centroFin[1] - lat0) * f; }
+      pedir();
+      anim = k < 1 ? requestAnimationFrame(paso) : null;
+    };
+    anim = requestAnimationFrame(paso);
+  }
+
+  return {
+    st, aPantalla, desdePantalla, metrosPorPx, pedir,
+    on(ev, f) { (oyentes[ev] = oyentes[ev] || []).push(f); },
+    setDibujo(f) { dibujo = f; pedir(); },
+    setBase(b) {
+      base = b; atrib.innerHTML = b.atribucion;
+      for (const k of [...teselas.keys()]) quitar(k);
+      pedir();
+    },
+    zoom(delta) { animar(st.z + delta, [st.lon, st.lat], [st.w / 2, st.h / 2]); },
+    vista(c, z, animado) {
+      if (animado) animar(z == null ? st.z : z, null, null, c);
+      else { detenerAnim(); st.lon = c[0]; st.lat = clampLat(c[1]); if (z != null) st.z = clampZ(z); pedir(); }
+    },
+    encuadrar(bb, pad, zMax, animado) {
+      pad = pad || {}; const pt = pad.t || 30, pb = pad.b || 30, pl = pad.l || 30, pr = pad.r || 30;
+      const a = aPx(bb[0], bb[3], 0), b = aPx(bb[2], bb[1], 0);
+      const dx = Math.max(1e-9, b[0] - a[0]), dy = Math.max(1e-9, b[1] - a[1]);
+      let z = Math.log2(Math.min(Math.max(40, st.w - pl - pr) / dx, Math.max(40, st.h - pt - pb) / dy));
+      z = clampZ(Math.min(zMax || 18, z));
+      const s = Math.pow(2, z), cx = (a[0] + b[0]) / 2 * s + (pr - pl) / 2, cy = (a[1] + b[1]) / 2 * s + (pb - pt) / 2;
+      const c = desdePx(cx, cy, z);
+      if (animado) animar(z, null, null, c); else { st.z = z; st.lon = c[0]; st.lat = c[1]; pedir(); }
+    }
+  };
+}
+
+</script>
+<script>
+/* =========================== Aplicación =========================== */
+(function () {
+'use strict';
+const C = window.EvacCore;
+const $ = (id) => document.getElementById(id);
+const S = {
+  datos: DATOS, fuente: 'incluidos en la página', net: null,
+  pos: null, prec: null, rumboBrujula: null, tBrujula: 0, rumboMov: null, tMov: 0,
+  guiando: false, prueba: false, manual: false, seguir: true, primerFix: false,
+  res: null, clave: null, fija: null, verAlt: false, voz: true,
+  zonas: [], estadoZona: null, zonaPend: null, zonaCuenta: 0, mar: null, dCosta: null, vehiculo: [],
+  modo: 'pie', sinRuta: false, contVel: 0, preguntoVehiculo: false, ultFix: null,
+  enVia: null, hitos: new Set(), llegado: false, watchId: null, sim: null, ultimoTxtVoz: '', anguloFlecha: 0, anguloAnillo: 0,
+  nacional: false, indice: null, paquete: null, amenaza: 'tsunami', cargando: false, eligiendo: false, defs: []
+};
+const AM = () => AMENAZAS[S.amenaza] || AMENAZAS.tsunami;
+
+/* ---------- Idiomas (textos en idiomas.js) ---------- */
+let LANG = 'es', D = IDIOMAS.es;
+function T(k, v) {
+  let t = D.t[k] != null ? D.t[k] : IDIOMAS.es.t[k];
+  if (t == null) return k;
+  if (v) t = t.replace(/\{(\w+)\}/g, (m, n) => (v[n] != null ? v[n] : m));
+  return t;
+}
+const TA = (a) => D.amenazas[a] || D.amenazas.tsunami;          // textos de una amenaza en el idioma actual
+const rumboL = (deg) => D.rumbos[Math.round(((deg % 360) + 360) % 360 / 45) % 8];
+// Los nombres vienen de las capas en español ("Punto de encuentro – Caldera"): se traduce solo el tipo
+function nombreL(n) {
+  if (!n || !D.prefijos.length) return n;
+  for (const [es, tr] of D.prefijos) if (n.startsWith(es)) return tr + n.slice(es.length);
+  return n;
+}
+
+/* ---------- Colores desde los tokens CSS ---------- */
+let COL = {}, PATRON = null;
+const COLOR_PD = '#3b2a63';   // morado oscuro: se distingue del verde PE y del azul de las vías
+function leerColores() {
+  const cs = getComputedStyle(document.documentElement), v = (n) => cs.getPropertyValue(n).trim();
+  COL = { via: v('--via'), borde: v('--borde-via'), seguro: v('--seguro'), alerta: v('--alerta'), alt: v('--alt'), tinta: v('--tinta'), hoja: v('--hoja'), zona: v('--zona') };
+  PATRON = null;
+}
+leerColores();
+if (window.matchMedia) window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', () => { leerColores(); mapa.pedir(); });
+
+/* ---------- Red ---------- */
+function cargarRed(datos, fuente) {
+  S.datos = datos; S.fuente = fuente;
+  S.net = C.buildNetwork(datos, datos.tolerancias || CONFIG.tolerancias);
+  S.zonas = C.prepararZonas(datos.zonas);
+  S.estadoZona = null; S.zonaPend = null; S.zonaCuenta = 0;
+  S.mar = C.prepararMar(datos.costa, S.zonas, datos.pe, datos.tierra, datos.aguas);
+  S.vehiculo = datos.vehiculo || [];
+  S.defs = datos.pe_definitivo || [];
+  $('leyendaDef').hidden = !S.defs.length;
+  S.hayTransitorio = !!(datos.pe && datos.pe.some(p => p.tipo === 'transitorio'));
+  $('leyendaPE').textContent = T(S.hayTransitorio ? 'ley.pet' : 'ley.pe');
+  $('leyendaAuto').hidden = !S.vehiculo.length;
+  $('leyendaZona').hidden = !S.zonas.length;
+  pintarResumen(); ponerTitulo();
+  S.res = null; S.clave = null; S.fija = null; S.verAlt = false; S.hitos.clear(); S.llegado = false; S.enVia = null;
+  pintarDiagnostico();
+}
+
+function pintarResumen() {
+  const datos = S.datos, fecha = datos.generado ? datos.generado.split('-').reverse().join('-') : '';
+  $('estadoDatos').textContent = T('datos.resumen', { v: S.net.lines.length, p: S.net.pes.length })
+    + (S.zonas.length ? ' · ' + T('datos.zona') : '') + (fecha ? ' · ' + T('datos.fecha', { f: fecha }) : '');
+}
+function ponerTitulo() {
+  const datos = S.datos;
+  const t = datos.titulo || (datos.sectores && datos.sectores.length === 1 ? datos.sectores[0] : T('app.nombre'));
+  $('titulo').textContent = t; $('inicioTitulo').textContent = t;
+  document.title = T('doc.titulo', { t });
+}
+
+/* ---------- Mapa ---------- */
+const mapa = MapaLigero($('mapa'), { centro: [-71.0, -27.5], zoom: 13 });
+let baseActual = 'calles';
+mapa.setBase(BASES.calles);
+function encuadrarRed() {
+  const bb = S.net.bbox;
+  if (!isFinite(bb[0])) return;
+  mapa.encuadrar(bb, { t: 50, b: 56, l: 40, r: 76 }, 17);
+}
+
+function trazar(ctx, P, pts, ancho, color, guiones) {
+  if (pts.length < 2) return;
+  ctx.beginPath();
+  pts.forEach((c, i) => { const p = P(c); i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); });
+  ctx.lineWidth = ancho; ctx.strokeStyle = color; ctx.setLineDash(guiones || []); ctx.stroke(); ctx.setLineDash([]);
+}
+function chevrones(ctx, P, pts, color) {
+  const sp = pts.map(P); let acc = 0, sig = 28;
+  ctx.fillStyle = color;
+  for (let i = 1; i < sp.length; i++) {
+    const a = sp[i - 1], b = sp[i], d = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    while (acc + d >= sig && d > 0) {
+      const f = (sig - acc) / d, x = a[0] + (b[0] - a[0]) * f, y = a[1] + (b[1] - a[1]) * f, ang = Math.atan2(b[1] - a[1], b[0] - a[0]);
+      ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
+      ctx.beginPath(); ctx.moveTo(4, 0); ctx.lineTo(-2.5, -3.6); ctx.lineTo(-1, 0); ctx.lineTo(-2.5, 3.6); ctx.closePath(); ctx.fill();
+      ctx.restore();
+      sig += 46;
+    }
+    acc += d;
+  }
+}
+function enVista(bb, st) {
+  const a = mapa.desdePantalla(-50, st.h + 50), b = mapa.desdePantalla(st.w + 50, -50);
+  return !(bb[2] < a[0] || bb[0] > b[0] || bb[3] < a[1] || bb[1] > b[1]);
+}
+mapa.setDibujo((ctx, P, st, mpp) => {
+  if (!S.net) return;
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  const r = S.res && !S.sinRuta && S.res.principal, guiando = !!r;
+  // Zona de amenaza (bajo cota 30)
+  if (S.zonas.length) dibujarZonas(ctx, P, st);
+  // Todas las vías
+  ctx.globalAlpha = guiando ? 0.5 : S.modo === 'vehiculo' ? 0.35 : 1;
+  const fz = st.z < 11 ? 0.45 : st.z < 13 ? 0.7 : 1;
+  for (const ln of S.net.lines) if (enVista(ln.bb, st)) trazar(ctx, P, ln.coords, (guiando ? 8 : 10) * fz, COL.borde);
+  for (const ln of S.net.lines) if (enVista(ln.bb, st)) trazar(ctx, P, ln.coords, (guiando ? 4.5 : 6) * fz, COL.via);
+  if (!guiando && st.z >= 14) for (const ln of S.net.lines) if (enVista(ln.bb, st)) chevronesSegunPE(ctx, P, ln);
+  ctx.globalAlpha = 1;
+  // Alternativa
+  const alt = S.res && S.res.alternativa;
+  if (alt && S.verAlt) { trazar(ctx, P, alt.camino, 7, COL.borde); trazar(ctx, P, alt.camino, 4, COL.alt, [8, 7]); }
+  // Ruta elegida
+  if (r) {
+    trazar(ctx, P, r.ruta, 12, COL.borde);
+    trazar(ctx, P, r.ruta, 7.5, COL.via);
+    chevrones(ctx, P, r.ruta, '#ffffff');
+    if (r.dAprox > 3) { trazar(ctx, P, [r.camino[0], r.entrada], 7, COL.borde); trazar(ctx, P, [r.camino[0], r.entrada], 4, COL.alerta, [2, 8]); }
+  }
+  // Puntos de encuentro
+  for (const pe of S.net.pes) {
+    const p = P(pe.coord); if (p[0] < -60 || p[1] < -60 || p[0] > st.w + 60 || p[1] > st.h + 60) continue;
+    const destino = r && S.net.pes[r.pe] === pe;
+    if (st.z < 12 && !destino) {
+      ctx.beginPath(); ctx.arc(p[0], p[1], st.z < 10 ? 4 : 5.5, 0, 7); ctx.fillStyle = COL.seguro; ctx.fill();
+      ctx.lineWidth = 1.5; ctx.strokeStyle = '#fff'; ctx.stroke();
+      continue;
+    }
+    const rad = destino ? 17 : 14;
+    ctx.beginPath(); ctx.arc(p[0], p[1], rad + 3, 0, 7); ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.beginPath(); ctx.arc(p[0], p[1], rad, 0, 7); ctx.fillStyle = COL.seguro; ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.font = '700 ' + (destino ? 15 : 13) + 'px "Barlow Condensed", "Arial Narrow", sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('PE', p[0], p[1] + 1);
+    if (st.z >= 15) {
+      ctx.font = '700 13px "Atkinson Hyperlegible", system-ui, sans-serif';
+      const nom = nombreL(pe.nombre);
+      ctx.lineWidth = 4; ctx.strokeStyle = COL.hoja; ctx.strokeText(nom, p[0], p[1] + rad + 13);
+      ctx.fillStyle = COL.tinta; ctx.fillText(nom, p[0], p[1] + rad + 13);
+    }
+  }
+  // Puntos de encuentro definitivos (volcán): círculo oscuro "PD", igual en tema claro y noche
+  for (const x of S.defs) {
+    const p = P(x.coord); if (p[0] < -60 || p[1] < -60 || p[0] > st.w + 60 || p[1] > st.h + 60) continue;
+    const rad = st.z < 12 ? 6 : 14;
+    ctx.beginPath(); ctx.arc(p[0], p[1], rad + (st.z < 12 ? 1.5 : 3), 0, 7); ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.beginPath(); ctx.arc(p[0], p[1], rad, 0, 7); ctx.fillStyle = COLOR_PD; ctx.fill();
+    if (st.z < 12) continue;
+    ctx.fillStyle = '#fff'; ctx.font = '700 13px "Barlow Condensed", "Arial Narrow", sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('PD', p[0], p[1] + 1);
+    if (st.z >= 14) {
+      ctx.font = '700 13px "Atkinson Hyperlegible", system-ui, sans-serif';
+      const nom = nombreL(x.nombre);
+      ctx.lineWidth = 4; ctx.strokeStyle = COL.hoja; ctx.strokeText(nom, p[0], p[1] + rad + 13);
+      ctx.fillStyle = COL.tinta; ctx.fillText(nom, p[0], p[1] + rad + 13);
+    }
+  }
+  // Puntos seguros vehiculares (solo en modo vehículo)
+  if (S.modo === 'vehiculo') for (const v of S.vehiculo) {
+    const p = P(v.coord); if (p[0] < -40 || p[1] < -40 || p[0] > st.w + 40 || p[1] > st.h + 40) continue;
+    ctx.fillStyle = '#fff'; ctx.fillRect(p[0] - 12, p[1] - 12, 24, 24);
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--via-fuerte').trim() || '#083a86'; ctx.fillRect(p[0] - 10, p[1] - 10, 20, 20);
+    ctx.fillStyle = '#fff'; ctx.font = '700 12px "Barlow Condensed", "Arial Narrow", sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('PSV', p[0], p[1] + 1);
+    if (st.z >= 14) { ctx.font = '700 13px "Atkinson Hyperlegible", system-ui, sans-serif'; ctx.lineWidth = 4; ctx.strokeStyle = COL.hoja; const nom = nombreL(v.nombre); ctx.strokeText(nom, p[0], p[1] + 24); ctx.fillStyle = COL.tinta; ctx.fillText(nom, p[0], p[1] + 24); }
+  }
+  // Persona
+  if (S.pos) {
+    const p = P(S.pos);
+    if (S.prec && mpp > 0) {
+      const rr = S.prec / mpp;
+      if (rr > 10) { ctx.beginPath(); ctx.arc(p[0], p[1], rr, 0, 7); ctx.fillStyle = COL.alerta; ctx.globalAlpha = 0.13; ctx.fill(); ctx.globalAlpha = 0.5; ctx.lineWidth = 1; ctx.strokeStyle = COL.alerta; ctx.stroke(); ctx.globalAlpha = 1; }
+    }
+    const h = rumboActual();
+    if (h != null) {
+      ctx.save(); ctx.translate(p[0], p[1]); ctx.rotate(h * Math.PI / 180);
+      const g = ctx.createLinearGradient(0, 0, 0, -46); g.addColorStop(0, COL.alerta); g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.globalAlpha = 0.45; ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, 46, -Math.PI / 2 - 0.45, -Math.PI / 2 + 0.45); ctx.closePath(); ctx.fillStyle = g; ctx.fill();
+      ctx.restore(); ctx.globalAlpha = 1;
+    }
+    ctx.beginPath(); ctx.arc(p[0], p[1], 11, 0, 7); ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.beginPath(); ctx.arc(p[0], p[1], 7.5, 0, 7); ctx.fillStyle = COL.alerta; ctx.fill();
+  }
+});
+function patronZona(ctx) {
+  if (PATRON) return PATRON;
+  const c = document.createElement('canvas'); c.width = c.height = 10;
+  const g = c.getContext('2d');
+  g.globalAlpha = 0.13; g.fillStyle = COL.zona; g.fillRect(0, 0, 10, 10);
+  g.globalAlpha = 0.6; g.strokeStyle = COL.zona; g.lineWidth = 1.4;
+  g.beginPath(); g.moveTo(-2, 12); g.lineTo(12, -2); g.moveTo(-2, 2); g.lineTo(2, -2); g.moveTo(8, 12); g.lineTo(12, 8); g.stroke();
+  PATRON = ctx.createPattern(c, 'repeat');
+  return PATRON;
+}
+let lienzoZonas = null;
+function dibujarZonas(ctx, P, st) {
+  // Se pintan todos los polígonos en un lienzo auxiliar y luego se rellena con el rayado:
+  // así la cota 30 y las áreas de evacuación se ven como una sola zona aunque se superpongan.
+  const rutas = [];
+  for (const z of S.zonas) {
+    if (!enVista(z.bb, st)) continue;
+    const path = new Path2D();
+    for (const anillo of z.anillos) {
+      let ult = null;
+      for (let i = 0; i < anillo.length; i++) {
+        const p = P(anillo[i]);
+        if (!ult) { path.moveTo(p[0], p[1]); ult = p; continue; }
+        if (i < anillo.length - 1 && Math.abs(p[0] - ult[0]) < 1.5 && Math.abs(p[1] - ult[1]) < 1.5) continue;
+        path.lineTo(p[0], p[1]); ult = p;
+      }
+      path.closePath();
+    }
+    rutas.push(path);
+  }
+  if (!rutas.length) return;
+  const W = ctx.canvas.width, H = ctx.canvas.height;
+  if (!lienzoZonas) lienzoZonas = document.createElement('canvas');
+  if (lienzoZonas.width !== W || lienzoZonas.height !== H) { lienzoZonas.width = W; lienzoZonas.height = H; PATRON = null; }
+  const o = lienzoZonas.getContext('2d');
+  o.setTransform(1, 0, 0, 1, 0, 0); o.globalCompositeOperation = 'source-over'; o.clearRect(0, 0, W, H);
+  o.setTransform(st.dpr, 0, 0, st.dpr, 0, 0); o.fillStyle = '#000';
+  for (const path of rutas) o.fill(path, 'evenodd');
+  o.globalCompositeOperation = 'source-in'; o.fillStyle = patronZona(o); o.fillRect(0, 0, st.w, st.h);
+  ctx.drawImage(lienzoZonas, 0, 0, st.w, st.h);
+  ctx.globalAlpha = 0.7; ctx.lineWidth = 1.3; ctx.strokeStyle = COL.zona;
+  for (const path of rutas) ctx.stroke(path);
+  ctx.globalAlpha = 1;
+}
+// Sentido de cada vía hacia su PE (cuando aún no hay ruta activa)
+function chevronesSegunPE(ctx, P, ln) {
+  if (!ln.llegaAPE || ln.coords.length < 2) return;
+  if (ln.sentido === undefined) {
+    const net = S.net, a = ln.ids[0], b = ln.ids[ln.ids.length - 1];
+    let da = Infinity, db = Infinity;
+    for (const k of net.compPE[net.comp[a]]) { const pe = net.pes[k]; da = Math.min(da, pe.dist[net.local[a]]); db = Math.min(db, pe.dist[net.local[b]]); }
+    ln.sentido = da >= db ? 1 : -1;
+  }
+  chevrones(ctx, P, ln.sentido > 0 ? ln.coords : ln.coords.slice().reverse(), 'rgba(255,255,255,.95)');
+}
+
+mapa.on('arrastre', () => { if (S.seguir) { S.seguir = false; pintarCentrar(); } });
+mapa.on('toque', ({ lonlat, px }) => {
+  if (S.prueba || S.manual) { detenerSim(); fijarPosicion(lonlat, 5, null); return; }
+  // Nombre del PE tocado
+  if (!S.net) return;
+  for (const pe of S.net.pes) { const p = mapa.aPantalla(pe.coord); if (Math.hypot(p[0] - px[0], p[1] - px[1]) < 26) { avisar(nombreL(pe.nombre)); return; } }
+});
+
+$('btnMas').onclick = () => mapa.zoom(1);
+$('btnMenos').onclick = () => mapa.zoom(-1);
+$('btnCentrar').onclick = () => {
+  S.seguir = true; pintarCentrar();
+  if (S.pos) mapa.vista(S.pos, Math.max(mapa.st.z, 16), true); else encuadrarRed();
+};
+function pintarCentrar() { $('btnCentrar').setAttribute('aria-pressed', String(S.seguir && !!S.pos)); }
+function ponerBase(nombre) {
+  baseActual = nombre; mapa.setBase(BASES[nombre]);
+  $('baseCalles').setAttribute('aria-pressed', String(nombre === 'calles'));
+  $('baseSat').setAttribute('aria-pressed', String(nombre === 'satelite'));
+  $('btnCapa').setAttribute('aria-label', T(nombre === 'calles' ? 'aria.sat' : 'aria.calles'));
+}
+$('btnCapa').onclick = () => ponerBase(baseActual === 'calles' ? 'satelite' : 'calles');
+$('baseCalles').onclick = () => ponerBase('calles');
+$('baseSat').onclick = () => ponerBase('satelite');
+
+let tAviso;
+function avisar(t) { const a = $('aviso'); a.textContent = t; a.hidden = false; clearTimeout(tAviso); tAviso = setTimeout(() => { a.hidden = true; }, 2600); }
+
+/* ---------- Vistas de la hoja ---------- */
+function vista(n) { for (const v of ['vInicio', 'vAmenaza', 'vGuia', 'vLlegada', 'vError']) $(v).hidden = v !== n; }
+
+/* ---------- Voz ---------- */
+function hablar(t, forzar) {
+  if (!S.voz || !('speechSynthesis' in window)) return;
+  if (!forzar && t === S.ultimoTxtVoz) return;
+  S.ultimoTxtVoz = t;
+  try {
+    const u = new SpeechSynthesisUtterance(t);
+    const vs = speechSynthesis.getVoices();
+    const pref = D.voz, base = LANG.toLowerCase();
+    u.voice = pref.map(l => vs.find(v => v.lang && v.lang.replace('_', '-').toLowerCase() === l.toLowerCase())).find(Boolean)
+      || vs.find(v => v.lang && v.lang.toLowerCase().startsWith(base)) || null;
+    u.lang = u.voice ? u.voice.lang : pref[0]; u.rate = 1;
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  } catch (_) { /* sin voz */ }
+}
+function ponerVoz(on) {
+  S.voz = on; $('chkVoz').checked = on;
+  $('btnVoz').setAttribute('aria-pressed', String(on));
+  $('btnVozTxt').textContent = T(on ? 'guia.voz' : 'guia.sinVoz');
+  $('ondas').style.display = on ? '' : 'none';
+  if (!on && 'speechSynthesis' in window) speechSynthesis.cancel();
+}
+$('btnVoz').onclick = () => ponerVoz(!S.voz);
+$('chkVoz').onchange = (e) => ponerVoz(e.target.checked);
+
+/* ---------- Brújula ---------- */
+function suavizar(prev, h) { if (prev == null) return h; const d = ((h - prev + 540) % 360) - 180; return (prev + d * 0.3 + 360) % 360; }
+let brujulaIniciada = false;
+function iniciarBrujula() {
+  if (brujulaIniciada) return; brujulaIniciada = true;
+  const manejar = (e) => {
+    let h = null;
+    if (typeof e.webkitCompassHeading === 'number' && !isNaN(e.webkitCompassHeading)) h = e.webkitCompassHeading;
+    else if (e.absolute && e.alpha != null) h = 360 - e.alpha;
+    if (h == null) return;
+    const ang = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
+    S.rumboBrujula = suavizar(S.rumboBrujula, (h + ang + 360) % 360); S.tBrujula = Date.now();
+    pintarFlecha();
+  };
+  if ('ondeviceorientationabsolute' in window) window.addEventListener('deviceorientationabsolute', manejar);
+  else window.addEventListener('deviceorientation', manejar);
+}
+function pedirBrujula() {
+  try {
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+      DeviceOrientationEvent.requestPermission().then(r => { if (r === 'granted') iniciarBrujula(); }).catch(() => {});
+    } else iniciarBrujula();
+  } catch (_) { /* sin brújula */ }
+}
+function rumboActual() {
+  const now = Date.now();
+  if (S.rumboBrujula != null && now - S.tBrujula < 3000) return S.rumboBrujula;
+  if (S.rumboMov != null && now - S.tMov < 8000) return S.rumboMov;
+  return null;
+}
+
+/* ---------- Pantalla encendida ---------- */
+let bloqueo = null;
+async function mantenerPantalla() {
+  try { if ('wakeLock' in navigator && !bloqueo) { bloqueo = await navigator.wakeLock.request('screen'); bloqueo.addEventListener('release', () => { bloqueo = null; }); } } catch (_) { /* no disponible */ }
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S.guiando) mantenerPantalla(); });
+
+/* ---------- GPS ---------- */
+function chip(estado, txt) { $('chipGps').dataset.estado = estado; $('chipGpsTxt').textContent = txt; }
+function iniciarGPS() {
+  if (!window.isSecureContext) return errorUbicacion(T('error.https'));
+  if (!('geolocation' in navigator)) return errorUbicacion(T('error.sinGeo'));
+  if (S.watchId != null) navigator.geolocation.clearWatch(S.watchId);
+  chip('buscando', T('chip.buscando'));
+  S.watchId = navigator.geolocation.watchPosition((p) => {
+    if (S.prueba || S.manual) return;
+    const c = p.coords;
+    let mov = null;
+    if (c.heading != null && !isNaN(c.heading) && c.speed != null && c.speed > 0.7) mov = c.heading;
+    revisarVelocidad([c.longitude, c.latitude], c.speed);
+    fijarPosicion([c.longitude, c.latitude], c.accuracy, mov);
+  }, (err) => {
+    if (S.prueba || S.manual) return;
+    if (err.code === 1) errorUbicacion(T('error.permiso'));
+    else if (!S.pos) { chip('buscando', T('chip.sinSenal')); $('tiempo').textContent = T('guia.buscando'); $('instruccion').textContent = T('guia.sinSenal'); }
+  }, { enableHighAccuracy: true, maximumAge: 2000, timeout: 20000 });
+}
+function errorUbicacion(t) { chip('error', T('chip.sinGps')); $('errorTxt').textContent = t; vista('vError'); }
+
+function fijarPosicion(ll, prec, rumboMov) {
+  if (S.nacional && revisarPaquete(ll)) { S.pos = ll; S.prec = prec; return; }
+  const antes = S.pos;
+  S.pos = ll; S.prec = prec;
+  if (rumboMov != null) { S.rumboMov = rumboMov; S.tMov = Date.now(); }
+  else if (antes && C.dist(antes, ll) > 4 && (S.sim || (prec != null && prec < 25))) { S.rumboMov = C.bearing(antes, ll); S.tMov = Date.now(); }
+  if (!S.prueba && !S.manual) chip(prec != null && prec <= 30 ? 'ok' : 'buscando', '±' + Math.round(prec) + ' m');
+  else chip('ok', T(S.prueba ? 'chip.prueba' : 'chip.manual'));
+  actualizar();
+}
+
+/* ---------- Cálculo y panel ---------- */
+const fmtM = (m) => m >= 1000 ? (m / 1000).toFixed(m >= 10000 ? 0 : 1).replace('.', D.decimal) + '<small>km</small>' : Math.round(m / (m > 200 ? 10 : 5)) * (m > 200 ? 10 : 5) + '<small>m</small>';
+const fmtMtxt = (m) => m >= 1000 ? T('u.km', { n: (m / 1000).toFixed(1).replace('.', D.decimal) }) : T('u.m', { n: Math.round(m / 10) * 10 || Math.round(m) });
+const HITOS = [1000, 500, 300, 200, 100];
+const fmtMin = (m) => { const auto = S.modo === 'vehiculo'; const min = Math.max(1, Math.round(m / (auto ? CONFIG.velocidadAuto : CONFIG.velocidadCaminata) / 60)); return T(auto ? 'min.auto' : 'min.pie', { n: min }); };
+
+function actualizar() {
+  if (!S.pos || !S.net || !S.guiando) { mapa.pedir(); return; }
+  const cambioZona = actualizarZona();
+  if (S.modo === 'vehiculo' && !AM().autoPorVias) return actualizarVehiculo(cambioZona);
+  const res = C.rutaDesde(S.net, S.pos, { claveAnterior: S.clave, rutaFija: S.fija, radioLlegada: CONFIG.radioLlegada });
+  if (res.sinDatos) { S.res = null; avisar(T('guia.noVias')); mapa.pedir(); return; }
+  if (res.llegada) {
+    S.res = null;
+    if (!S.llegado) {
+      S.llegado = true; detenerSim();
+      S.llegadaPE = res.nombrePE; pintarLlegada();
+      vista('vLlegada');
+      hablar(CONFIG.textos.llegadaVoz, true);
+      try { navigator.vibrate && navigator.vibrate([200, 100, 200]); } catch (_) { /* sin vibración */ }
+    }
+    seguirMapa(); mapa.pedir(); return;
+  }
+  if (S.llegado) { S.llegado = false; vista('vGuia'); }
+  S.res = res;
+  const r = res.principal;
+  if (r.key !== 'fija') S.clave = r.key;
+  const t = CONFIG.textos;
+  $('senal').classList.remove('vehiculo', 'mar');
+  $('destinoEtq').textContent = T('guia.destino'); $('destinoFila').hidden = false;
+
+  if (S.estadoZona === 'mar') {
+    // En el agua, lejos de la costa: mensaje para embarcaciones, sin ruta al punto de encuentro
+    entrarSinRuta();
+    $('senal').classList.add('lejos', 'mar');
+    $('cifra').innerHTML = S.dCosta == null ? '—' : isFinite(S.dCosta) ? fmtM(S.dCosta) : '+5<small>km</small>';
+    $('tiempo').textContent = S.dCosta != null ? T('guia.deLaCosta') : t.marTitulo;
+    $('instruccion').textContent = t.mar;
+    $('destino').textContent = '—';
+    if (!S.anuncioInicial || cambioZona) { S.anuncioInicial = true; hablar(t.marTitulo + '. ' + t.mar, true); }
+    seguirMapa(); mapa.pedir(); return;
+  }
+
+  if (res.lejos) {
+    // A más de 5 km de cualquier vía: no se entrega rumbo (podría apuntar hacia la costa)
+    entrarSinRuta(); S.lejos = true;
+    $('senal').classList.add('lejos');
+    $('cifra').innerHTML = fmtM(r.total);
+    $('tiempo').textContent = T('guia.hastaPE');
+    const txt = S.estadoZona === 'dentro' || S.estadoZona === 'playa' ? t.lejosDentro : t.lejosFuera;
+    $('instruccion').textContent = txt;
+    $('destino').textContent = nombreL(r.nombrePE);
+    if (AM().autoPorVias && r.coordPE) {
+      // Volcán: aunque no haya vías cerca, se puede llegar en auto por caminos al punto de encuentro más cercano
+      $('btnGmaps').href = C.enlaceGoogleMapsAuto(r.coordPE); $('btnGmaps').setAttribute('aria-disabled', 'false');
+      $('btnGmapsTxt').textContent = T('guia.gmapsAuto');
+    }
+    if (!S.anuncioInicial) { S.anuncioInicial = true; hablar((S.estadoZona === 'fuera' ? t.zonaFueraTitulo + '. ' : '') + txt, true); }
+    seguirMapa(); mapa.pedir(); return;
+  }
+  if (S.sinRuta) { S.sinRuta = false; S.lejos = false; S.anuncioInicial = false; S.primerFix = false; }
+  $('senal').classList.remove('lejos');
+
+  // ¿Va por la vía?
+  const antesEnVia = S.enVia;
+  if (r.directo) S.enVia = null;
+  else if (S.enVia) { if (r.dAprox > CONFIG.distanciaEnVia * 1.75) S.enVia = false; }
+  else if (r.dAprox <= CONFIG.distanciaEnVia) S.enVia = true; else S.enVia = false;
+
+  const objetivo = C.puntoA(r.camino, 25);
+  S.rumboObjetivo = C.bearing(S.pos, objetivo);
+  const rb = rumboL(S.rumboObjetivo);
+  let instr;
+  const verbo = T(S.modo === 'vehiculo' ? 'dir.conduce' : 'dir.camina');
+  if (r.directo) instr = T('dir.alPE', { verbo, rb, d: fmtMtxt(r.dAprox) });
+  else if (!S.enVia) instr = T('dir.aVia', { verbo, rb: rumboL(C.bearing(S.pos, r.entrada)), d: fmtMtxt(r.dAprox) });
+  else instr = T('dir.seguir', { rb });
+
+  $('cifra').innerHTML = fmtM(r.total);
+  $('tiempo').textContent = fmtMin(r.total);
+  $('instruccion').textContent = instr;
+  $('destino').textContent = nombreL(r.nombrePE);
+  $('estadoVia').innerHTML = r.directo ? '' : S.enVia ? '<b style="color:var(--seguro)">● ' + esc(T('guia.enVia')) + '</b>' : '<b style="color:var(--alerta)">● ' + esc(T('guia.fueraVia')) + '</b>';
+  const enAuto = S.modo === 'vehiculo';
+  $('btnGmaps').href = C.enlaceGoogleMaps(r, S.prueba || S.manual ? S.pos : null, enAuto ? 'driving' : 'walking');
+  $('btnGmaps').setAttribute('aria-disabled', 'false');
+  $('btnGmapsTxt').textContent = T(enAuto ? 'guia.gmapsAuto' : 'guia.gmaps');
+
+  // Alternativa
+  const alt = res.alternativa;
+  $('btnAlt').disabled = !alt;
+  $('btnAltTxt').textContent = T(S.fija ? 'guia.recomendada' : alt ? 'guia.alternativa' : 'guia.sinAlternativa');
+  if (!alt) S.verAlt = false;
+  $('btnAlt').setAttribute('aria-pressed', String(S.verAlt));
+  if (alt && S.verAlt) {
+    const otroPE = alt.pe !== r.pe;
+    const x = otroPE ? T('alt.irA', { pe: nombreL(alt.nombrePE) }) : T('alt.porVia', { via: nombreL(alt.via) });
+    $('altTxt').textContent = T(S.fija ? 'alt.recomendada' : 'alt.alternativa', { x, d: fmtMtxt(alt.total) });
+    $('btnUsarAlt').textContent = T(S.fija ? 'guia.volverRecomendada' : 'guia.seguirRuta');
+    $('tarjetaAlt').hidden = false;
+  } else $('tarjetaAlt').hidden = true;
+
+  pintarFlecha();
+
+  // Voz
+  const ez = S.estadoZona;
+  const prefZona = ez === 'dentro' ? t.zonaDentroTitulo + '. ' : ez === 'playa' ? t.playaTitulo + '. ' + T('voz.salAgua') + ' ' : ez === 'fuera' ? t.zonaFueraTitulo + '. ' : '';
+  if (!S.anuncioInicial) { S.anuncioInicial = true; HITOS.forEach(h => { if (r.total < h) S.hitos.add(h); }); hablar(prefZona + instr + ' ' + T('voz.faltan', { d: fmtMtxt(r.total) }), true); }
+  else if (cambioZona === 'fuera') hablar(t.salioZona);
+  else if (cambioZona === 'dentro' || cambioZona === 'playa') hablar(t.entroZona);
+  else if (antesEnVia === false && S.enVia === true) hablar(T('voz.enVia', { rb }));
+  else if (antesEnVia === true && S.enVia === false) hablar(T('voz.teAlejaste', { rb: rumboL(C.bearing(S.pos, r.entrada)) }));
+  for (const h of HITOS) if (r.total < h && !S.hitos.has(h)) { S.hitos.add(h); hablar(T('voz.faltan', { d: fmtMtxt(r.total) })); break; }
+
+  seguirMapa();
+  mapa.pedir();
+}
+
+// Estado frente a la amenaza: 'dentro' | 'fuera' | 'playa' | 'mar' | null (sin datos de zona ni costa)
+function calcularEstadoZona() {
+  if (S.amenaza === 'tsunami') {
+    const m = C.estadoMar(S.mar, S.pos);
+    S.dCosta = m.dCosta;
+    if (m.mar) return m.dCosta != null && m.dCosta > CONFIG.distanciaMarAdentro ? 'mar' : 'playa';
+  } else S.dCosta = null;
+  if (!S.zonas.length) return null;
+  return C.zonaEn(S.zonas, S.pos) ? 'dentro' : 'fuera';
+}
+const ICONO_ALERTA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" style="color:var(--zona)"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4M12 17h.01" stroke-linecap="round"/></svg>';
+const ICONO_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--seguro)"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6l-8-3Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>';
+const ICONO_MAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="color:#0a6f94"><path d="M2 9c2 0 2-1.5 4-1.5S8 9 10 9s2-1.5 4-1.5S16 9 18 9s2-1.5 4-1.5"/><path d="M2 14c2 0 2-1.5 4-1.5s2 1.5 4 1.5 2-1.5 4-1.5 2 1.5 4 1.5 2-1.5 4-1.5"/><path d="M2 19c2 0 2-1.5 4-1.5s2 1.5 4 1.5 2-1.5 4-1.5 2 1.5 4 1.5 2-1.5 4-1.5"/></svg>';
+// Confirmación en dos lecturas para evitar parpadeo en los bordes. Devuelve el nuevo estado si cambió.
+function actualizarZona() {
+  const box = $('avisoZona');
+  if (!S.pos) { box.hidden = true; return null; }
+  const ahora = calcularEstadoZona();
+  let cambio = null;
+  if (S.estadoZona === null || ahora === null) { if (S.estadoZona !== ahora && S.estadoZona !== null) cambio = ahora; S.estadoZona = ahora; S.zonaPend = null; S.zonaCuenta = 0; }
+  else if (ahora !== S.estadoZona) {
+    if (S.zonaPend === ahora) S.zonaCuenta++; else { S.zonaPend = ahora; S.zonaCuenta = 1; }
+    if (S.zonaCuenta >= 2 || S.sim || S.prueba || S.manual) { cambio = ahora; S.estadoZona = ahora; S.zonaPend = null; S.zonaCuenta = 0; }
+  } else { S.zonaPend = null; S.zonaCuenta = 0; }
+  // En tsunami el modo vehículo tiene su propia tarjeta; en volcán se maneja por las vías y el aviso lleva el texto completo
+  const t = CONFIG.textos, e = S.estadoZona, auto = S.modo === 'vehiculo' && !AM().autoPorVias;
+  if (!e) { box.hidden = true; return cambio; }
+  const fila = (cls, icono, titulo, texto) => { box.className = 'aviso-zona ' + cls; box.innerHTML = icono + '<div><strong>' + esc(titulo) + '.</strong> ' + (texto ? esc(texto) : '') + '</div>'; };
+  if (e === 'dentro') fila('dentro', ICONO_ALERTA, t.zonaDentroTitulo, auto ? '' : t.zonaDentro);
+  else if (e === 'playa') fila('dentro', ICONO_ALERTA, t.playaTitulo, auto ? '' : t.playa);
+  else if (e === 'mar') fila('mar', ICONO_MAR, t.marTitulo, '');
+  else fila('fuera', ICONO_OK, t.zonaFueraTitulo, auto ? '' : t.zonaFuera);
+  box.hidden = false;
+  return cambio;
+}
+
+// Estado común cuando no se muestra una ruta a pie (lejos, mar adentro, modo vehículo)
+function entrarSinRuta() {
+  S.sinRuta = true; S.enVia = null; S.rumboObjetivo = null; S.verAlt = false;
+  $('estadoVia').textContent = '';
+  $('btnGmaps').setAttribute('aria-disabled', 'true');
+  $('btnAlt').disabled = true; $('btnAltTxt').textContent = T('guia.sinAlternativa');
+  $('tarjetaAlt').hidden = true; $('tarjetaGmaps').hidden = true;
+}
+
+/* ---------- Modo vehículo: salir de la zona y esperar, sin ir al punto de encuentro ---------- */
+function vehiculoCercano() {
+  let mejor = null, d = Infinity;
+  for (const v of S.vehiculo) { const x = C.dist(S.pos, v.coord); if (x < d) { d = x; mejor = v; } }
+  return mejor;
+}
+function actualizarVehiculo(cambio) {
+  S.res = null; S.llegado = false;
+  if ($('vGuia').hidden) vista('vGuia');
+  entrarSinRuta();
+  const t = CONFIG.textos, e = S.estadoZona;
+  let titulo, txt;
+  if (e === 'mar') { titulo = t.marTitulo; txt = t.mar; }
+  else if (e === 'dentro' || e === 'playa') { titulo = T('veh.salZona'); txt = t.vehiculoDentro; }
+  else if (e === 'fuera') { titulo = T('veh.fueraZona'); txt = t.vehiculoFuera; }
+  else { titulo = T('veh.modo'); txt = t.vehiculoSinZona; }
+  const s = $('senal'); s.classList.remove('mar'); s.classList.add('lejos', 'vehiculo');
+  $('cifra').textContent = titulo;
+  $('tiempo').textContent = T('veh.modo');
+  $('instruccion').textContent = txt;
+  const pv = e === 'mar' ? null : vehiculoCercano();
+  $('destinoEtq').textContent = T('veh.puntoSeguro');
+  $('destino').textContent = pv ? nombreL(pv.nombre) + ' (' + fmtMtxt(C.dist(S.pos, pv.coord)) + ')' : '';
+  $('destinoFila').hidden = !pv;
+  $('btnGmapsTxt').textContent = T('guia.gmapsAuto');
+  if (pv) { $('btnGmaps').href = C.enlaceGoogleMapsAuto(pv.coord); $('btnGmaps').setAttribute('aria-disabled', 'false'); }
+  if (!S.anuncioInicial) { S.anuncioInicial = true; hablar(T('veh.modo') + '. ' + titulo + '. ' + txt, true); }
+  else if (cambio) hablar(titulo + '. ' + txt);
+  seguirMapa(); mapa.pedir();
+}
+function ponerModo(m) {
+  S.modo = m; S.anuncioInicial = false; S.primerFix = false; S.fija = null; S.clave = null; S.hitos.clear(); S.sinRuta = false;
+  $('tarjetaModo').hidden = true; $('tarjetaGmaps').hidden = true;
+  $('btnModo').textContent = textoBtnModo();
+  $('senal').classList.remove('vehiculo');
+  if (m === 'pie' || AM().autoPorVias) { $('destinoEtq').textContent = T('guia.destino'); $('btnGmapsTxt').textContent = T('guia.gmaps'); $('destinoFila').hidden = false; }
+  actualizarZona(); actualizar();
+}
+function textoBtnModo() { return T(S.modo === 'vehiculo' ? 'guia.aPie' : 'guia.vasVehiculo'); }
+$('btnModo').onclick = () => ponerModo(S.modo === 'vehiculo' ? 'pie' : 'vehiculo');
+$('btnSiVehiculo').onclick = () => ponerModo('vehiculo');
+$('btnNoVehiculo').onclick = () => { $('tarjetaModo').hidden = true; };
+// Velocidad sostenida de auto mientras se guía a pie: preguntar una vez
+function revisarVelocidad(ll, velGps) {
+  const ahora = Date.now();
+  let v = velGps;
+  if ((v == null || isNaN(v)) && S.ultFix) { const dt = (ahora - S.ultFix.t) / 1000; if (dt > 0.5) v = C.dist(S.ultFix.ll, ll) / dt; }
+  S.ultFix = { ll, t: ahora };
+  if (S.modo !== 'pie' || S.preguntoVehiculo || v == null) return;
+  S.contVel = v > CONFIG.velocidadVehiculo ? S.contVel + 1 : 0;
+  if (S.contVel >= 3) { S.preguntoVehiculo = true; $('tarjetaModo').hidden = false; hablar(T('voz.pareceVehiculo')); }
+}
+
+/* ---------- Confirmación antes de abrir Google Maps ---------- */
+$('btnGmaps').addEventListener('click', (e) => {
+  e.preventDefault();
+  if ($('btnGmaps').getAttribute('aria-disabled') === 'true') return;
+  const pv = S.modo === 'vehiculo' ? vehiculoCercano() : null;
+  $('gmapsTxt').textContent = S.modo !== 'vehiculo' ? T('gmaps.pie')
+    : (AM().autoPorVias ? T('gmaps.autoVia') : T('veh.gmapsTxt', { n: pv ? nombreL(pv.nombre) : T('veh.elPuntoSeguro') })) + ' ' + T('gmaps.pantallaAuto');
+  $('btnGmapsIr').href = $('btnGmaps').href;
+  $('tarjetaGmaps').hidden = false;
+});
+$('btnGmapsIr').addEventListener('click', () => { setTimeout(() => { $('tarjetaGmaps').hidden = true; }, 300); });
+$('btnGmapsVolver').onclick = () => { $('tarjetaGmaps').hidden = true; };
+
+function seguirMapa() {
+  if (!S.pos) return;
+  if (!S.primerFix) {
+    S.primerFix = true;
+    if (S.sinRuta) { mapa.vista(S.pos, S.lejos ? 13 : 14, true); pintarCentrar(); return; }
+    const r = S.res && S.res.principal, pts = r ? r.camino : [S.pos];
+    const bb = [Infinity, Infinity, -Infinity, -Infinity];
+    for (const c of pts) { bb[0] = Math.min(bb[0], c[0]); bb[1] = Math.min(bb[1], c[1]); bb[2] = Math.max(bb[2], c[0]); bb[3] = Math.max(bb[3], c[1]); }
+    mapa.encuadrar(bb, { t: 50, b: 56, l: 40, r: 76 }, 17, true);
+  } else if (S.seguir) {
+    const p = mapa.aPantalla(S.pos), st = mapa.st;
+    // Recentrar solo si la persona se acerca al borde (evita que el mapa "baile")
+    if (p[0] < st.w * 0.25 || p[0] > st.w * 0.75 || p[1] < st.h * 0.25 || p[1] > st.h * 0.75) mapa.vista(S.pos, null, true);
+  }
+  pintarCentrar();
+}
+
+function desenrollar(prev, nuevo) { return prev + (((nuevo - prev) % 360 + 540) % 360 - 180); }
+function pintarFlecha() {
+  if (S.rumboObjetivo == null) return;
+  const h = rumboActual();
+  const rel = h == null ? S.rumboObjetivo : S.rumboObjetivo - h;
+  S.anguloFlecha = desenrollar(S.anguloFlecha, rel);
+  S.anguloAnillo = desenrollar(S.anguloAnillo, h == null ? 0 : -h);
+  $('flecha').style.transform = 'rotate(' + S.anguloFlecha + 'deg)';
+  $('anillo').style.transform = 'rotate(' + S.anguloAnillo + 'deg)';
+  $('brujulaPie').textContent = T(h == null ? 'guia.sinBrujula' : 'guia.conBrujula');
+  mapa.pedir();
+}
+
+/* ---------- Inicio, modo prueba, alternativa ---------- */
+function comenzarGuia(modo) {
+  S.lejos = false; S.sinRuta = false; S.estadoZona = null; S.preguntoVehiculo = false; S.contVel = 0;
+  S.modo = modo || 'pie';
+  $('senal').classList.remove('lejos', 'vehiculo', 'mar');
+  $('btnModo').textContent = textoBtnModo();
+  $('tarjetaModo').hidden = true; $('tarjetaGmaps').hidden = true;
+  S.guiando = true; S.anuncioInicial = false; S.hitos.clear(); S.llegado = false; S.primerFix = false; S.seguir = true;
+  vista('vGuia');
+}
+function iniciarGuia(modo) {
+  pedirBrujula();
+  if ('speechSynthesis' in window && S.voz) { try { speechSynthesis.speak(new SpeechSynthesisUtterance('')); } catch (_) { /* desbloqueo de audio */ } }
+  mantenerPantalla();
+  S.manual = false; ponerPrueba(false);
+  comenzarGuia(modo);
+  $('cifra').textContent = '—'; $('tiempo').textContent = T('guia.buscando');
+  $('instruccion').textContent = T('guia.salAbierto');
+  iniciarGPS();
+}
+$('btnIniciar').onclick = () => iniciarGuia(AM().modoInicial);
+$('btnVehiculo').onclick = () => iniciarGuia('vehiculo');
+function ponerPrueba(on) {
+  S.prueba = on; $('chkPrueba').checked = on; $('franjaPrueba').hidden = !on;
+  if (!on) detenerSim();
+}
+function entrarPrueba() {
+  ponerPrueba(true); S.manual = false; comenzarGuia();
+  S.pos = null; S.res = null;
+  $('cifra').textContent = '—'; $('tiempo').textContent = T('prueba.modo');
+  $('instruccion').textContent = T('prueba.toca');
+  $('destino').textContent = '—'; $('estadoVia').textContent = '';
+  chip('ok', T('chip.prueba'));
+  encuadrarRed(); mapa.pedir();
+}
+$('btnPrueba').onclick = () => { pedirBrujula(); entrarPrueba(); };
+$('chkPrueba').onchange = (e) => { if (e.target.checked) { $('menu').close(); entrarPrueba(); } else salirPrueba(); };
+function salirPrueba() {
+  ponerPrueba(false); S.pos = null; S.res = null; S.guiando = false; S.rumboObjetivo = null;
+  chip('inactivo', 'GPS'); vista('vInicio'); encuadrarRed(); mapa.pedir();
+}
+$('btnSalirPrueba').onclick = salirPrueba;
+$('btnManual').onclick = () => {
+  S.manual = true; comenzarGuia(); chip('ok', T('chip.manual'));
+  $('cifra').textContent = '—'; $('tiempo').textContent = T('manual.titulo');
+  $('instruccion').textContent = T('manual.toca');
+};
+$('btnReintentar').onclick = () => { S.manual = false; comenzarGuia(); iniciarGPS(); };
+$('btnSeguirGuia').onclick = () => { vista('vGuia'); };
+
+$('btnAlt').onclick = () => { S.verAlt = !S.verAlt; actualizar(); };
+$('btnUsarAlt').onclick = () => {
+  const alt = S.res && S.res.alternativa; if (!alt) return;
+  S.fija = S.fija ? null : alt;
+  S.verAlt = false; S.clave = null; S.anuncioInicial = false; S.enVia = null; actualizar();
+  avisar(T(S.fija ? 'alt.guiandoAlt' : 'alt.guiandoRec'));
+};
+
+/* ---------- Simulación de caminata (modo prueba) ---------- */
+function detenerSim() { if (S.sim) { clearInterval(S.sim.id); S.sim = null; $('btnSimular').textContent = T('prueba.simular'); } }
+$('btnSimular').onclick = () => {
+  if (S.sim) return detenerSim();
+  const r = S.res && S.res.principal;
+  if (!r) { avisar(T('prueba.primero')); return; }
+  const camino = r.camino.slice(), L = C.largo(camino), paso = S.modo === 'vehiculo' ? 40 : 9;
+  S.sim = { d: 0, id: 0 };
+  $('btnSimular').textContent = T('prueba.detener');
+  S.sim.id = setInterval(() => {
+    if (!S.sim) return;
+    S.sim.d = Math.min(L, S.sim.d + paso);
+    fijarPosicion(C.puntoA(camino, S.sim.d), 5, null);
+    if (S.sim && S.sim.d >= L) detenerSim();
+  }, 180);
+};
+
+/* ---------- Menú ---------- */
+$('btnMenu').onclick = () => { pintarDiagnostico(); const m = $('menu'); if (m.showModal) m.showModal(); else m.setAttribute('open', ''); };
+$('btnCerrarMenu').onclick = () => { const m = $('menu'); if (m.close) m.close(); else m.removeAttribute('open'); };
+$('menu').addEventListener('click', (e) => { if (e.target === $('menu')) $('menu').close(); });
+
+function esc(t) { return String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+function pintarDiagnostico() {
+  const n = S.net; if (!n) return;
+  const km = n.lines.reduce((s, l) => s + l.largo, 0) / 1000;
+  const sectores = [...new Set(n.lines.map(l => l.sector).concat(n.pes.map(p => p.sector)).filter(Boolean))];
+  let h = `<div class="resumen tabla-num">${n.lines.length} vías (${km.toFixed(2).replace('.', ',')} km) · ${n.pes.length} punto${n.pes.length === 1 ? '' : 's'} de encuentro · ${n.uniones.length} uniones${n.nCruces ? ' · ' + n.nCruces + ' cruces' : ''}</div>`;
+  if (S.zonas.length) {
+    h += `<div class="tabla-num">${S.zonas.length} polígono${S.zonas.length === 1 ? '' : 's'} de zona de amenaza.</div>`;
+    const peEnZona = n.pes.filter(pe => C.zonaEn(S.zonas, pe.coord));
+    if (peEnZona.length) h += '<ul>' + peEnZona.map(pe => `<li><span class="nivel aviso">aviso</span>«${esc(pe.nombre)}» (${pe.coord[1].toFixed(5)}, ${pe.coord[0].toFixed(5)}) está dentro de la zona de amenaza.</li>`).join('') + '</ul>';
+  }
+  else h += `<div class="nota">Sin zona de amenaza cargada: la guía no indica si la persona está bajo la cota 30.</div>`;
+  if (S.mar && S.mar.avisos.length) h += '<ul>' + S.mar.avisos.map(a => `<li><span class="nivel aviso">aviso</span>${esc(a)}</li>`).join('') + '</ul>';
+  h += S.mar && S.mar.conMar
+    ? `<div class="tabla-num">Polígono de mar cargado (${S.mar.mares.length}): se detecta con precisión si la persona está en el mar.</div>`
+    : S.mar && S.mar.conTierra
+    ? `<div class="tabla-num">Polígonos de tierra cargados (${S.mar.tierras.length}): se detecta con precisión si la persona está en el mar.</div>`
+    : S.mar && S.mar.conCosta
+    ? `<div class="tabla-num">Línea de costa cargada: ${S.mar.segs.length} tramos. Se detecta con precisión si la persona está en el mar.</div>`
+    : `<div class="nota">Sin línea de costa: el mar se detecta con una regla aproximada (si para llegar al punto de encuentro hay que cruzar la zona de amenaza).</div>`;
+  h += S.vehiculo.length ? `<div class="tabla-num">${S.vehiculo.length} puntos seguros vehiculares.</div>` : `<div class="nota">Sin puntos seguros vehiculares: en modo vehículo no se ofrece ruta en auto.</div>`;
+  h += `<div class="nota">Sectores: ${esc(sectores.join(', ') || '—')}. Datos ${esc(S.fuente)}${S.datos.generado ? ', generados el ' + esc(S.datos.generado) : ''}.</div>`;
+  const errores = n.avisos.filter(a => a.nivel !== 'info'), infos = n.avisos.filter(a => a.nivel === 'info');
+  if (!n.lines.some(l => !l.llegaAPE)) h += `<div><span class="nivel">ok</span>Todas las vías llegan a un punto de encuentro.</div>`;
+  if (n.avisos.length) h += '<ul>' + errores.concat(infos).map(a => `<li><span class="nivel ${a.nivel}">${a.nivel}</span>${esc(a.texto)}</li>`).join('') + '</ul>';
+  if (n.uniones.length) h += '<details><summary>Uniones detectadas</summary><ul class="tabla-num">' + n.uniones.map(u => `<li>${esc(u.via)} → ${esc(u.con)}: ${u.d.toFixed(1).replace('.', ',')} m</li>`).join('') + '</ul></details>';
+  $('diag').innerHTML = h;
+}
+
+/* ---------- Cargar KML / KMZ ---------- */
+async function leerKMZ(buf) {
+  const dv = new DataView(buf); let eocd = -1;
+  for (let i = buf.byteLength - 22; i >= Math.max(0, buf.byteLength - 65557); i--) if (dv.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+  if (eocd < 0) throw new Error('El archivo KMZ no es válido.');
+  const n = dv.getUint16(eocd + 10, true); let off = dv.getUint32(eocd + 16, true);
+  const ent = [];
+  for (let k = 0; k < n; k++) {
+    if (dv.getUint32(off, true) !== 0x02014b50) break;
+    const metodo = dv.getUint16(off + 10, true), tam = dv.getUint32(off + 20, true);
+    const ln = dv.getUint16(off + 28, true), lx = dv.getUint16(off + 30, true), lc = dv.getUint16(off + 32, true), lho = dv.getUint32(off + 42, true);
+    ent.push({ nombre: new TextDecoder().decode(new Uint8Array(buf, off + 46, ln)), metodo, tam, lho });
+    off += 46 + ln + lx + lc;
+  }
+  const kmls = ent.filter(e => /\.kml$/i.test(e.nombre)).sort((a, b) => (/(^|\/)doc\.kml$/i.test(b.nombre) ? 1 : 0) - (/(^|\/)doc\.kml$/i.test(a.nombre) ? 1 : 0));
+  if (!kmls.length) throw new Error('El KMZ no contiene un archivo .kml.');
+  const e = kmls[0], l1 = dv.getUint16(e.lho + 26, true), l2 = dv.getUint16(e.lho + 28, true);
+  const bytes = new Uint8Array(buf, e.lho + 30 + l1 + l2, e.tam);
+  if (e.metodo === 0) return new TextDecoder().decode(bytes);
+  if (e.metodo === 8 && typeof DecompressionStream !== 'undefined') {
+    const s = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+    return await new Response(s).text();
+  }
+  throw new Error('Este navegador no puede abrir el KMZ. Descomprímelo y carga el .kml.');
+}
+const RE_ZONA = /cota|inund|riesgo|amenaza|[áa]reas? de evacuaci[óo]n|areas?_evac/i;
+function parsearKML(texto, nombreArchivo) {
+  const doc = new DOMParser().parseFromString(texto, 'application/xml');
+  if (doc.getElementsByTagName('parsererror').length) throw new Error('«' + nombreArchivo + '» no es un KML válido.');
+  const base = nombreArchivo.replace(/\.(kml|kmz)$/i, '');
+  const out = { vias: [], pe: [], zonas: [], vehiculo: [], costa: [], tierra: [], aguas: [], ignorados: 0 };
+  const hijoTxt = (el, tag) => { for (const c of el.children) if (c.localName === tag) return (c.textContent || '').trim(); return ''; };
+  const docNom = (() => { const d = doc.getElementsByTagNameNS('*', 'Document')[0]; return d ? hijoTxt(d, 'name') : ''; })();
+  const costaArchivo = /costa|coast|litoral|marea/i.test(base + ' ' + docNom);
+  const RE_MAR = /m[aá]scara|millas|oc[eé]ano|mar[\s_-]*territorial|\bmar\b/i;
+  const leer = (txt) => (txt || '').trim().split(/\s+/).map(s => s.split(',').map(Number)).filter(a => a.length >= 2 && isFinite(a[0]) && isFinite(a[1])).map(a => [a[0], a[1]]);
+  const coords = (g) => { const c = [...g.children].find(x => x.localName === 'coordinates'); return leer(c ? c.textContent : ''); };
+  const anillo = (borde) => { const lr = borde.getElementsByTagNameNS('*', 'LinearRing')[0]; return lr ? coords(lr) : []; };
+  (function rec(el, sector, textos) {
+    const tag = el.localName;
+    if (tag === 'Folder' || tag === 'Document') {
+      const n = hijoTxt(el, 'name');
+      if (n) textos = textos.concat(n);
+      if (tag === 'Folder' && n) sector = n.replace(/\s*\(\d+\)\s*$/, ''); else if (tag === 'Document' && n && !sector) sector = n;
+    }
+    if (tag === 'Placemark') {
+      const nom = hijoTxt(el, 'name'), todo = textos.concat(nom).join(' ');
+      const esMar = RE_MAR.test(todo);
+      const esCosta = esMar || costaArchivo || /l[ií]nea\s*de\s*costa|coastline|litoral|marea/i.test(todo), esAuto = /veh[ií]cul|autom[oó]vil/i.test(todo);
+      for (const g of el.getElementsByTagNameNS('*', 'Point')) { const c = coords(g); if (c.length) (esAuto ? out.vehiculo : out.pe).push({ nombre: nom || (esAuto ? 'Punto seguro vehicular' : 'Punto de encuentro'), sector, coord: c[0] }); }
+      for (const g of el.getElementsByTagNameNS('*', 'LineString')) { const c = coords(g); if (c.length > 1) { if (esCosta) out.costa.push(c); else out.vias.push({ nombre: nom || 'Vía de evacuación', sector, coords: c }); } }
+      if (esCosta) {
+        for (const g of el.getElementsByTagNameNS('*', 'Polygon')) {
+          const anillos = [...g.children].filter(b => b.localName === 'outerBoundaryIs' || b.localName === 'innerBoundaryIs').map(anillo).filter(r => r.length >= 4);
+          if (anillos.length) (esMar ? out.aguas : out.tierra).push({ anillos });
+        }
+        return;
+      }
+      for (const g of el.getElementsByTagNameNS('*', 'Polygon')) {
+        if (!RE_ZONA.test(textos.concat(nom).join(' '))) { out.ignorados++; continue; }
+        const anillos = [...g.children].filter(b => b.localName === 'outerBoundaryIs' || b.localName === 'innerBoundaryIs').map(anillo).filter(r => r.length >= 4);
+        if (anillos.length) out.zonas.push({ nombre: nom || textos[textos.length - 1] || 'Zona de amenaza', sector, anillos });
+      }
+      return;
+    }
+    for (const c of el.children) rec(c, sector, textos);
+  })(doc.documentElement, '', [base]);
+  for (const x of out.vias.concat(out.pe, out.zonas, out.vehiculo)) if (!x.sector) x.sector = base;
+  return out;
+}
+async function leerArchivo(f) {
+  const buf = await f.arrayBuffer();
+  const b = new Uint8Array(buf, 0, Math.min(2, buf.byteLength));
+  const texto = b[0] === 0x50 && b[1] === 0x4b ? await leerKMZ(buf) : new TextDecoder().decode(buf);
+  return parsearKML(texto, f.name);
+}
+$('archivoKml').onchange = async (e) => {
+  const archivos = [...(e.target.files || [])]; if (!archivos.length) return;
+  const est = $('archivoEstado'); est.textContent = 'Leyendo ' + archivos.length + (archivos.length === 1 ? ' archivo…' : ' archivos…');
+  const sumar = $('chkSumar').checked;
+  const junto = sumar ? { vias: S.datos.vias.slice(), pe: S.datos.pe.slice(), zonas: (S.datos.zonas || []).slice(), vehiculo: (S.datos.vehiculo || []).slice(), costa: (S.datos.costa || []).slice(), tierra: (S.datos.tierra || []).slice(), aguas: (S.datos.aguas || []).slice() }
+    : { vias: [], pe: [], zonas: [], vehiculo: [], costa: [], tierra: [], aguas: [] };
+  const lineas = [];
+  let ignorados = 0;
+  for (const f of archivos) {
+    try {
+      const d = await leerArchivo(f);
+      junto.vias.push(...d.vias); junto.pe.push(...d.pe); junto.zonas.push(...d.zonas); junto.vehiculo.push(...d.vehiculo); junto.costa.push(...d.costa); junto.tierra.push(...d.tierra); junto.aguas.push(...d.aguas); ignorados += d.ignorados;
+      const partes = [];
+      if (d.vias.length) partes.push(d.vias.length + ' vías');
+      if (d.pe.length) partes.push(d.pe.length + ' PE');
+      if (d.zonas.length) partes.push(d.zonas.length + ' polígonos de zona de amenaza');
+      if (d.vehiculo.length) partes.push(d.vehiculo.length + ' puntos seguros vehiculares');
+      if (d.costa.length) partes.push(d.costa.length + ' tramos de línea de costa');
+      if (d.tierra.length) partes.push(d.tierra.length + ' polígonos de tierra (costa)');
+      if (d.aguas.length) partes.push(d.aguas.length + ' polígonos de mar');
+      lineas.push('«' + f.name + '»: ' + (partes.join(', ') || 'sin vías, PE ni zonas'));
+    } catch (err) { lineas.push('«' + f.name + '»: ' + (err.message || String(err))); }
+  }
+  const pintar = (fin) => { est.innerHTML = lineas.map(l => esc(l)).join('<br>') + (fin ? '<br><strong>' + esc(fin) + '</strong>' : ''); };
+  if (!junto.vias.length) { pintar('No se cargó nada: ninguno de los archivos tiene líneas (vías de evacuación).'); e.target.value = ''; return; }
+  if (junto.costa.length || junto.tierra.length || junto.aguas.length) {
+    // dejar solo la costa cercana a lo cargado
+    const bb = [Infinity, Infinity, -Infinity, -Infinity], m = 0.25;
+    for (const c of junto.vias.flatMap(v => v.coords).concat(junto.pe.map(p => p.coord))) { bb[0] = Math.min(bb[0], c[0]); bb[1] = Math.min(bb[1], c[1]); bb[2] = Math.max(bb[2], c[0]); bb[3] = Math.max(bb[3], c[1]); }
+    const caja = [bb[0] - m, bb[1] - m, bb[2] + m, bb[3] + m];
+    junto.costa = C.recortarLineas(junto.costa, caja);
+    const recPol = (lista) => lista.map(t => ({ anillos: t.anillos.map(r => C.recortarAnillo(r, caja)).filter(r => r.length >= 4) })).filter(t => t.anillos.length);
+    junto.tierra = recPol(junto.tierra); junto.aguas = recPol(junto.aguas);
+  }
+  if (!junto.pe.length) lineas.push('Atención: no hay puntos de encuentro; elige también el archivo de los PE.');
+  if (ignorados) lineas.push(ignorados + ' polígonos ignorados (su carpeta o nombre no menciona cota, inundación, riesgo, amenaza ni área de evacuación).');
+  const sectores = [...new Set(junto.vias.map(v => v.sector).filter(Boolean))];
+  const titulo = sectores.length === 1 ? sectores[0] : sumar ? S.datos.titulo : 'Ruta de evacuación';
+  const nombres = archivos.length === 1 ? '«' + archivos[0].name + '»' : archivos.length + ' archivos';
+  cargarRed({ titulo, generado: new Date().toISOString().slice(0, 10), sectores, ...junto }, (sumar ? 'sumados desde ' : 'cargados desde ') + nombres);
+  pintar(`Total: ${S.net.lines.length} vías, ${S.net.pes.length} puntos de encuentro${S.zonas.length ? ', ' + S.zonas.length + ' polígonos de zona de amenaza' : ''}.`);
+  pintarDiagnostico();
+  if (S.guiando && S.pos) actualizar(); else encuadrarRed();
+  e.target.value = '';
+};
+
+/* ---------- Capas de ArcGIS Online (opcional) ---------- */
+async function cargarArcGIS() {
+  const a = CONFIG.arcgis; if (!a || !a.vias || !a.pe) return;
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 8000);
+  const q = (u) => fetch(u.replace(/\/+$/, '') + '/query?where=1%3D1&outFields=*&outSR=4326&f=geojson', { signal: ctl.signal }).then(r => r.ok ? r.json() : Promise.reject(r.status));
+  try {
+    const [gv, gp] = await Promise.all([q(a.vias), q(a.pe)]);
+    const campo = (p, re) => { for (const k in p || {}) if (re.test(k) && p[k] != null && p[k] !== '') return String(p[k]); return ''; };
+    const reNom = /^(nombre|name|nom|descripcion|descrip)/i, reSec = /(sector|localidad|caleta|comuna)/i;
+    const vias = [], pe = [];
+    for (const f of gv.features || []) {
+      const g = f.geometry; if (!g) continue;
+      const partes = g.type === 'LineString' ? [g.coordinates] : g.type === 'MultiLineString' ? g.coordinates : [];
+      for (const cs of partes) vias.push({ nombre: campo(f.properties, reNom) || 'Vía de evacuación', sector: campo(f.properties, reSec), coords: cs.map(c => [c[0], c[1]]) });
+    }
+    for (const f of gp.features || []) {
+      const g = f.geometry; if (!g || g.type !== 'Point') continue;
+      pe.push({ nombre: campo(f.properties, reNom) || 'Punto de encuentro', sector: campo(f.properties, reSec), coord: [g.coordinates[0], g.coordinates[1]] });
+    }
+    if (vias.length && pe.length && !S.guiando) {
+      cargarRed({ titulo: DATOS.titulo, generado: new Date().toISOString().slice(0, 10), vias, pe }, 'leídos desde ArcGIS Online');
+      encuadrarRed();
+    }
+  } catch (_) { /* sin conexión: se usan los datos incluidos */ } finally { clearTimeout(t); }
+}
+
+/* ---------- Versión nacional: paquetes por región y amenaza ---------- */
+function definitivoCercano(p) {
+  let mejor = null, d = Infinity;
+  for (const x of S.defs) { const k = C.dist(p, x.coord); if (k < d) { d = k; mejor = x; } }
+  return mejor;
+}
+const enCaja = (bb, p, m) => p[0] >= bb[0] - m && p[0] <= bb[2] + m && p[1] >= bb[1] - m && p[1] <= bb[3] + m;
+const distCaja = (bb, p) => Math.hypot(Math.max(bb[0] - p[0], 0, p[0] - bb[2]), Math.max(bb[1] - p[1], 0, p[1] - bb[3]));
+const leerPref = (k) => { try { return localStorage.getItem('evac.' + k); } catch (_) { return null; } };
+const guardarPref = (k, v) => { try { localStorage.setItem('evac.' + k, v); } catch (_) { /* sin almacenamiento */ } };
+const urlDatos = (p) => 'datos/' + p.archivo + '?v=' + encodeURIComponent(S.indice.version || '');
+
+function aplicarAmenaza(a) {
+  S.amenaza = AMENAZAS[a] ? a : 'tsunami';
+  const A = TA(S.amenaza);
+  CONFIG.textos = Object.assign({}, D.textos, A.textos);
+  $('inicioEyebrow').textContent = A.etiqueta;
+  $('inicioTexto').textContent = A.inicioTexto;
+  $('inicioRecuadro').innerHTML = A.inicioRecuadro;
+  $('tarjetaModo').querySelector('p').textContent = T(AM().autoPorVias ? 'modo.pareceAuto' : 'modo.pareceNoPE');
+  $('leyendaZonaTxt').textContent = T(S.amenaza === 'volcan' ? 'ley.zonaVolcan' : 'ley.zonaTsunami');
+}
+
+async function cargarPaquete(p, opciones) {
+  opciones = opciones || {};
+  S.cargando = true;
+  try {
+    const r = await fetch(urlDatos(p));
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const datos = await r.json();
+    S.paquete = p; aplicarAmenaza(p.amenaza);
+    cargarRed(datos, 'de ' + p.nombre + ' (' + IDIOMAS.es.amenazas[S.amenaza].nombre.toLowerCase() + ')');
+    guardarPref('paquete', p.id);
+    $('selPaquete').value = p.id;
+    if (!opciones.sinEncuadre && !S.pos) encuadrarRed();
+    return true;
+  } catch (e) {
+    avisar(T('datos.errorPaquete', { n: p.nombre }));
+    return false;
+  } finally { S.cargando = false; }
+}
+
+// Paquetes que cubren un punto (margen ~10 km), los más cercanos primero
+function candidatos(ll, amenaza) {
+  const ps = (S.indice ? S.indice.paquetes : []).filter(p => !amenaza || p.amenaza === amenaza);
+  const area = (b) => (b[2] - b[0]) * (b[3] - b[1]);
+  const cerca = ps.filter(p => enCaja(p.bbox, ll, 0.1)).sort((a, b) => distCaja(a.bbox, ll) - distCaja(b.bbox, ll) || area(a.bbox) - area(b.bbox));
+  return cerca.length ? cerca : ps.slice().sort((a, b) => distCaja(a.bbox, ll) - distCaja(b.bbox, ll)).slice(0, 1);
+}
+
+// Devuelve true si hubo que cargar o elegir paquete (la posición se procesa después)
+function revisarPaquete(ll) {
+  if (S.cargando || S.eligiendo) return true;
+  if (S.paquete && enCaja(S.paquete.bbox, ll, 0.12) && (S.amenazaElegida || S.confirmado === S.paquete.id)) return false;
+  const fijada = S.amenazaElegida ? S.amenaza : null;
+  const cs = candidatos(ll, fijada);
+  if (!cs.length) return false;
+  const amenazas = [...new Set(cs.map(p => p.amenaza))];
+  if (!fijada && amenazas.length > 1) { if (!S.guiando) return false; mostrarEleccion(cs, ll); return true; }
+  const p = cs.find(x => S.paquete && x.id === S.paquete.id) || cs[0];
+  S.confirmado = p.id;
+  if (S.paquete && p.id === S.paquete.id) return false;
+  cargarPaquete(p, { sinEncuadre: true }).then(() => {
+    if (S.guiando) { ponerModoInicial(); fijarPosicion(ll, S.prec, null); }
+  });
+  return true;
+}
+function ponerModoInicial() {
+  S.modo = AM().modoInicial; S.anuncioInicial = false; S.primerFix = false;
+  $('btnModo').textContent = textoBtnModo();
+}
+function mostrarEleccion(cs, ll) {
+  S.eligiendo = true;
+  const lista = $('listaAmenazas'); lista.innerHTML = '';
+  for (const a of Object.keys(AMENAZAS)) {
+    const p = cs.find(x => x.amenaza === a); if (!p) continue;
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'boton-amenaza ' + a;
+    b.innerHTML = '<span class="ico" aria-hidden="true">' + AMENAZAS[a].ico + '</span><b>' + esc(TA(a).nombre) + '</b><span>' + esc(TA(a).sub) + '</span>';
+    b.onclick = async () => {
+      S.eligiendo = false; S.amenazaElegida = true;
+      await cargarPaquete(p, { sinEncuadre: true });
+      if (S.guiando) { ponerModoInicial(); vista('vGuia'); if (ll) fijarPosicion(ll, S.prec, null); }
+      else { vista('vInicio'); encuadrarRed(); }
+    };
+    lista.appendChild(b);
+  }
+  vista('vAmenaza');
+  S.eleccion = { cs, ll };
+  hablar(T('amenaza.voz', { lista: cs.map(p => TA(p.amenaza).nombre).filter((x, i, a) => a.indexOf(x) === i).join(T('amenaza.o')) }), true);
+}
+
+// Guarda todos los paquetes en el teléfono para usarlos sin internet
+async function guardarTodo() {
+  const ps = S.indice.paquetes, total = ps.length;
+  const lento = navigator.connection && (navigator.connection.saveData || /2g/.test(navigator.connection.effectiveType || ''));
+  if (lento) { ponerOffline('off.lento'); return; }
+  let ok = 0;
+  for (const p of ps) {
+    try { const r = await fetch(urlDatos(p)); if (r.ok) { await r.arrayBuffer(); ok++; } } catch (_) { /* sin red */ }
+    $('barraOffline').style.width = Math.round(100 * ok / total) + '%';
+    if (ok < total) ponerOffline('off.progreso', { ok, total }); else ponerOffline(null);
+    await new Promise(res => setTimeout(res, 150));
+  }
+  const mb = ps.reduce((s, p) => s + (p.bytes || 0), 0) / 1e6;
+  if (ok === total) ponerOffline(total === 1 ? 'off.listo1' : 'off.listo', { total, mb: mb.toFixed(1).replace('.', D.decimal) });
+  else ponerOffline('off.parcial', { ok, total });
+}
+// Estado del guardado sin internet: se guarda la clave para volver a escribirlo si cambia el idioma
+function ponerOffline(k, v) { S.offline = k ? { k, v } : null; pintarOffline(); }
+function pintarOffline() {
+  const o = S.offline;
+  if (o === undefined) { $('estadoOffline').textContent = T('menu.preparando'); return; }   // aún no empieza
+  if (o && o.v && o.v.mb) o.v.mb = String(o.v.mb).replace(/[.,]/, D.decimal);
+  $('estadoOffline').textContent = o ? T(o.k, o.v) : '';
+}
+
+function llenarSelector() {
+  const sel = $('selPaquete'); sel.innerHTML = '';
+  for (const a of Object.keys(AMENAZAS)) {
+    const ps = S.indice.paquetes.filter(p => p.amenaza === a); if (!ps.length) continue;
+    const g = document.createElement('optgroup'); g.label = TA(a).nombre;
+    for (const p of ps) { const o = document.createElement('option'); o.value = p.id; o.textContent = T('datos.opcion', { n: p.nombre, v: p.vias, p: p.pe }); g.appendChild(o); }
+    sel.appendChild(g);
+  }
+  if (S.paquete) sel.value = S.paquete.id;
+  sel.onchange = async () => {
+    const p = S.indice.paquetes.find(x => x.id === sel.value); if (!p) return;
+    S.amenazaElegida = true;
+    await cargarPaquete(p); $('menu').close();
+    if (S.guiando && S.pos && !S.prueba) { ponerModoInicial(); actualizar(); } else { vista('vInicio'); encuadrarRed(); }
+  };
+}
+$('btnCambiar').onclick = () => { pintarDiagnostico(); $('menu').showModal(); $('selPaquete').focus(); };
+
+const PARAM = (() => { const q = new URLSearchParams(location.search); return { amenaza: AMENAZAS[q.get('amenaza')] ? q.get('amenaza') : null, region: (q.get('region') || '').padStart(2, '0') }; })();
+
+async function arrancarNacional() {
+  let indice = null;
+  try { const r = await fetch(CONFIG.indice, { cache: 'no-cache' }); if (r.ok) indice = await r.json(); } catch (_) { /* sin red y sin copia */ }
+  if (!indice || !indice.paquetes || !indice.paquetes.length) return false;
+  S.nacional = true; S.indice = indice; S.amenazaElegida = !!PARAM.amenaza;
+  $('secRegion').hidden = false; $('btnCambiar').hidden = false;
+  llenarSelector();
+  // Paquete inicial: el de la dirección (?region=08&amenaza=volcan), el último usado o el primero
+  const ps = indice.paquetes;
+  let p = ps.find(x => x.region === PARAM.region && (!PARAM.amenaza || x.amenaza === PARAM.amenaza))
+    || ps.find(x => x.id === leerPref('paquete') && (!PARAM.amenaza || x.amenaza === PARAM.amenaza))
+    || ps.find(x => x.amenaza === (PARAM.amenaza || 'tsunami')) || ps[0];
+  await cargarPaquete(p);
+  vista('vInicio'); encuadrarRed();
+  if ('serviceWorker' in navigator) navigator.serviceWorker.ready.then(() => setTimeout(guardarTodo, 1500)).catch(() => {});
+  else setTimeout(guardarTodo, 1500);
+  return true;
+}
+
+/* ---------- Tema (claro, noche o automático) ---------- */
+function ponerTema(t) {
+  if (t === 'claro') document.documentElement.dataset.theme = 'light';
+  else if (t === 'oscuro') document.documentElement.dataset.theme = 'dark';
+  else delete document.documentElement.dataset.theme;
+  $('temaAuto').setAttribute('aria-pressed', String(t !== 'claro' && t !== 'oscuro'));
+  $('temaClaro').setAttribute('aria-pressed', String(t === 'claro'));
+  $('temaOscuro').setAttribute('aria-pressed', String(t === 'oscuro'));
+  guardarPref('tema', t); leerColores(); mapa.pedir();
+}
+$('temaAuto').onclick = () => ponerTema('auto');
+$('temaClaro').onclick = () => ponerTema('claro');
+$('temaOscuro').onclick = () => ponerTema('oscuro');
+ponerTema(leerPref('tema') || 'auto');
+
+/* ---------- Instalar como app ---------- */
+let pedidoInstalar = null;
+window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); pedidoInstalar = e; $('btnInstalar').hidden = false; $('btnInstalarMenu').hidden = false; });
+async function instalar() {
+  if (!pedidoInstalar) return;
+  pedidoInstalar.prompt();
+  try { await pedidoInstalar.userChoice; } catch (_) { /* cancelado */ }
+  pedidoInstalar = null; $('btnInstalar').hidden = true; $('btnInstalarMenu').hidden = true;
+}
+$('btnInstalar').onclick = instalar; $('btnInstalarMenu').onclick = instalar;
+function ponerInstalarTxt() {
+  let k = 'menu.instalarTxt';
+  if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !navigator.standalone) k = 'menu.instalarIphone';
+  if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) k = 'menu.instalada';
+  $('instalarTxt').textContent = T(k);
+}
+
+/* ---------- Idioma: el de la dirección (?lang=en), el elegido antes o el del teléfono ---------- */
+function idiomaInicial() {
+  const q = (new URLSearchParams(location.search).get('lang') || '').slice(0, 2).toLowerCase();
+  if (IDIOMAS[q]) return q;
+  const g = leerPref('idioma'); if (g && IDIOMAS[g]) return g;
+  for (const l of (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'es'])) {
+    const k = String(l).slice(0, 2).toLowerCase(); if (IDIOMAS[k]) return k;
+  }
+  return 'es';
+}
+function pintarLlegada() {
+  $('llegadaPE').textContent = nombreL(S.llegadaPE || T('ley.pe')); $('llegadaTxt').textContent = CONFIG.textos.llegada;
+  const def = S.pos ? definitivoCercano(S.pos) : null;
+  $('llegadaSiguiente').hidden = !def;
+  if (def) $('llegadaSiguiente').textContent = T('llegada.def', { n: nombreL(def.nombre), d: fmtMtxt(C.dist(S.pos, def.coord)) });
+}
+function ponerIdioma(l, guardar) {
+  LANG = IDIOMAS[l] ? l : 'es'; D = IDIOMAS[LANG];
+  document.documentElement.lang = LANG;
+  for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = T(el.dataset.i18n);
+  for (const el of document.querySelectorAll('[data-i18n-aria]')) el.setAttribute('aria-label', T(el.dataset.i18nAria));
+  for (const b of document.querySelectorAll('.idiomas button')) b.setAttribute('aria-pressed', String(b.dataset.lang === LANG));
+  $('secArchivos').hidden = $('secRevision').hidden = LANG !== 'es';    // herramientas de los equipos: solo en español
+  if (guardar) guardarPref('idioma', LANG);
+  aplicarAmenaza(S.amenaza);
+  ponerVoz(S.voz); ponerBase(baseActual); ponerInstalarTxt(); pintarOffline();
+  $('btnModo').textContent = textoBtnModo();
+  $('btnSimular').textContent = T(S.sim ? 'prueba.detener' : 'prueba.simular');
+  $('btnAltTxt').textContent = T('guia.alternativa'); $('btnUsarAlt').textContent = T('guia.seguirRuta'); $('btnGmapsTxt').textContent = T('guia.gmaps');
+  if (S.net) { pintarResumen(); ponerTitulo(); $('leyendaPE').textContent = T(S.hayTransitorio ? 'ley.pet' : 'ley.pe'); }
+  if (S.indice) llenarSelector();
+  if (S.prueba || S.manual) chip('ok', T(S.prueba ? 'chip.prueba' : 'chip.manual'));
+  if (!$('vLlegada').hidden) pintarLlegada();
+  if (!$('vAmenaza').hidden && S.eleccion) mostrarEleccion(S.eleccion.cs, S.eleccion.ll);
+  // La guía en curso se vuelve a escribir (y a anunciar por voz) en el idioma nuevo
+  if (S.guiando && S.pos) { S.anuncioInicial = false; S.ultimoTxtVoz = ''; actualizarZona(); actualizar(); }
+  else if (S.guiando && S.prueba) { $('tiempo').textContent = T('prueba.modo'); $('instruccion').textContent = T('prueba.toca'); }
+  mapa.pedir();
+}
+for (const b of document.querySelectorAll('.idiomas button')) b.onclick = () => ponerIdioma(b.dataset.lang, true);
+
+/* ---------- Arranque ---------- */
+ponerIdioma(idiomaInicial(), false);
+cargarRed(DATOS, 'incluidos en la página');
+aplicarAmenaza(DATOS.amenaza || 'tsunami');
+vista('vInicio');
+requestAnimationFrame(encuadrarRed);
+if (!(DATOS.vias && DATOS.vias.length) && CONFIG.indice) {
+  mapa.encuadrar([-75.5, -55.5, -67, -17.5], { t: 20, b: 20, l: 20, r: 20 }, 6);
+  $('estadoDatos').textContent = T('datos.cargando');
+  arrancarNacional().then((ok) => { if (!ok) $('estadoDatos').textContent = T('datos.error'); });
+} else cargarArcGIS();
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) navigator.serviceWorker.register('sw.js').catch(() => {});
+if ('speechSynthesis' in window) speechSynthesis.getVoices();
+window.__evac = { S, mapa, actualizar, fijarPosicion, ponerIdioma, T };
+})();
+</script>
+</body>
+</html>

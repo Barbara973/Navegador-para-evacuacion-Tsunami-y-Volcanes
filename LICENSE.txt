@@ -1,0 +1,12 @@
+Ruta de Evacuación
+© 2026 Bárbara del Pilar González Lucero. Todos los derechos reservados.
+
+Este repositorio es público solo para que la aplicación pueda publicarse en internet.
+No es software libre: se prohíbe copiar, modificar, redistribuir o usar este código,
+total o parcialmente, sin autorización escrita de la autora.
+
+Los datos de vías de evacuación, puntos de encuentro y zonas de amenaza son capas
+públicas de SENAPRED (visor Chile Preparado) y no forman parte de la obra.
+
+© 2026 Bárbara del Pilar González Lucero. All rights reserved. This repository is public
+only so the application can be served on the web. It is not open-source software.
