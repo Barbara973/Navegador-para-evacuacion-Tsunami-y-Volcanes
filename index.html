@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-nnCnlYptke3ocGahEaE36dqbehQhm49eNE/MxvB013U=' 'sha256-0Q9DAv9Cy89A3/1vtUhd+lY2RweR69u8YHxMzXb9glY=' 'sha256-E+VfAv3xJ/hkLt1pavyUvaMNB/0trT8YQ0jCc/SbMZg=' 'sha256-lcidphfaTqsS226rv1B1TC/eSl0cMPOJbs8xZvJg0bE=' 'sha256-fwRrOzSd7wyMAjDIy2Je8wX4xFAROEqB8C3wOQ1Q97w=' 'sha256-dIOHXWKIDBKMlyhjSaSCI/0hqSi/8Q0xIt2Bz253+tY='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tile.openstreetmap.org https://server.arcgisonline.com; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-nnCnlYptke3ocGahEaE36dqbehQhm49eNE/MxvB013U=' 'sha256-0Q9DAv9Cy89A3/1vtUhd+lY2RweR69u8YHxMzXb9glY=' 'sha256-BBZj6fFAa5cqOXbtfJDQyHgrg1+vqbYCErpHz+tkchs=' 'sha256-Iv5BhrCXsLmHDMVrlp6e/KsskdUR4aLg5w4OWDwtbaQ=' 'sha256-o4BpecFGIZmeKX70dAnyMjnDMwBmtJmCpcxfUxv5GRk=' 'sha256-Kbc8u3Ot5zn3Hi/YN4xb1kJ8wC8lV3R4Hi1/utTr1B0='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tile.openstreetmap.org https://server.arcgisonline.com; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style>
 /* Fuentes alojadas en el mismo sitio (licencia SIL OFL): la app no pide nada a Google Fonts */
@@ -56,8 +56,8 @@ body{background:var(--papel);color:var(--tinta);font:16px/1.45 var(--f-texto);ov
 button,a.boton{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--alerta);outline-offset:2px}
 
-#app{height:100%;display:grid;grid-template-rows:auto auto minmax(40vh,1fr) auto;grid-template-columns:minmax(0,1fr)}
-#app > .barra{grid-row:1} #app > .franja{grid-row:2} #app > .mapa-zona{grid-row:3} #app > .hoja{grid-row:4}
+#app{height:100%;display:grid;grid-template-rows:auto auto auto minmax(40vh,1fr) auto;grid-template-columns:minmax(0,1fr)}
+#app > .barra{grid-row:1} #app > .selector{grid-row:2} #app > .franja{grid-row:3} #app > .mapa-zona{grid-row:4} #app > .hoja{grid-row:5}
 
 /* Barra superior */
 .barra{display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 8px) 12px 8px 16px;background:var(--hoja);border-bottom:1px solid var(--linea)}
@@ -74,6 +74,20 @@ button,a.boton{font:inherit;color:inherit}
 @keyframes latido{50%{opacity:.25}}
 .icono-btn{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;border:1px solid var(--linea);background:var(--hoja);cursor:pointer;flex:none}
 .icono-btn svg{width:22px;height:22px}
+
+/* Barra de emergencia y región: Tsunami · Volcán · Región */
+.selector{display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--hoja);border-bottom:1px solid var(--linea)}
+.selector[hidden]{display:none}
+.segmento{display:flex;flex:none;gap:2px;padding:2px;border:1px solid var(--linea);border-radius:999px}
+.segmento button{display:inline-flex;align-items:center;gap:4px;min-height:38px;padding:0 10px;border:0;border-radius:999px;background:transparent;color:var(--tinta);font-weight:700;font-size:15px;cursor:pointer}
+.segmento button[aria-pressed="true"]{background:var(--via);color:#fff}
+.segmento button[data-amenaza="volcan"][aria-pressed="true"]{background:#9a3412}
+.segmento .ico{font-size:17px;line-height:1}
+.region-chip{position:relative;display:flex;align-items:center;gap:3px;flex:1;min-width:0;min-height:44px;padding:0 26px 0 8px;border:1px solid var(--linea);border-radius:999px;color:var(--tinta)}
+.region-chip .ico{font-size:16px;line-height:1;flex:none}
+.region-chip select{appearance:none;-webkit-appearance:none;flex:1;min-width:0;height:42px;padding:0;border:0;background:transparent;color:inherit;font-weight:700;font-size:15px;text-overflow:ellipsis;cursor:pointer}
+.region-chip::after{content:"";position:absolute;right:13px;top:50%;width:7px;height:7px;border-right:2px solid var(--tenue);border-bottom:2px solid var(--tenue);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+@media (max-width:370px){.segmento button{padding:0 8px;font-size:14px}.region-chip select{font-size:14px}}
 
 /* Franja de modo prueba */
 .franja{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:8px 16px;background:var(--alerta);color:#fff;font-weight:700;font-size:14px}
@@ -106,6 +120,9 @@ button,a.boton{font:inherit;color:inherit}
 .boton{display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px;border-radius:14px;border:0;background:var(--via);color:#fff!important;font:700 22px/1 var(--f-rotulo);letter-spacing:.02em;text-transform:uppercase;cursor:pointer;text-decoration:none;padding:0 18px}
 .boton:active{background:var(--via-fuerte)}
 .boton svg{width:24px;height:24px}
+/* «Cambiar región o emergencia» a la izquierda e «Instalar» a la derecha, en la misma fila */
+.fila-enlaces{display:flex;align-items:center;gap:12px}
+.fila-enlaces .enlace-btn{flex:1;text-align:center}
 .enlace-btn{background:none;border:0;color:var(--via);font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:6px 0;justify-self:center}
 :root[data-theme="dark"] .enlace-btn{color:#8fb6ff}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .enlace-btn{color:#8fb6ff}}
@@ -231,6 +248,14 @@ select.campo{width:100%;min-height:46px;border-radius:10px;border:1px solid var(
     </button>
   </header>
 
+  <nav class="selector" id="barraSelector" hidden data-i18n-aria="sel.aria" aria-label="Emergencia y región">
+    <div class="segmento" role="group" data-i18n-aria="sel.emergencia" aria-label="Emergencia">
+      <button type="button" data-amenaza="tsunami" aria-pressed="true"><span class="ico" aria-hidden="true">🌊</span><span data-i18n="sel.tsunami">Tsunami</span></button>
+      <button type="button" data-amenaza="volcan" aria-pressed="false"><span class="ico" aria-hidden="true">🌋</span><span data-i18n="sel.volcan">Volcán</span></button>
+    </div>
+    <label class="region-chip"><span class="ico" aria-hidden="true">📍</span><select id="selRegion" data-i18n-aria="sel.region" aria-label="Región"></select></label>
+  </nav>
+
   <div class="franja" id="franjaPrueba" hidden>
     <span id="franjaTxt" data-i18n="prueba.franja">Modo prueba: toca el mapa para ubicarte.</span>
     <button id="btnSimular" type="button">Simular caminata</button>
@@ -263,9 +288,11 @@ select.campo{width:100%;min-height:46px;border-radius:10px;border:1px solid var(
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14v-5l-2-5H7l-2 5v5Z"/><path d="M5 12h14"/><circle cx="8" cy="17" r="1.6"/><circle cx="16" cy="17" r="1.6"/></svg>
         <span data-i18n="inicio.vehiculo">Voy en vehículo</span>
       </button>
+      <div class="fila-enlaces">
+        <button class="enlace-btn" id="btnCambiar" type="button" hidden data-i18n="inicio.cambiar">Cambiar región o emergencia</button>
+        <button class="enlace-btn" id="btnInstalar" type="button" hidden data-i18n="inicio.instalar">Instalar en el teléfono</button>
+      </div>
       <button class="enlace-btn" id="btnPrueba" type="button" data-i18n="inicio.prueba">Probar sin GPS (modo prueba)</button>
-      <button class="enlace-btn" id="btnCambiar" type="button" hidden data-i18n="inicio.cambiar">Cambiar región o emergencia</button>
-      <button class="enlace-btn" id="btnInstalar" type="button" hidden data-i18n="inicio.instalar">Instalar en el teléfono</button>
       <div class="idiomas" role="group" aria-label="Idioma · Language · Langue · Idioma">
         <button type="button" data-lang="es" lang="es">Español</button><button type="button" data-lang="en" lang="en">English</button><button type="button" data-lang="fr" lang="fr">Français</button><button type="button" data-lang="pt" lang="pt">Português</button>
       </div>
@@ -485,6 +512,10 @@ es: {
     'aria.mapa': 'Mapa con las vías de evacuación', 'aria.menu': 'Abrir menú', 'aria.mas': 'Acercar', 'aria.menos': 'Alejar',
     'aria.centrar': 'Seguir mi ubicación', 'aria.sat': 'Cambiar a vista satélite', 'aria.calles': 'Cambiar a mapa de calles', 'aria.cerrar': 'Cerrar',
     'prueba.franja': 'Modo prueba: toca el mapa para ubicarte.', 'prueba.simular': 'Simular caminata', 'prueba.detener': 'Detener', 'prueba.salir': 'Salir',
+    'sel.aria': 'Emergencia y región', 'sel.emergencia': 'Emergencia', 'sel.tsunami': 'Tsunami', 'sel.volcan': 'Volcán', 'sel.region': 'Región',
+    'sel.miUbicacion': 'Detectar mi ubicación', 'sel.buscando': 'Buscando tu ubicación…', 'sel.sinUbicacion': 'No se pudo obtener tu ubicación. Elige la región en la lista.',
+    'sel.sinVolcan': 'En {r} no hay vías de evacuación volcánica. Te muestro {n}, la región más cercana que las tiene.',
+    'sel.sinTsunami': 'En {r} no hay vías de evacuación por tsunami. Te muestro {n}, la región más cercana que las tiene.',
     'prueba.modo': 'Modo prueba', 'prueba.toca': 'Toca el mapa para marcar dónde estás. La guía calcula la ruta desde ese punto.',
     'prueba.primero': 'Primero toca el mapa para marcar un punto de partida.',
     'manual.titulo': 'Ubicación manual', 'manual.toca': 'Toca el mapa en el lugar donde estás.',
@@ -611,6 +642,10 @@ en: {
     'aria.mapa': 'Map of evacuation routes', 'aria.menu': 'Open menu', 'aria.mas': 'Zoom in', 'aria.menos': 'Zoom out',
     'aria.centrar': 'Follow my location', 'aria.sat': 'Switch to satellite view', 'aria.calles': 'Switch to street map', 'aria.cerrar': 'Close',
     'prueba.franja': 'Test mode: tap the map to set your location.', 'prueba.simular': 'Simulate walk', 'prueba.detener': 'Stop', 'prueba.salir': 'Exit',
+    'sel.aria': 'Emergency and region', 'sel.emergencia': 'Emergency', 'sel.tsunami': 'Tsunami', 'sel.volcan': 'Volcano', 'sel.region': 'Region',
+    'sel.miUbicacion': 'Detect my location', 'sel.buscando': 'Finding your location…', 'sel.sinUbicacion': 'Could not get your location. Choose the region from the list.',
+    'sel.sinVolcan': 'There are no volcanic evacuation routes in {r}. Showing {n}, the nearest region that has them.',
+    'sel.sinTsunami': 'There are no tsunami evacuation routes in {r}. Showing {n}, the nearest region that has them.',
     'prueba.modo': 'Test mode', 'prueba.toca': 'Tap the map to mark where you are. The guide calculates the route from that point.',
     'prueba.primero': 'First tap the map to set a starting point.',
     'manual.titulo': 'Manual location', 'manual.toca': 'Tap the map where you are.',
@@ -736,6 +771,10 @@ fr: {
     'aria.mapa': 'Carte des voies d’évacuation', 'aria.menu': 'Ouvrir le menu', 'aria.mas': 'Zoom avant', 'aria.menos': 'Zoom arrière',
     'aria.centrar': 'Suivre ma position', 'aria.sat': 'Passer à la vue satellite', 'aria.calles': 'Passer au plan des rues', 'aria.cerrar': 'Fermer',
     'prueba.franja': 'Mode test : touchez la carte pour vous situer.', 'prueba.simular': 'Simuler la marche', 'prueba.detener': 'Arrêter', 'prueba.salir': 'Quitter',
+    'sel.aria': 'Urgence et région', 'sel.emergencia': 'Urgence', 'sel.tsunami': 'Tsunami', 'sel.volcan': 'Volcan', 'sel.region': 'Région',
+    'sel.miUbicacion': 'Détecter ma position', 'sel.buscando': 'Recherche de votre position…', 'sel.sinUbicacion': 'Impossible d’obtenir votre position. Choisissez la région dans la liste.',
+    'sel.sinVolcan': 'Il n’y a pas de voies d’évacuation volcanique dans la région {r}. Voici {n}, la région la plus proche qui en a.',
+    'sel.sinTsunami': 'Il n’y a pas de voies d’évacuation en cas de tsunami dans la région {r}. Voici {n}, la région la plus proche qui en a.',
     'prueba.modo': 'Mode test', 'prueba.toca': 'Touchez la carte pour indiquer où vous êtes. Le guide calcule l’itinéraire depuis ce point.',
     'prueba.primero': 'Touchez d’abord la carte pour choisir un point de départ.',
     'manual.titulo': 'Position manuelle', 'manual.toca': 'Touchez la carte à l’endroit où vous êtes.',
@@ -861,6 +900,10 @@ pt: {
     'aria.mapa': 'Mapa com as rotas de evacuação', 'aria.menu': 'Abrir menu', 'aria.mas': 'Aproximar', 'aria.menos': 'Afastar',
     'aria.centrar': 'Seguir minha localização', 'aria.sat': 'Mudar para vista de satélite', 'aria.calles': 'Mudar para mapa de ruas', 'aria.cerrar': 'Fechar',
     'prueba.franja': 'Modo de teste: toque no mapa para se localizar.', 'prueba.simular': 'Simular caminhada', 'prueba.detener': 'Parar', 'prueba.salir': 'Sair',
+    'sel.aria': 'Emergência e região', 'sel.emergencia': 'Emergência', 'sel.tsunami': 'Tsunami', 'sel.volcan': 'Vulcão', 'sel.region': 'Região',
+    'sel.miUbicacion': 'Detectar minha localização', 'sel.buscando': 'Buscando sua localização…', 'sel.sinUbicacion': 'Não foi possível obter sua localização. Escolha a região na lista.',
+    'sel.sinVolcan': 'Não há rotas de evacuação vulcânica na região {r}. Mostrando {n}, a região mais próxima que tem.',
+    'sel.sinTsunami': 'Não há rotas de evacuação de tsunami na região {r}. Mostrando {n}, a região mais próxima que tem.',
     'prueba.modo': 'Modo de teste', 'prueba.toca': 'Toque no mapa para marcar onde você está. O guia calcula a rota a partir desse ponto.',
     'prueba.primero': 'Primeiro toque no mapa para marcar um ponto de partida.',
     'manual.titulo': 'Localização manual', 'manual.toca': 'Toque no mapa no lugar onde você está.',
@@ -1454,7 +1497,8 @@ pt: {
      hacia el PE más cercano (que siempre está en tierra) cruza la costa; si es impar,
      la persona está en el agua. Sin línea de costa (provisorio): si para llegar al PE
      hay que atravesar la zona de amenaza, la persona está del lado del mar.          */
-  function prepararMar(costa, zonas, pes, tierra, aguas) {
+  // caja: zona [oeste, sur, este, norte] que cubre la capa de tierra o mar; fuera de ella no se puede decir si es mar
+  function prepararMar(costa, zonas, pes, tierra, aguas, caja) {
     const segs = [], grid = Grid(0.01);
     const agregar = (a, b) => {
       const bb = [Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1])];
@@ -1485,7 +1529,7 @@ pt: {
         }
       }
     }
-    return { segs, grid, zonas: zonas || [], pes: pesC, tierras, mares, avisos,
+    return { segs, grid, zonas: zonas || [], pes: pesC, tierras, mares, avisos, caja: caja || null,
       conCosta: segs.length > 0, conTierra: tierras.length > 0, conMar: mares.length > 0 };
   }
   function estadoMar(M, p) {
@@ -1493,6 +1537,9 @@ pt: {
     let q = null, dq = Infinity;
     for (const c of M.pes) { const d = dist(p, c); if (d < dq) { dq = d; q = c; } }
     if (dq > 60000) return { mar: false, dCosta: null, metodo: null };   // fuera del área de trabajo
+    // Fuera de la zona que cubre la capa de tierra (p. ej. tierra adentro, en Copiapó) no se sabe: no es mar
+    const k = M.caja;
+    if (k && (p[0] < k[0] || p[0] > k[2] || p[1] < k[1] || p[1] > k[3])) return { mar: false, dCosta: null, metodo: null };
     let dC = Infinity;
     if (M.conCosta) for (const id of M.grid.query(bboxAround(p, 5000))) { const s = M.segs[id]; dC = Math.min(dC, projectOnSegment(p, s[0], s[1]).d); }
     // Recorre la recta hacia el PE (que está en tierra) y avisa si algún punto cumple la condición
@@ -1763,7 +1810,7 @@ function MapaLigero(el, opciones) {
       z = clampZ(Math.min(zMax || 18, z));
       const s = Math.pow(2, z), cx = (a[0] + b[0]) / 2 * s + (pr - pl) / 2, cy = (a[1] + b[1]) / 2 * s + (pb - pt) / 2;
       const c = desdePx(cx, cy, z);
-      if (animado) animar(z, null, null, c); else { st.z = z; st.lon = c[0]; st.lat = c[1]; pedir(); }
+      if (animado) animar(z, null, null, c); else { detenerAnim(); st.z = z; st.lon = c[0]; st.lat = c[1]; pedir(); }   // detiene un movimiento anterior para que no lo pise
     }
   };
 }
@@ -1821,7 +1868,7 @@ function cargarRed(datos, fuente) {
   S.net = C.buildNetwork(datos, datos.tolerancias || CONFIG.tolerancias);
   S.zonas = C.prepararZonas(datos.zonas);
   S.estadoZona = null; S.zonaPend = null; S.zonaCuenta = 0;
-  S.mar = C.prepararMar(datos.costa, S.zonas, datos.pe, datos.tierra, datos.aguas);
+  S.mar = C.prepararMar(datos.costa, S.zonas, datos.pe, datos.tierra, datos.aguas, datos.tierraCaja);
   S.vehiculo = datos.vehiculo || [];
   S.defs = datos.pe_definitivo || [];
   $('leyendaDef').hidden = !S.defs.length;
@@ -2049,7 +2096,7 @@ $('baseCalles').onclick = () => ponerBase('calles');
 $('baseSat').onclick = () => ponerBase('satelite');
 
 let tAviso;
-function avisar(t) { const a = $('aviso'); a.textContent = t; a.hidden = false; clearTimeout(tAviso); tAviso = setTimeout(() => { a.hidden = true; }, 2600); }
+function avisar(t, ms) { const a = $('aviso'); a.textContent = t; a.hidden = false; clearTimeout(tAviso); tAviso = setTimeout(() => { a.hidden = true; }, ms || 2600); }
 
 /* ---------- Vistas de la hoja ---------- */
 function vista(n) { for (const v of ['vInicio', 'vAmenaza', 'vGuia', 'vLlegada', 'vError']) $(v).hidden = v !== n; }
@@ -2699,7 +2746,7 @@ async function cargarPaquete(p, opciones) {
     S.paquete = p; aplicarAmenaza(p.amenaza);
     cargarRed(datos, 'de ' + p.nombre + ' (' + IDIOMAS.es.amenazas[S.amenaza].nombre.toLowerCase() + ')');
     guardarPref('paquete', p.id);
-    $('selPaquete').value = p.id;
+    $('selPaquete').value = p.id; pintarSelector();
     if (!opciones.sinEncuadre && !S.pos) encuadrarRed();
     return true;
   } catch (e) {
@@ -2783,32 +2830,109 @@ function pintarOffline() {
   $('estadoOffline').textContent = o ? T(o.k, o.v) : '';
 }
 
+// Regiones de norte a sur, con las islas al final
+function ordenGeo(ps) {
+  return ps.slice().sort((a, b) => (/[a-z]$/.test(a.region) - /[a-z]$/.test(b.region)) || b.bbox[3] - a.bbox[3]);
+}
 function llenarSelector() {
   const sel = $('selPaquete'); sel.innerHTML = '';
   for (const a of Object.keys(AMENAZAS)) {
-    const ps = S.indice.paquetes.filter(p => p.amenaza === a); if (!ps.length) continue;
+    const ps = ordenGeo(S.indice.paquetes.filter(p => p.amenaza === a)); if (!ps.length) continue;
     const g = document.createElement('optgroup'); g.label = TA(a).nombre;
     for (const p of ps) { const o = document.createElement('option'); o.value = p.id; o.textContent = T('datos.opcion', { n: p.nombre, v: p.vias, p: p.pe }); g.appendChild(o); }
     sel.appendChild(g);
   }
   if (S.paquete) sel.value = S.paquete.id;
-  sel.onchange = async () => {
-    const p = S.indice.paquetes.find(x => x.id === sel.value); if (!p) return;
-    S.amenazaElegida = true;
-    await cargarPaquete(p); $('menu').close();
-    if (S.guiando && S.pos && !S.prueba) { ponerModoInicial(); actualizar(); } else { vista('vInicio'); encuadrarRed(); }
-  };
+  sel.onchange = () => { const p = S.indice.paquetes.find(x => x.id === sel.value); if (p) { $('menu').close(); elegirPaquete(p); } };
+  pintarSelector();
 }
+// La persona eligió una región o emergencia (menú o barra): se carga y se muestra en el mapa
+async function elegirPaquete(p) {
+  S.amenazaElegida = true; S.regionElegida = true;
+  if (S.eligiendo) { S.eligiendo = false; if (S.guiando) vista('vGuia'); }   // estaba en «¿de qué estás evacuando?»
+  if (!(await cargarPaquete(p, { sinEncuadre: true }))) { pintarSelector(); return; }
+  if (S.prueba || S.manual) {
+    S.pos = null; S.res = null; S.confirmado = p.id; ponerModoInicial();
+    $('cifra').textContent = '—'; $('tiempo').textContent = T(S.prueba ? 'prueba.modo' : 'manual.titulo');
+    $('instruccion').textContent = T(S.prueba ? 'prueba.toca' : 'manual.toca'); $('destino').textContent = '—';
+    vista('vGuia'); encuadrarRed(); mapa.pedir();
+  } else if (S.guiando && S.pos) { S.confirmado = p.id; ponerModoInicial(); actualizar(); }
+  else { if (!S.guiando) vista('vInicio'); encuadrarRed(); }
+}
+
+/* ---------- Barra: Tsunami · Volcán · Región ---------- */
+function pintarSelector() {
+  if (!S.indice) return;
+  const a = S.paquete ? S.paquete.amenaza : S.amenaza;
+  for (const b of document.querySelectorAll('.segmento button')) b.setAttribute('aria-pressed', String(b.dataset.amenaza === a));
+  const sel = $('selRegion'); sel.innerHTML = '';
+  const o0 = document.createElement('option'); o0.value = 'gps'; o0.textContent = T('sel.miUbicacion'); sel.appendChild(o0);
+  for (const p of ordenGeo(S.indice.paquetes.filter(x => x.amenaza === a))) {
+    const o = document.createElement('option'); o.value = p.id; o.textContent = p.nombre; sel.appendChild(o);
+  }
+  sel.value = S.paquete && S.paquete.amenaza === a ? S.paquete.id : 'gps';
+}
+const centroCaja = (b) => [(b[0] + b[2]) / 2, (b[1] + b[3]) / 2];
+// Cambia de emergencia en la misma región; si la región no tiene esa emergencia, muestra la más cercana que la tiene
+function cambiarAmenaza(a) {
+  if (!S.indice || S.cargando || (S.paquete && S.paquete.amenaza === a)) return;
+  const ps = S.indice.paquetes.filter(x => x.amenaza === a); if (!ps.length) return;
+  const ref = S.pos || (S.paquete ? centroCaja(S.paquete.bbox) : null);
+  let p = S.paquete && ps.find(x => x.region === S.paquete.region);
+  if (!p && S.pos) p = candidatos(S.pos, a)[0];
+  if (!p) p = ref ? ps.slice().sort((x, y) => distCaja(x.bbox, ref) - distCaja(y.bbox, ref))[0] : ps[0];
+  if (S.paquete && p.region !== S.paquete.region) avisar(T(a === 'volcan' ? 'sel.sinVolcan' : 'sel.sinTsunami', { r: S.paquete.nombre, n: p.nombre }), 6000);
+  elegirPaquete(p);
+}
+for (const b of document.querySelectorAll('.segmento button')) b.onclick = () => cambiarAmenaza(b.dataset.amenaza);
+// «Detectar mi ubicación»: el teléfono vuelve a elegir la región según dónde está, como al iniciar la guía
+async function usarMiUbicacion() {
+  if (!navigator.geolocation) { avisar(T('sel.sinUbicacion'), 5000); pintarSelector(); return; }
+  avisar(T('sel.buscando'), 15000);
+  try {
+    const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: true, maximumAge: 60000, timeout: 15000 }));
+    const ll = [pos.coords.longitude, pos.coords.latitude];
+    let q = candidatos(ll, S.amenaza)[0];
+    if (!q || distCaja(q.bbox, ll) > 0.15) { const r = candidatos(ll)[0]; if (r && (!q || distCaja(r.bbox, ll) < distCaja(q.bbox, ll))) q = r; }   // sin esa emergencia cerca: la que haya
+    $('aviso').hidden = true;
+    if (!q) { pintarSelector(); return; }
+    S.regionElegida = false; S.amenazaElegida = S.amenazaElegida && q.amenaza === S.amenaza;   // vuelve a lo automático
+    if (q.id !== (S.paquete && S.paquete.id)) await cargarPaquete(q, { sinEncuadre: true });
+    S.confirmado = q.id;
+    if (S.guiando && S.pos && !S.prueba && !S.manual) { ponerModoInicial(); actualizar(); }
+    else if (S.prueba || S.manual) { encuadrarRed(); mapa.pedir(); }
+    else { vista('vInicio'); encuadrarRed(); }
+    pintarSelector();
+  } catch (_) { avisar(T('sel.sinUbicacion'), 5000); pintarSelector(); }
+}
+$('selRegion').onchange = () => {
+  const v = $('selRegion').value;
+  if (v === 'gps') { usarMiUbicacion(); return; }
+  const p = S.indice.paquetes.find(x => x.id === v); if (p) elegirPaquete(p);
+};
 $('btnCambiar').onclick = () => { pintarDiagnostico(); $('menu').showModal(); $('selPaquete').focus(); };
 
-const PARAM = (() => { const q = new URLSearchParams(location.search); return { amenaza: AMENAZAS[q.get('amenaza')] ? q.get('amenaza') : null, region: (q.get('region') || '').padStart(2, '0') }; })();
+const PARAM = (() => { const q = new URLSearchParams(location.search); return { amenaza: AMENAZAS[q.get('amenaza')] ? q.get('amenaza') : null, region: q.get('region') ? q.get('region').padStart(2, '0') : null }; })();
+
+// Paquete más cercano a la ubicación, solo si el permiso ya está dado (nunca abre la pregunta de permiso al cargar)
+async function regionPorUbicacion() {
+  try {
+    if (!navigator.permissions || !navigator.geolocation) return null;
+    const permiso = await navigator.permissions.query({ name: 'geolocation' });
+    if (permiso.state !== 'granted') return null;
+    const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { enableHighAccuracy: false, maximumAge: 600000, timeout: 8000 }));
+    const ll = [pos.coords.longitude, pos.coords.latitude];
+    const q = candidatos(ll, PARAM.amenaza)[0];
+    return q && distCaja(q.bbox, ll) < 1.5 ? q : null;   // a menos de ~150 km de la zona del paquete
+  } catch (_) { return null; }
+}
 
 async function arrancarNacional() {
   let indice = null;
   try { const r = await fetch(CONFIG.indice, { cache: 'no-cache' }); if (r.ok) indice = await r.json(); } catch (_) { /* sin red y sin copia */ }
   if (!indice || !indice.paquetes || !indice.paquetes.length) return false;
   S.nacional = true; S.indice = indice; S.amenazaElegida = !!PARAM.amenaza;
-  $('secRegion').hidden = false; $('btnCambiar').hidden = false;
+  $('secRegion').hidden = false; $('btnCambiar').hidden = false; $('barraSelector').hidden = false;
   llenarSelector();
   // Paquete inicial: el de la dirección (?region=08&amenaza=volcan), el último usado o el primero
   const ps = indice.paquetes;
@@ -2817,6 +2941,10 @@ async function arrancarNacional() {
     || ps.find(x => x.amenaza === (PARAM.amenaza || 'tsunami')) || ps[0];
   await cargarPaquete(p);
   vista('vInicio'); encuadrarRed();
+  // Si la persona ya dio permiso de ubicación, se abre su región sin volver a preguntar (si no eligió otra mientras tanto)
+  if (!PARAM.region) regionPorUbicacion().then((q) => {
+    if (q && S.paquete && q.id !== S.paquete.id && !S.guiando && !S.regionElegida && !S.cargando) cargarPaquete(q);
+  });
   if ('serviceWorker' in navigator) navigator.serviceWorker.ready.then(() => setTimeout(guardarTodo, 1500)).catch(() => {});
   else setTimeout(guardarTodo, 1500);
   return true;
