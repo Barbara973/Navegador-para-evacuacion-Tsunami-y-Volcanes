@@ -8,3 +8,5 @@ Funciona sin internet una vez abierta. En español, inglés, francés y portugu�
 
 Creada por Bárbara del Pilar González Lucero. © 2026, todos los derechos reservados (ver LICENSE.txt).
 No es una aplicación oficial de SENAPRED. Los datos geográficos son capas públicas de SENAPRED (visor Chile Preparado).
+
+Los archivos `datos/calles-*.json` (calles para la ruta en vehículo) son datos de OpenStreetMap: © colaboradores de OpenStreetMap, disponibles bajo la licencia ODbL (https://www.openstreetmap.org/copyright). El resto del contenido conserva todos sus derechos reservados.

@@ -52,7 +52,9 @@
    "vias": 260,
    "pe": 124,
    "zonas": 64,
-   "generado": "2026-10-14"
+   "generado": "2026-10-14",
+   "calles": "calles-03.json",
+   "callesBytes": 502874
   },
   {
    "id": "tsunami-04",
@@ -451,5 +453,5 @@
    "generado": "2026-10-14"
   }
  ],
- "version": "20261014224609"
+ "version": "20261015010252"
 }

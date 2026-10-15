@@ -6,7 +6,7 @@
      al actualizar la página. Así el teléfono nunca queda sin datos.
    - Mosaicos del mapa: se guardan los que la persona ya vio (hasta 1500).
    - Si cambias sw.js, sube VERSION para forzar la actualización. */
-const VERSION = 'evac-v9';
+const VERSION = 'evac-v10';
 const TESELAS = 'evac-teselas';
 const DATOS = 'evac-datos';
 const MAX_TESELAS = 1500;

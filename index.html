@@ -10,7 +10,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-nnCnlYptke3ocGahEaE36dqbehQhm49eNE/MxvB013U=' 'sha256-0Q9DAv9Cy89A3/1vtUhd+lY2RweR69u8YHxMzXb9glY=' 'sha256-OCpnO6YPMdNQBtRhwIqHk58hIo4PSNlFmoTK0wjCAjA=' 'sha256-hmwz+ioJ02awGGaVMS2Od3f1lqJmIgJPhOZF5TwXdy8=' 'sha256-o4BpecFGIZmeKX70dAnyMjnDMwBmtJmCpcxfUxv5GRk=' 'sha256-XoqKTw1dseaL7oW62McH4i+J6LPhvqUA1NJgsLzvjp4='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tile.openstreetmap.org https://server.arcgisonline.com; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'sha256-nnCnlYptke3ocGahEaE36dqbehQhm49eNE/MxvB013U=' 'sha256-qUW/IuC9E3kL23Go4NNw0iGUYZ/RfVRQCiwb2OQDsQ4=' 'sha256-51usK7BLcMKV+GLn2nJfBUVjMcybr2slJQ3RP6P/+F4=' 'sha256-V7UrcAjf3JftQLOlI4slHG4bhXomjyMeEtEvUew72J8=' 'sha256-o4BpecFGIZmeKX70dAnyMjnDMwBmtJmCpcxfUxv5GRk=' 'sha256-O1eWw1unHGnLgmpa2VPzDVWvE7qxtnLNJEdhiPfNxN0='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://tile.openstreetmap.org https://server.arcgisonline.com; font-src 'self'; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <style>
 /* Fuentes alojadas en el mismo sitio (licencia SIL OFL): la app no pide nada a Google Fonts */
@@ -206,6 +206,7 @@ dialog::backdrop{background:rgba(5,10,20,.55)}
 .sw-via{height:7px;border-radius:4px;background:var(--via);box-shadow:0 0 0 2px var(--borde-via)}
 .sw-pe{width:24px;height:24px;margin:0 5px;border-radius:50%;background:var(--seguro);color:#fff;font:700 11px/1 var(--f-rotulo);box-shadow:0 0 0 2px #fff}
 .sw-zona{border:1.5px solid var(--zona);border-radius:4px;background:repeating-linear-gradient(135deg,color-mix(in srgb,var(--zona) 55%,transparent) 0 2px,color-mix(in srgb,var(--zona) 12%,transparent) 2px 7px)}
+.sw-rutaauto{gap:3px;grid-auto-flow:column}.sw-rutaauto i{width:8px;height:8px;border-radius:50%;background:var(--via);box-shadow:0 0 0 1.5px #fff}
 .sw-auto{width:18px;height:18px;margin:0 8px;border-radius:4px;background:var(--via-fuerte);box-shadow:0 0 0 2px #fff}
 .sw-yo{width:16px;height:16px;margin:0 9px;border-radius:50%;background:var(--alerta);box-shadow:0 0 0 3px #fff,0 0 0 4px var(--linea)}
 
@@ -418,6 +419,7 @@ select.campo{width:100%;min-height:46px;border-radius:10px;border:1px solid var(
         <li><span class="sw sw-pe">PE</span><span id="leyendaPE">Punto de encuentro</span></li>
         <li id="leyendaDef" hidden><span class="sw sw-pe" style="background:#3b2a63">PD</span><span data-i18n="ley.def">Punto de encuentro definitivo</span></li>
         <li id="leyendaZona"><span class="sw sw-zona"></span><span id="leyendaZonaTxt">Zona de amenaza de tsunami (bajo cota 30 y áreas de evacuación)</span></li>
+        <li id="leyendaRutaAuto" hidden><span class="sw sw-rutaauto"><i></i><i></i><i></i></span><span data-i18n="ley.rutaAuto">Ruta en auto por calles, a favor del tránsito (modo vehículo)</span></li>
         <li id="leyendaAuto" hidden><span class="sw sw-auto"></span><span data-i18n="ley.auto">Punto seguro vehicular (modo vehículo)</span></li>
         <li><span class="sw sw-yo"></span><span data-i18n="ley.yo">Tu ubicación. La línea naranja punteada es el tramo hasta la vía.</span></li>
       </ul>
@@ -489,7 +491,7 @@ const BASES = {
   calles: { id: 'calles', url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png', maxNativo: 19,
     atribucion: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>' },
   satelite: { id: 'sat', url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', maxNativo: 18,
-    atribucion: '© Esri, Maxar, Earthstar Geographics' }
+    atribucion: '© Esri, Maxar, Earthstar Geographics · © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>' }
 };
 </script>
 <script>
@@ -511,7 +513,7 @@ es: {
     'app.nombre': 'Ruta de evacuación', 'doc.titulo': 'Evacuación {t}',
     'aria.mapa': 'Mapa con las vías de evacuación', 'aria.menu': 'Abrir menú', 'aria.mas': 'Acercar', 'aria.menos': 'Alejar',
     'aria.centrar': 'Seguir mi ubicación', 'aria.sat': 'Cambiar a vista satélite', 'aria.calles': 'Cambiar a mapa de calles', 'aria.cerrar': 'Cerrar',
-    'prueba.franja': 'Modo prueba: toca el mapa para ubicarte.', 'prueba.simular': 'Simular caminata', 'prueba.detener': 'Detener', 'prueba.salir': 'Salir',
+    'prueba.franja': 'Modo prueba: toca el mapa para ubicarte.', 'prueba.simular': 'Simular caminata', 'prueba.simularAuto': 'Simular viaje', 'prueba.detener': 'Detener', 'prueba.salir': 'Salir',
     'sel.aria': 'Emergencia y región', 'sel.emergencia': 'Emergencia', 'sel.tsunami': 'Tsunami', 'sel.volcan': 'Volcán', 'sel.region': 'Región',
     'sel.miUbicacion': 'Detectar mi ubicación', 'sel.buscando': 'Buscando tu ubicación…', 'sel.sinUbicacion': 'No se pudo obtener tu ubicación. Elige la región en la lista.',
     'sel.sinVolcan': 'En {r} no hay vías de evacuación volcánica. Te muestro {n}, la región más cercana que las tiene.',
@@ -549,6 +551,13 @@ es: {
     'veh.gmapsTxt': 'Se abrirá Google Maps con una ruta en auto hasta «{n}», fuera de la zona de amenaza.',
     'gmaps.autoVia': 'Se abrirá Google Maps con una ruta en auto que pasa por tu vía de evacuación hasta el punto de encuentro.',
     'gmaps.pantallaAuto': 'Si tu teléfono está conectado a Android Auto o CarPlay, la ruta aparece en la pantalla del auto.', 'gmaps.sentido': 'Google Maps sigue el sentido de las calles; la vía de evacuación dibujada es para ir a pie.',
+    'auto.inicio': 'Conduce hacia {rb} por {calle}.', 'auto.inicioSin': 'Conduce hacia {rb}.',
+    'auto.aCalle': 'Dirígete hacia {rb} {d} hasta {calle}.', 'auto.aCalleSin': 'Dirígete hacia {rb} {d} hasta la calle más cercana.',
+    'auto.giro': 'En {d}, {giro} en {calle}.', 'auto.giroSin': 'En {d}, {giro}.',
+    'auto.ahora': 'Ahora, {giro} en {calle}.', 'auto.ahoraSin': 'Ahora, {giro}.',
+    'auto.final': 'Sigue {d} hasta el punto de encuentro.', 'auto.luego': 'Luego, {giro} en {calle}.', 'auto.luegoSin': 'Luego, {giro}.',
+    'giro.der': 'gira a la derecha', 'giro.izq': 'gira a la izquierda', 'giro.lder': 'dobla levemente a la derecha', 'giro.lizq': 'dobla levemente a la izquierda', 'giro.sigue': 'continúa', 'giro.vuelta': 'da la vuelta',
+    'ley.rutaAuto': 'Ruta en auto por calles, a favor del tránsito (modo vehículo)', 'auto.atrib': 'calles',
     'gmaps.pie': 'Se abrirá Google Maps con una ruta a pie que pasa por tu vía de evacuación. Puede diferir en senderos que Google no conoce.',
     'llegada.titulo': 'Llegaste', 'llegada.def': 'Punto de encuentro definitivo más cercano: {n} ({d}).', 'llegada.volver': 'Volver a la guía',
     'error.titulo': 'Ubicación no disponible', 'error.manual': 'Marcar dónde estoy en el mapa', 'error.reintentar': 'Intentar de nuevo con GPS',
@@ -641,7 +650,7 @@ en: {
     'app.nombre': 'Evacuation route', 'doc.titulo': 'Evacuation – {t}',
     'aria.mapa': 'Map of evacuation routes', 'aria.menu': 'Open menu', 'aria.mas': 'Zoom in', 'aria.menos': 'Zoom out',
     'aria.centrar': 'Follow my location', 'aria.sat': 'Switch to satellite view', 'aria.calles': 'Switch to street map', 'aria.cerrar': 'Close',
-    'prueba.franja': 'Test mode: tap the map to set your location.', 'prueba.simular': 'Simulate walk', 'prueba.detener': 'Stop', 'prueba.salir': 'Exit',
+    'prueba.franja': 'Test mode: tap the map to set your location.', 'prueba.simular': 'Simulate walk', 'prueba.simularAuto': 'Simulate drive', 'prueba.detener': 'Stop', 'prueba.salir': 'Exit',
     'sel.aria': 'Emergency and region', 'sel.emergencia': 'Emergency', 'sel.tsunami': 'Tsunami', 'sel.volcan': 'Volcano', 'sel.region': 'Region',
     'sel.miUbicacion': 'Detect my location', 'sel.buscando': 'Finding your location…', 'sel.sinUbicacion': 'Could not get your location. Choose the region from the list.',
     'sel.sinVolcan': 'There are no volcanic evacuation routes in {r}. Showing {n}, the nearest region that has them.',
@@ -679,6 +688,13 @@ en: {
     'veh.gmapsTxt': 'Google Maps will open with a driving route to “{n}”, outside the hazard zone.',
     'gmaps.autoVia': 'Google Maps will open with a driving route that follows your evacuation route to the meeting point.',
     'gmaps.pantallaAuto': 'If your phone is connected to Android Auto or CarPlay, the route appears on the car screen.', 'gmaps.sentido': 'Google Maps follows the direction of traffic; the evacuation route drawn on the map is for walking.',
+    'auto.inicio': 'Drive {rb} on {calle}.', 'auto.inicioSin': 'Drive {rb}.',
+    'auto.aCalle': 'Head {rb} {d} to {calle}.', 'auto.aCalleSin': 'Head {rb} {d} to the nearest street.',
+    'auto.giro': 'In {d}, {giro} onto {calle}.', 'auto.giroSin': 'In {d}, {giro}.',
+    'auto.ahora': 'Now {giro} onto {calle}.', 'auto.ahoraSin': 'Now {giro}.',
+    'auto.final': 'Continue {d} to the meeting point.', 'auto.luego': 'Then {giro} onto {calle}.', 'auto.luegoSin': 'Then {giro}.',
+    'giro.der': 'turn right', 'giro.izq': 'turn left', 'giro.lder': 'bear right', 'giro.lizq': 'bear left', 'giro.sigue': 'continue', 'giro.vuelta': 'make a U-turn',
+    'ley.rutaAuto': 'Driving route on streets, with the flow of traffic (vehicle mode)', 'auto.atrib': 'streets',
     'gmaps.pie': 'Google Maps will open with a walking route that follows your evacuation route. It may differ on paths Google does not know.',
     'llegada.titulo': 'You made it', 'llegada.def': 'Nearest final meeting point: {n} ({d}).', 'llegada.volver': 'Back to the guide',
     'error.titulo': 'Location unavailable', 'error.manual': 'Mark where I am on the map', 'error.reintentar': 'Try GPS again',
@@ -770,7 +786,7 @@ fr: {
     'app.nombre': 'Itinéraire d’évacuation', 'doc.titulo': 'Évacuation – {t}',
     'aria.mapa': 'Carte des voies d’évacuation', 'aria.menu': 'Ouvrir le menu', 'aria.mas': 'Zoom avant', 'aria.menos': 'Zoom arrière',
     'aria.centrar': 'Suivre ma position', 'aria.sat': 'Passer à la vue satellite', 'aria.calles': 'Passer au plan des rues', 'aria.cerrar': 'Fermer',
-    'prueba.franja': 'Mode test : touchez la carte pour vous situer.', 'prueba.simular': 'Simuler la marche', 'prueba.detener': 'Arrêter', 'prueba.salir': 'Quitter',
+    'prueba.franja': 'Mode test : touchez la carte pour vous situer.', 'prueba.simular': 'Simuler la marche', 'prueba.simularAuto': 'Simuler le trajet', 'prueba.detener': 'Arrêter', 'prueba.salir': 'Quitter',
     'sel.aria': 'Urgence et région', 'sel.emergencia': 'Urgence', 'sel.tsunami': 'Tsunami', 'sel.volcan': 'Volcan', 'sel.region': 'Région',
     'sel.miUbicacion': 'Détecter ma position', 'sel.buscando': 'Recherche de votre position…', 'sel.sinUbicacion': 'Impossible d’obtenir votre position. Choisissez la région dans la liste.',
     'sel.sinVolcan': 'Il n’y a pas de voies d’évacuation volcanique dans la région {r}. Voici {n}, la région la plus proche qui en a.',
@@ -808,6 +824,13 @@ fr: {
     'veh.gmapsTxt': 'Google Maps va s’ouvrir avec un itinéraire en voiture jusqu’à « {n} », hors de la zone de danger.',
     'gmaps.autoVia': 'Google Maps va s’ouvrir avec un itinéraire en voiture qui suit votre voie d’évacuation jusqu’au point de rassemblement.',
     'gmaps.pantallaAuto': 'Si votre téléphone est connecté à Android Auto ou CarPlay, l’itinéraire s’affiche sur l’écran de la voiture.', 'gmaps.sentido': 'Google Maps respecte le sens de circulation ; la voie d’évacuation dessinée est prévue pour aller à pied.',
+    'auto.inicio': 'Conduisez vers {rb} sur {calle}.', 'auto.inicioSin': 'Conduisez vers {rb}.',
+    'auto.aCalle': 'Dirigez-vous vers {rb} sur {d} jusqu’à {calle}.', 'auto.aCalleSin': 'Dirigez-vous vers {rb} sur {d} jusqu’à la rue la plus proche.',
+    'auto.giro': 'Dans {d}, {giro} sur {calle}.', 'auto.giroSin': 'Dans {d}, {giro}.',
+    'auto.ahora': 'Maintenant, {giro} sur {calle}.', 'auto.ahoraSin': 'Maintenant, {giro}.',
+    'auto.final': 'Continuez sur {d} jusqu’au point de rassemblement.', 'auto.luego': 'Ensuite, {giro} sur {calle}.', 'auto.luegoSin': 'Ensuite, {giro}.',
+    'giro.der': 'tournez à droite', 'giro.izq': 'tournez à gauche', 'giro.lder': 'serrez à droite', 'giro.lizq': 'serrez à gauche', 'giro.sigue': 'continuez', 'giro.vuelta': 'faites demi-tour',
+    'ley.rutaAuto': 'Itinéraire en voiture par les rues, dans le sens de la circulation (mode véhicule)', 'auto.atrib': 'rues',
     'gmaps.pie': 'Google Maps va s’ouvrir avec un itinéraire à pied qui passe par votre voie d’évacuation. Il peut différer sur des sentiers que Google ne connaît pas.',
     'llegada.titulo': 'Vous y êtes', 'llegada.def': 'Point de rassemblement définitif le plus proche : {n} ({d}).', 'llegada.volver': 'Revenir au guidage',
     'error.titulo': 'Position indisponible', 'error.manual': 'Indiquer ma position sur la carte', 'error.reintentar': 'Réessayer avec le GPS',
@@ -899,7 +922,7 @@ pt: {
     'app.nombre': 'Rota de evacuação', 'doc.titulo': 'Evacuação – {t}',
     'aria.mapa': 'Mapa com as rotas de evacuação', 'aria.menu': 'Abrir menu', 'aria.mas': 'Aproximar', 'aria.menos': 'Afastar',
     'aria.centrar': 'Seguir minha localização', 'aria.sat': 'Mudar para vista de satélite', 'aria.calles': 'Mudar para mapa de ruas', 'aria.cerrar': 'Fechar',
-    'prueba.franja': 'Modo de teste: toque no mapa para se localizar.', 'prueba.simular': 'Simular caminhada', 'prueba.detener': 'Parar', 'prueba.salir': 'Sair',
+    'prueba.franja': 'Modo de teste: toque no mapa para se localizar.', 'prueba.simular': 'Simular caminhada', 'prueba.simularAuto': 'Simular viagem', 'prueba.detener': 'Parar', 'prueba.salir': 'Sair',
     'sel.aria': 'Emergência e região', 'sel.emergencia': 'Emergência', 'sel.tsunami': 'Tsunami', 'sel.volcan': 'Vulcão', 'sel.region': 'Região',
     'sel.miUbicacion': 'Detectar minha localização', 'sel.buscando': 'Buscando sua localização…', 'sel.sinUbicacion': 'Não foi possível obter sua localização. Escolha a região na lista.',
     'sel.sinVolcan': 'Não há rotas de evacuação vulcânica na região {r}. Mostrando {n}, a região mais próxima que tem.',
@@ -937,6 +960,13 @@ pt: {
     'veh.gmapsTxt': 'O Google Maps será aberto com uma rota de carro até “{n}”, fora da zona de risco.',
     'gmaps.autoVia': 'O Google Maps será aberto com uma rota de carro que passa pela sua rota de evacuação até o ponto de encontro.',
     'gmaps.pantallaAuto': 'Se o seu celular estiver conectado ao Android Auto ou CarPlay, a rota aparece na tela do carro.', 'gmaps.sentido': 'O Google Maps respeita o sentido das ruas; a rota de evacuação desenhada é para ir a pé.',
+    'auto.inicio': 'Dirija para {rb} por {calle}.', 'auto.inicioSin': 'Dirija para {rb}.',
+    'auto.aCalle': 'Siga para {rb} por {d} até {calle}.', 'auto.aCalleSin': 'Siga para {rb} por {d} até a rua mais próxima.',
+    'auto.giro': 'Em {d}, {giro} em {calle}.', 'auto.giroSin': 'Em {d}, {giro}.',
+    'auto.ahora': 'Agora, {giro} em {calle}.', 'auto.ahoraSin': 'Agora, {giro}.',
+    'auto.final': 'Siga por {d} até o ponto de encontro.', 'auto.luego': 'Depois, {giro} em {calle}.', 'auto.luegoSin': 'Depois, {giro}.',
+    'giro.der': 'vire à direita', 'giro.izq': 'vire à esquerda', 'giro.lder': 'mantenha-se à direita', 'giro.lizq': 'mantenha-se à esquerda', 'giro.sigue': 'continue', 'giro.vuelta': 'faça o retorno',
+    'ley.rutaAuto': 'Rota de carro pelas ruas, no sentido do trânsito (modo veículo)', 'auto.atrib': 'ruas',
     'gmaps.pie': 'O Google Maps será aberto com uma rota a pé que passa pela sua rota de evacuação. Pode diferir em trilhas que o Google não conhece.',
     'llegada.titulo': 'Você chegou', 'llegada.def': 'Ponto de encontro definitivo mais próximo: {n} ({d}).', 'llegada.volver': 'Voltar à orientação',
     'error.titulo': 'Localização indisponível', 'error.manual': 'Marcar onde estou no mapa', 'error.reintentar': 'Tentar novamente com GPS',
@@ -1604,7 +1634,148 @@ pt: {
       + (origen ? '&origin=' + encodeURIComponent(f(origen)) : '');
   }
 
-  const api = { dist, bearing, rumbo, projectOnSegment, buildNetwork, rutaDesde, puntoA, largo, enlaceGoogleMaps, enlaceGoogleMapsAuto, prepararZonas, zonaEn, prepararMar, estadoMar, recortarLineas, recortarAnillo };
+  /* ------------------------ Ruta en vehículo por calles (OpenStreetMap) ------------------------
+     La red de calles es dirigida: cada tramo se recorre en ambos sentidos salvo los de un solo sentido.
+     Se calcula una vez, hacia atrás desde todos los puntos de encuentro, el tiempo en auto hasta el PE
+     más cercano desde cada cruce. Luego, desde cualquier posición, la ruta sigue esos punteros, así que
+     se recalcula en cada lectura del GPS sin costo y nunca manda a nadie en contra del tránsito. */
+  const SNAP_PE_AUTO = 300;    // m: un PE se une a la calle más cercana dentro de esta distancia
+  const SNAP_AUTO = 400;       // m: la persona debe estar a menos de esto de una calle (en la playa puede estar lejos)
+  const VEL_ACERCA = 2;        // m/s: costo de llegar a la calle desde la posición (prefiere la calle más cercana)
+
+  function prepararCalles(K, pes) {
+    const E = K.escala, nN = K.nodos.length / 2;
+    const nodos = new Array(nN);
+    for (let i = 0; i < nN; i++) nodos[i] = [K.nodos[2 * i] / E, K.nodos[2 * i + 1] / E];
+    const aristas = K.aristas.map(([a, b, s, c, n, plano]) => {
+      const pts = [nodos[a]]; let x = K.nodos[2 * a], y = K.nodos[2 * a + 1];
+      for (let k = 0; k < plano.length; k += 2) { x += plano[k]; y += plano[k + 1]; pts.push([x / E, y / E]); }
+      pts.push(nodos[b]);
+      const acum = [0]; for (let k = 1; k < pts.length; k++) acum.push(acum[k - 1] + dist(pts[k - 1], pts[k]));
+      const L = acum[acum.length - 1], v = (K.velocidades[c] || 30) / 3.6;
+      const bb = [Infinity, Infinity, -Infinity, -Infinity];
+      for (const p of pts) { bb[0] = Math.min(bb[0], p[0]); bb[1] = Math.min(bb[1], p[1]); bb[2] = Math.max(bb[2], p[0]); bb[3] = Math.max(bb[3], p[1]); }
+      return { a, b, unico: !!s, clase: K.clases[c], nombre: n >= 0 ? K.nombres[n] : '', pts, acum, largo: L, v, t: L / v, bb };
+    });
+    const grid = Grid(0.003); aristas.forEach((e, i) => grid.add(i, e.bb));
+
+    // Puntos más cercanos sobre las calles (dentro de maxM metros): el mejor, o todos si se pide
+    function ajustar(p, maxM, todos) {
+      let mejor = null; const lista = [];
+      for (const i of grid.query(bboxAround(p, maxM))) {
+        const e = aristas[i];
+        for (let j = 1; j < e.pts.length; j++) {
+          const pr = projectOnSegment(p, e.pts[j - 1], e.pts[j]);
+          if (pr.d > maxM) continue;
+          const s = { e: i, d: pr.d, q: pr.q, off: e.acum[j - 1] + pr.t * (e.acum[j] - e.acum[j - 1]) };
+          if (todos) lista.push(s);
+          if (!mejor || s.d < mejor.d) mejor = s;
+        }
+      }
+      return todos ? lista : mejor;
+    }
+
+    // Entrantes de cada cruce: [arista, cruce de origen, sentido (+1 = de a hacia b)]
+    const entr = Array.from({ length: nN }, () => []);
+    aristas.forEach((e, i) => { entr[e.b].push([i, e.a, 1]); if (!e.unico) entr[e.a].push([i, e.b, -1]); });
+    const costo = new Float64Array(nN).fill(Infinity), sig = new Int32Array(nN).fill(-1);
+    const sigDir = new Int8Array(nN), sigPE = new Int32Array(nN).fill(-1), fin = new Uint8Array(nN);
+    const peSnap = [], pePorArista = new Map(), h = Heap();
+    function semilla(n, c, ei, dir, k) {
+      if (c < costo[n]) { costo[n] = c; sig[n] = ei; sigDir[n] = dir; sigPE[n] = k; fin[n] = 1; h.push([c, n]); }
+    }
+    pes.forEach((pe, k) => {
+      const s = ajustar(pe.coord, SNAP_PE_AUTO); if (!s) return;
+      peSnap[k] = s;
+      if (!pePorArista.has(s.e)) pePorArista.set(s.e, []);
+      pePorArista.get(s.e).push(k);
+      const e = aristas[s.e];
+      semilla(e.a, s.off / e.v, s.e, 1, k);                                 // desde a, avanzando hasta el PE
+      if (!e.unico) semilla(e.b, (e.largo - s.off) / e.v, s.e, -1, k);      // desde b (solo si es doble vía)
+    });
+    while (h.size) {
+      const [c, n] = h.pop(); if (c > costo[n]) continue;
+      for (const [ei, desde, dir] of entr[n]) {
+        const nc = c + aristas[ei].t;
+        if (nc < costo[desde]) { costo[desde] = nc; sig[desde] = ei; sigDir[desde] = dir; sigPE[desde] = sigPE[n]; fin[desde] = 0; h.push([nc, desde]); }
+      }
+    }
+    return { nodos, aristas, grid, ajustar, costo, sig, sigDir, sigPE, fin, peSnap, pePorArista, pes, conPE: peSnap.filter(Boolean).length };
+  }
+
+  // Trozo de una arista entre dos distancias medidas desde su inicio, en el orden de recorrido (d0 → d1)
+  function trozo(e, d0, d1) {
+    const lo = Math.min(d0, d1), hi = Math.max(d0, d1), out = [];
+    const en = (d) => {
+      let j = 1; while (j < e.pts.length - 1 && e.acum[j] < d) j++;
+      const L = e.acum[j] - e.acum[j - 1], f = L > 0 ? (d - e.acum[j - 1]) / L : 0;
+      return [e.pts[j - 1][0] + (e.pts[j][0] - e.pts[j - 1][0]) * f, e.pts[j - 1][1] + (e.pts[j][1] - e.pts[j - 1][1]) * f];
+    };
+    out.push(en(lo));
+    for (let j = 1; j < e.pts.length - 1; j++) if (e.acum[j] > lo && e.acum[j] < hi) out.push(e.pts[j]);
+    out.push(en(hi));
+    return d1 >= d0 ? out : out.reverse();
+  }
+
+  // Ruta en auto desde la posición hasta el PE más rápido, siempre a favor del tránsito
+  function rutaAuto(K, pos) {
+    let mejor = null;
+    for (const s of K.ajustar(pos, SNAP_AUTO, true)) {
+      const e = K.aristas[s.e], acerca = s.d / VEL_ACERCA;
+      const prueba = (c, o) => { if (isFinite(c) && (!mejor || c < mejor.c)) mejor = Object.assign({ c, s }, o); };
+      prueba(acerca + (e.largo - s.off) / e.v + K.costo[e.b], { dir: 1 });
+      if (!e.unico) prueba(acerca + s.off / e.v + K.costo[e.a], { dir: -1 });
+      for (const k of K.pePorArista.get(s.e) || []) {        // PE en la misma cuadra
+        const off = K.peSnap[k].off;
+        if (off >= s.off) prueba(acerca + (off - s.off) / e.v, { directo: k });
+        else if (!e.unico) prueba(acerca + (s.off - off) / e.v, { directo: k });
+      }
+    }
+    if (!mejor) return null;
+    const piezas = [], s = mejor.s, e0 = K.aristas[s.e];     // piezas: { pts, nombre } en orden de recorrido
+    let k = null;
+    if (mejor.directo != null) { k = mejor.directo; piezas.push({ pts: trozo(e0, s.off, K.peSnap[k].off), nombre: e0.nombre }); }
+    else {
+      let n = mejor.dir > 0 ? e0.b : e0.a;
+      piezas.push({ pts: trozo(e0, s.off, mejor.dir > 0 ? e0.largo : 0), nombre: e0.nombre });
+      for (let guard = 0; guard < 200000; guard++) {
+        const e = K.aristas[K.sig[n]], dir = K.sigDir[n];
+        if (K.fin[n]) { k = K.sigPE[n]; piezas.push({ pts: trozo(e, dir > 0 ? 0 : e.largo, K.peSnap[k].off), nombre: e.nombre }); break; }
+        piezas.push({ pts: dir > 0 ? e.pts : e.pts.slice().reverse(), nombre: e.nombre });
+        n = dir > 0 ? e.b : e.a;
+      }
+    }
+    if (k == null) return null;
+    const pe = K.pes[k];
+    // Camino completo y maniobras (giros y cambios de calle), con su distancia desde la posición
+    const camino = [pos, s.q], maniobras = [];
+    let d = s.d;
+    piezas.forEach((pz, i) => {
+      if (i > 0) {
+        const prev = piezas[i - 1].pts, pts = pz.pts;
+        const a = prev[Math.max(0, prev.length - 2)], j = prev[prev.length - 1], b = pts[Math.min(1, pts.length - 1)];
+        if (dist(a, j) > 0.5 && dist(j, b) > 0.5) {
+          const delta = ((bearing(j, b) - bearing(a, j)) % 360 + 540) % 360 - 180, ad = Math.abs(delta);
+          const cambia = pz.nombre !== piezas[i - 1].nombre;
+          // En la misma calle, una curva suave no es un giro; un cambio de nombre sin giro es «continúa por»
+          const giro = ad >= 150 ? 'vuelta' : ad >= 60 ? (delta > 0 ? 'der' : 'izq') : ad >= 30 && cambia ? (delta > 0 ? 'lder' : 'lizq') : (cambia && pz.nombre ? 'sigue' : null);
+          if (giro) {
+            const ult = maniobras[maniobras.length - 1];
+            if (ult && d - ult.d < 12 && giro === ult.giro) ult.nombre = pz.nombre || ult.nombre;   // dos quiebres seguidos: uno solo
+            else maniobras.push({ d, giro, nombre: pz.nombre });
+          }
+        }
+      }
+      for (let m = 1; m < pz.pts.length; m++) { d += dist(pz.pts[m - 1], pz.pts[m]); camino.push(pz.pts[m]); }
+    });
+    const dFinal = dist(camino[camino.length - 1], pe.coord);
+    camino.push(pe.coord);
+    const enCalle = camino.slice(1);
+    return { camino, total: d + dFinal, tiempo: mejor.c - s.d / VEL_ACERCA, pe: k, coordPE: pe.coord, nombrePE: pe.nombre,
+      dCalle: s.d, calle: piezas[0].nombre, maniobras, rumboInicio: enCalle.length > 1 ? bearing(enCalle[0], puntoA(enCalle, 25)) : null };
+  }
+
+  const api = { dist, bearing, rumbo, projectOnSegment, buildNetwork, rutaDesde, puntoA, largo, enlaceGoogleMaps, enlaceGoogleMapsAuto, prepararZonas, zonaEn, prepararMar, estadoMar, recortarLineas, recortarAnillo, prepararCalles, rutaAuto };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else global.EvacCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);
 
@@ -1880,6 +2051,7 @@ function cargarRed(datos, fuente) {
   $('leyendaZona').hidden = !S.zonas.length;
   pintarResumen(); ponerTitulo();
   S.res = null; S.clave = null; S.fija = null; S.verAlt = false; S.hitos.clear(); S.llegado = false; S.enVia = null;
+  S.calles = null; S.rutaAuto = null; $('leyendaRutaAuto').hidden = true;
   pintarDiagnostico();
 }
 
@@ -1926,6 +2098,16 @@ function chevrones(ctx, P, pts, color) {
     acc += d;
   }
 }
+// Línea de puntitos a lo largo de una polilínea (ruta en auto)
+function puntitos(ctx, P, pts, radio, paso) {
+  const sp = pts.map(P); let acc = 0, sig = 0;
+  const dibujar = (x, y) => { ctx.beginPath(); ctx.arc(x, y, radio + 1.8, 0, 7); ctx.fillStyle = '#fff'; ctx.fill(); ctx.beginPath(); ctx.arc(x, y, radio, 0, 7); ctx.fillStyle = COL.via; ctx.fill(); };
+  for (let i = 1; i < sp.length; i++) {
+    const a = sp[i - 1], b = sp[i], d = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    while (acc + d >= sig && d > 0) { const f = (sig - acc) / d; dibujar(a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f); sig += paso; }
+    acc += d;
+  }
+}
 function enVista(bb, st) {
   const a = mapa.desdePantalla(-50, st.h + 50), b = mapa.desdePantalla(st.w + 50, -50);
   return !(bb[2] < a[0] || bb[0] > b[0] || bb[3] < a[1] || bb[1] > b[1]);
@@ -1953,10 +2135,17 @@ mapa.setDibujo((ctx, P, st, mpp) => {
     chevrones(ctx, P, r.ruta, '#ffffff');
     if (r.dAprox > 3) { trazar(ctx, P, [r.camino[0], r.entrada], 7, COL.borde); trazar(ctx, P, [r.camino[0], r.entrada], 4, COL.alerta, [2, 8]); }
   }
+  // Ruta en auto por calles: puntitos, como en Google Maps (el tramo hasta la calle, punteado naranjo)
+  const ra = S.modo === 'vehiculo' && S.guiando ? S.rutaAuto : null;
+  if (ra) {
+    if (ra.dCalle > 3) { trazar(ctx, P, ra.camino.slice(0, 2), 7, COL.borde); trazar(ctx, P, ra.camino.slice(0, 2), 4, COL.alerta, [2, 8]); }
+    puntitos(ctx, P, ra.camino.slice(1), st.z >= 15 ? 5.5 : st.z >= 13 ? 4.5 : 3.5, st.z >= 15 ? 15 : 12);
+  }
   // Puntos de encuentro
+  const peDestino = r ? S.net.pes[r.pe] : ra ? S.net.pes[ra.pe] : null;
   for (const pe of S.net.pes) {
     const p = P(pe.coord); if (p[0] < -60 || p[1] < -60 || p[0] > st.w + 60 || p[1] > st.h + 60) continue;
-    const destino = r && S.net.pes[r.pe] === pe;
+    const destino = peDestino === pe;
     if (st.z < 12 && !destino) {
       ctx.beginPath(); ctx.arc(p[0], p[1], st.z < 10 ? 4 : 5.5, 0, 7); ctx.fillStyle = COL.seguro; ctx.fill();
       ctx.lineWidth = 1.5; ctx.strokeStyle = '#fff'; ctx.stroke();
@@ -2368,7 +2557,94 @@ function vehiculoCercano() {
   for (const v of S.vehiculo) { const x = C.dist(S.pos, v.coord); if (x < d) { d = x; mejor = v; } }
   return mejor;
 }
+/* ---------- Ruta en auto por calles (OpenStreetMap), siempre a favor del tránsito ---------- */
+// La red de calles de la región se carga al entrar en modo vehículo; queda guardada para usar sin internet
+const urlCalles = (p) => 'datos/' + p.calles + '?v=' + encodeURIComponent(S.indice.version || '');
+async function cargarCalles() {
+  const p = S.paquete;
+  if (!p || !p.calles || AM().autoPorVias || !S.net) return null;
+  if (S.calles && S.calles.id === p.id) return S.calles.R;
+  if (S.callesCargando === p.id) return null;
+  S.callesCargando = p.id;
+  try {
+    const r = await fetch(urlCalles(p)); if (!r.ok) throw new Error('HTTP ' + r.status);
+    const K = await r.json();
+    if (!S.paquete || S.paquete.id !== p.id) return null;            // cambió de región mientras cargaba
+    S.calles = { id: p.id, R: C.prepararCalles(K, S.net.pes) };
+    $('leyendaRutaAuto').hidden = false;
+    if (S.guiando && S.modo === 'vehiculo' && S.pos) actualizar();
+    return S.calles.R;
+  } catch (_) { return null; } finally { if (S.callesCargando === p.id) S.callesCargando = null; }
+}
+function callesListas() {
+  if (!S.paquete || !S.paquete.calles || AM().autoPorVias || S.vehiculo.length) return null;
+  if (S.calles && S.calles.id === S.paquete.id) return S.calles.R;
+  cargarCalles(); return null;
+}
+// Instrucción según la próxima maniobra
+function textoAuto(r) {
+  if (r.dCalle > 30) {
+    const rb = rumboL(C.bearing(S.pos, r.camino[1]));
+    return r.calle ? T('auto.aCalle', { rb, d: fmtMtxt(r.dCalle), calle: r.calle }) : T('auto.aCalleSin', { rb, d: fmtMtxt(r.dCalle) });
+  }
+  const m = r.maniobras.find(x => x.d > 8);
+  if (!m) return T('auto.final', { d: fmtMtxt(r.total) });
+  const giro = T('giro.' + m.giro), d = m.d;
+  if (d <= 40) return m.nombre ? T('auto.ahora', { giro, calle: m.nombre }) : T('auto.ahoraSin', { giro });
+  if (d > 400 && r.rumboInicio != null) {          // tramo largo: primero «conduce hacia… por…», luego el giro
+    const rb = rumboL(r.rumboInicio);
+    const ini = r.calle ? T('auto.inicio', { rb, calle: r.calle }) : T('auto.inicioSin', { rb });
+    return ini + ' ' + (m.nombre ? T('auto.giro', { d: fmtMtxt(d), giro, calle: m.nombre }) : T('auto.giroSin', { d: fmtMtxt(d), giro }));
+  }
+  return m.nombre ? T('auto.giro', { d: fmtMtxt(d), giro, calle: m.nombre }) : T('auto.giroSin', { d: fmtMtxt(d), giro });
+}
+function guiarAuto(r, cambio) {
+  if (!S.rutaAutoVista) { S.rutaAutoVista = true; S.primerFix = false; }     // primera ruta en auto: se encuadra completa
+  S.res = null; S.rutaAuto = r; S.sinRuta = false; S.lejos = false;
+  if (C.dist(S.pos, r.coordPE) <= CONFIG.radioLlegada) {
+    if (!S.llegado) {
+      S.llegado = true; detenerSim();
+      S.llegadaPE = r.nombrePE; pintarLlegada(); vista('vLlegada');
+      hablar(CONFIG.textos.llegadaVoz, true);
+      try { navigator.vibrate && navigator.vibrate([200, 100, 200]); } catch (_) { /* sin vibración */ }
+    }
+    seguirMapa(); mapa.pedir(); return;
+  }
+  if (S.llegado || $('vGuia').hidden) { S.llegado = false; vista('vGuia'); }
+  $('senal').classList.remove('mar', 'lejos', 'vehiculo');
+  $('cifra').innerHTML = fmtM(r.total);
+  $('tiempo').textContent = T('min.auto', { n: Math.max(1, Math.round(r.tiempo / 60)) });
+  const instr = textoAuto(r);
+  $('instruccion').textContent = instr;
+  $('destinoEtq').textContent = T('guia.destino'); $('destinoFila').hidden = false;
+  $('destino').textContent = nombreL(r.nombrePE);
+  $('estadoVia').textContent = '';
+  S.destinoAuto = { nombre: r.nombrePE, coord: r.coordPE };
+  $('btnGmapsTxt').textContent = T('guia.gmapsAuto');
+  $('btnGmaps').href = C.enlaceGoogleMapsAuto(r.coordPE, S.prueba || S.manual ? S.pos : null); $('btnGmaps').setAttribute('aria-disabled', 'false');
+  $('btnAlt').disabled = true; $('btnAltTxt').textContent = T('guia.sinAlternativa'); $('tarjetaAlt').hidden = true; S.verAlt = false;
+  S.rumboObjetivo = C.bearing(S.pos, C.puntoA(r.camino, Math.min(r.total, r.dCalle + 25)));
+  pintarFlecha();
+  // Voz: al empezar, al acercarse a cada giro (a ~250 m y al llegar) y al cambiar de zona
+  const t = CONFIG.textos, ez = S.estadoZona;
+  const m = r.maniobras.find(x => x.d > 8), clave = m ? m.giro + '|' + m.nombre + '|' + Math.round((r.total - m.d) / 30) : 'final';
+  const fase = !m ? 0 : m.d <= 45 ? 2 : m.d <= 260 ? 1 : 0;
+  if (!S.anuncioInicial) {
+    S.anuncioInicial = true; S.vozAuto = { clave, fase };
+    const pref = ez === 'dentro' || ez === 'playa' ? T('veh.salZona') + '. ' : '';
+    hablar(T('veh.modo') + '. ' + pref + instr + ' ' + T('voz.faltan', { d: fmtMtxt(r.total) }), true);
+  } else if (cambio === 'fuera') hablar(t.salioZona);
+  else if (!S.vozAuto || S.vozAuto.clave !== clave) { S.vozAuto = { clave, fase }; if (fase > 0) hablar(instr); }
+  else if (fase > S.vozAuto.fase) { S.vozAuto.fase = fase; hablar(instr); }
+  seguirMapa(); mapa.pedir();
+}
+
 function actualizarVehiculo(cambio) {
+  if (S.estadoZona !== 'mar') {
+    const R = callesListas(), ra = R && C.rutaAuto(R, S.pos);
+    if (ra) return guiarAuto(ra, cambio);
+  }
+  S.rutaAuto = null;
   S.res = null; S.llegado = false;
   if ($('vGuia').hidden) vista('vGuia');
   entrarSinRuta();
@@ -2398,7 +2674,9 @@ function actualizarVehiculo(cambio) {
   seguirMapa(); mapa.pedir();
 }
 function ponerModo(m) {
-  S.modo = m; S.anuncioInicial = false; S.primerFix = false; S.fija = null; S.clave = null; S.hitos.clear(); S.sinRuta = false;
+  if (m === 'vehiculo') cargarCalles();
+  S.vozAuto = null; S.rutaAutoVista = false; detenerSim();
+  S.modo = m; $('btnSimular').textContent = textoSimular(); S.anuncioInicial = false; S.primerFix = false; S.fija = null; S.clave = null; S.hitos.clear(); S.sinRuta = false;
   $('tarjetaModo').hidden = true; $('tarjetaGmaps').hidden = true;
   $('btnModo').textContent = textoBtnModo();
   $('senal').classList.remove('vehiculo');
@@ -2438,7 +2716,7 @@ function seguirMapa() {
   if (!S.primerFix) {
     S.primerFix = true;
     if (S.sinRuta) { mapa.vista(S.pos, S.lejos ? 13 : 14, true); pintarCentrar(); return; }
-    const r = S.res && S.res.principal, pts = r ? r.camino : [S.pos];
+    const r = S.res && S.res.principal, pts = r ? r.camino : S.modo === 'vehiculo' && S.rutaAuto ? S.rutaAuto.camino : [S.pos];
     const bb = [Infinity, Infinity, -Infinity, -Infinity];
     for (const c of pts) { bb[0] = Math.min(bb[0], c[0]); bb[1] = Math.min(bb[1], c[1]); bb[2] = Math.max(bb[2], c[0]); bb[3] = Math.max(bb[3], c[1]); }
     mapa.encuadrar(bb, { t: 50, b: 56, l: 40, r: 76 }, 17, true);
@@ -2466,7 +2744,9 @@ function pintarFlecha() {
 /* ---------- Inicio, modo prueba, alternativa ---------- */
 function comenzarGuia(modo) {
   S.lejos = false; S.sinRuta = false; S.estadoZona = null; S.preguntoVehiculo = false; S.contVel = 0;
-  S.modo = modo || 'pie';
+  S.modo = modo || 'pie'; S.rutaAuto = null; S.rutaAutoVista = false; S.vozAuto = null;
+  if (S.modo === 'vehiculo') cargarCalles();
+  $('btnSimular').textContent = textoSimular();
   $('senal').classList.remove('lejos', 'vehiculo', 'mar');
   $('btnModo').textContent = textoBtnModo();
   $('tarjetaModo').hidden = true; $('tarjetaGmaps').hidden = true;
@@ -2522,10 +2802,11 @@ $('btnUsarAlt').onclick = () => {
 };
 
 /* ---------- Simulación de caminata (modo prueba) ---------- */
-function detenerSim() { if (S.sim) { clearInterval(S.sim.id); S.sim = null; $('btnSimular').textContent = T('prueba.simular'); } }
+function textoSimular() { return T(S.sim ? 'prueba.detener' : S.modo === 'vehiculo' ? 'prueba.simularAuto' : 'prueba.simular'); }
+function detenerSim() { if (S.sim) { clearInterval(S.sim.id); S.sim = null; $('btnSimular').textContent = textoSimular(); } }
 $('btnSimular').onclick = () => {
   if (S.sim) return detenerSim();
-  const r = S.res && S.res.principal;
+  const r = S.modo === 'vehiculo' && S.rutaAuto ? S.rutaAuto : S.res && S.res.principal;
   if (!r) {   // el mensaje explica por qué no hay ruta: sin punto, en vehículo (tsunami) o lejos de las vías
     avisar(T(!S.pos ? 'prueba.primero' : S.modo === 'vehiculo' && !AM().autoPorVias ? 'prueba.simVehiculo' : 'prueba.simSinRuta'), S.pos ? 6000 : 2600);
     return;
@@ -2757,6 +3038,7 @@ async function cargarPaquete(p, opciones) {
     cargarRed(datos, 'de ' + p.nombre + ' (' + IDIOMAS.es.amenazas[S.amenaza].nombre.toLowerCase() + ')');
     guardarPref('paquete', p.id);
     $('selPaquete').value = p.id; pintarSelector();
+    if (p.calles && !AM().autoPorVias) setTimeout(() => { fetch(urlCalles(p)).catch(() => {}); }, 3000);   // calles de la región: quedan guardadas para usar sin internet
     if (!opciones.sinEncuadre && !S.pos) encuadrarRed();
     return true;
   } catch (e) {
@@ -2821,13 +3103,19 @@ async function guardarTodo() {
   const lento = navigator.connection && (navigator.connection.saveData || /2g/.test(navigator.connection.effectiveType || ''));
   if (lento) { ponerOffline('off.lento'); return; }
   let ok = 0;
+  const callesVistas = new Set();
   for (const p of ps) {
-    try { const r = await fetch(urlDatos(p)); if (r.ok) { await r.arrayBuffer(); ok++; } } catch (_) { /* sin red */ }
+    try {
+      const r = await fetch(urlDatos(p));
+      if (r.ok) { await r.arrayBuffer(); ok++; }
+      // Calles (ruta en auto): solo las de la región abierta; las demás se guardan al abrir esa región
+      if (p.calles && S.paquete && p.region === S.paquete.region && !callesVistas.has(p.calles)) { callesVistas.add(p.calles); const k = await fetch(urlCalles(p)); if (k.ok) await k.arrayBuffer(); }
+    } catch (_) { /* sin red */ }
     $('barraOffline').style.width = Math.round(100 * ok / total) + '%';
     if (ok < total) ponerOffline('off.progreso', { ok, total }); else ponerOffline(null);
     await new Promise(res => setTimeout(res, 150));
   }
-  const mb = ps.reduce((s, p) => s + (p.bytes || 0), 0) / 1e6;
+  const mb = (ps.reduce((s, p) => s + (p.bytes || 0), 0) + [...new Map(ps.filter(p => p.calles && S.paquete && p.region === S.paquete.region).map(p => [p.calles, p.callesBytes || 0])).values()].reduce((a, b) => a + b, 0)) / 1e6;
   if (ok === total) ponerOffline(total === 1 ? 'off.listo1' : 'off.listo', { total, mb: mb.toFixed(1).replace('.', D.decimal) });
   else ponerOffline('off.parcial', { ok, total });
 }
@@ -3019,7 +3307,7 @@ function ponerIdioma(l, guardar) {
   aplicarAmenaza(S.amenaza);
   ponerVoz(S.voz); ponerBase(baseActual); ponerInstalarTxt(); pintarOffline();
   $('btnModo').textContent = textoBtnModo();
-  $('btnSimular').textContent = T(S.sim ? 'prueba.detener' : 'prueba.simular');
+  $('btnSimular').textContent = textoSimular();
   $('btnAltTxt').textContent = T('guia.alternativa'); $('btnUsarAlt').textContent = T('guia.seguirRuta'); $('btnGmapsTxt').textContent = T('guia.gmaps');
   if (S.net) { pintarResumen(); ponerTitulo(); $('leyendaPE').textContent = T(S.hayTransitorio ? 'ley.pet' : 'ley.pe'); }
   if (S.indice) llenarSelector();
